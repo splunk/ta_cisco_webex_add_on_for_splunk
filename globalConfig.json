@@ -1,11 +1,11 @@
 {
     "meta": {
-        "name": "TA-cisco-webex-add-on-for-splunk",
+        "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add on for Splunk",
-        "version": "1.0.0",
-        "restRoot": "TA_cisco_webex_add_on_for_splunk",
-        "apiVersion": "3.2.0",
-        "schemaVersion": "0.0.2"
+        "version": "0.0.0R416aada",
+        "restRoot": "ta_cisco_webex_add_on_for_splunk",
+        "apiVersion": "4.1.10",
+        "schemaVersion": "0.0.3"
     },
     "pages": {
         "configuration": {
@@ -22,8 +22,8 @@
                                 "label": "Account name"
                             },
                             {
-                                "field": "username",
-                                "label": "Username"
+                                "label": "Authentication Type",
+                                "field": "auth_type"
                             }
                         ],
                         "actions": [
@@ -54,40 +54,73 @@
                             ]
                         },
                         {
-                            "field": "username",
-                            "label": "Username",
                             "type": "text",
-                            "required": true,
-                            "help": "Enter the username for this account.",
+                            "label": "Endpoint",
+                            "field": "endpoint",
+                            "help": "Enter Endpoint",
                             "options": {
-                                "placeholder": "Enter the username here"
+                                "display": false
                             },
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 200,
-                                    "errorMsg": "Length of username should be between 1 and 200"
-                                }
-                            ]
+                            "defaultValue": "webexapis.com"
                         },
                         {
-                            "field": "password",
-                            "label": "Password",
-                            "type": "text",
-                            "encrypted": true,
-                            "required": true,
-                            "help": "Enter the password for this account.",
-                            "validators": [
-                                {
-                                    "type": "string",
-                                    "minLength": 1,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Length of password should be between 1 and 8192"
-                                }
-                            ]
+                            "field": "oauth",
+                            "label": "Not used",
+                            "type": "oauth",
+                            "options": {
+                                "auth_type": [
+                                    "basic",
+                                    "oauth"
+                                ],
+                                "basic": [
+                                    {
+                                        "oauth_field": "username",
+                                        "label": "User Name",
+                                        "field": "username",
+                                        "help": "Enter Account name."
+                                    },
+                                    {
+                                        "oauth_field": "password",
+                                        "label": "Password",
+                                        "field": "password",
+                                        "encrypted": true,
+                                        "help": "Enter Password."
+                                    }
+                                ],
+                                "oauth": [
+                                    {
+                                        "oauth_field": "client_id",
+                                        "label": "Client Id",
+                                        "field": "client_id",
+                                        "help": "Enter Client Id."
+                                    },
+                                    {
+                                        "oauth_field": "client_secret",
+                                        "label": "Client Secret",
+                                        "field": "client_secret",
+                                        "encrypted": true,
+                                        "help": "Enter Client Secret."
+                                    },
+                                    {
+                                        "oauth_field": "redirect_url",
+                                        "label": "Redirect url",
+                                        "field": "redirect_url",
+                                        "help": "Please add this redirect URL in your app."
+                                    }
+                                ],
+                                "auth_label": "Auth Type",
+                                "oauth_popup_width": 600,
+                                "oauth_popup_height": 600,
+                                "oauth_timeout": 180,
+                                "auth_code_endpoint": "/v1/authorize",
+                                "access_token_endpoint": "/v1/access_token"
+                            }
                         }
-                    ]
+                    ],
+                    "hook": {
+                        "src": "account_hook",
+                        "type": "external"
+                    }
                 },
                 {
                     "name": "proxy",
