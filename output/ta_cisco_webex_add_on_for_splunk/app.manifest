@@ -19,7 +19,7 @@
         "id": {
             "group": null,
             "name": "ta_cisco_webex_add_on_for_splunk",
-            "version": "0.0.0R121a002"
+            "version": "1.0.0"
         },
         "license": {
             "name": null,
