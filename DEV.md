@@ -6,8 +6,36 @@ pip3 install splunk-add-on-ucc-framework
 ```
 ### 2. Create `globalConfig.json` and `app.manifest`
 An easy way to create desired `globalConfig.json` and `app.manifest` is by leveraging AOB. You can create a TA with desired UI components using AOB, and then use the generated `globalConfig.json` and `app.manifest` directly.
-**Note**: Pay attention to `"meta"` section inside `globalConfig.json`. Make sure you have `"apiVersion"` under `"meta"` 
+
+**If you use AOB, please pay attention to the following points**:
+1. AOB auto-generates an `Add-on Folder Name` for your add-on, which has the format  `TA-your-add-on-name`. This format is not consistent with the built-in OAuth redirect URL format. You'd better change it to a format that only contains **lowercase** and **"_"**. 
+e. g. `ta_your_add_on_name`
+Two ways to change the Add-on Folder Name for AOB Add-on:
+    - There is an `Edit` button right behind `Add-on Folder Name` in the AOB UI, click it to modify the Add-on Folder Name.
+    - You can also manually modify it via updating `globalConfig.json` and `app. manifest`. Check the **Steps to change Add-on Folder name** section to see the details.
+
+2. In order to get the AOB-style modular input python script, you **MUST** add `"template": "input_with_helper"` entry in each of you input. Position of this entry is 
+    `globalConfig.json` > `pages` > `inputs` > `services` > next to `name`.
+    ```
+    "inputs": {
+            "title": "Inputs",
+            "description": "Manage your data inputs",
+            "table": {
+                "header": [
+                ],
+                "moreInfo": [
+            },
+            "services": [
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_meetings",
+                    "title": "Webex Meetings",
+                    ...
+    ```
+
+3. Pay attention to `"meta"` section inside `globalConfig.json`. Make sure you have `"apiVersion"` under `"meta"` 
 e.g. `"apiVersion": "4.1.10".`
+
 
 ### 3. Create required file structure
 ```
@@ -531,9 +559,29 @@ In the Webex example, since we modified the `redirect_uri`  by adding  `scopes` 
 
 Re-run `ucc-gen` the desired `input.conf` and `props.conf` will be copied into your TA.
 
-## Steps to change app name
-1. globalConfig.json > meta
-2. app.manifest > info
+## Steps to change Add-on Folder name
+1. globalConfig.json > meta > name
+```
+"meta": {
+        "name": "ta_cisco_webex_add_on_for_splunk",
+        "displayName": "Cisco Webex Add on for Splunk",
+        "version": "1.0.0",
+        "restRoot": "ta_cisco_webex_add_on_for_splunk",
+        "apiVersion": "4.1.10",
+        "schemaVersion": "0.0.3"
+    }
+```
+
+2. app.manifest > info > id > name
+```
+"info": {
+    "title": "Cisco Webex Add on for Splunk",
+    "id": {
+      "group": null,
+      "name": "ta_cisco_webex_add_on_for_splunk",
+      "version": "1.0.0"
+    }
+```
 
 
 ## Troubleshooting
