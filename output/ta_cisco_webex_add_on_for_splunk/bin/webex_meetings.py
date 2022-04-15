@@ -34,6 +34,13 @@ class WEBEX_MEETINGS(smi.Script):
         
         scheme.add_argument(
             smi.Argument(
+                'global_account',
+                required_on_create=True,
+            )
+        )
+        
+        scheme.add_argument(
+            smi.Argument(
                 'start_time',
                 required_on_create=False,
             )

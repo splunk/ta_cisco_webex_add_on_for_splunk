@@ -35,6 +35,13 @@ fields = [
         )
     ), 
     field.RestField(
+        'global_account',
+        required=True,
+        encrypted=False,
+        default=None,
+        validator=None
+    ), 
+    field.RestField(
         'start_time',
         required=False,
         encrypted=False,

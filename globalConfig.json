@@ -297,6 +297,10 @@
                         "label": "Status"
                     },
                     {
+                        "field": "global_account",
+                        "label": "Global Account"
+                    },
+                    {
                         "field": "start_time",
                         "label": "Start Time"
                     },
@@ -370,6 +374,16 @@
                                     "errorMsg": "Length of index name should be between 1 and 80."
                                 }
                             ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
                         },
                         {
                             "field": "start_time",
