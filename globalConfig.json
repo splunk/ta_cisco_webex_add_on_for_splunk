@@ -318,6 +318,7 @@
             },
             "services": [
                 {
+                    "template": "input_with_helper",
                     "name": "webex_meetings",
                     "title": "Webex Meetings",
                     "entity": [

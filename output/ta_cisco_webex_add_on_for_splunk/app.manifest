@@ -1,50 +1,53 @@
 {
-    "dependencies": {},
-    "incompatibleApps": {},
-    "info": {
-        "author": [
-            {
-                "company": null,
-                "email": null,
-                "name": "FDSE"
-            }
-        ],
-        "classification": {
-            "categories": [],
-            "developmentStatus": null,
-            "intendedAudience": null
-        },
-        "commonInformationModels": null,
-        "description": "",
-        "id": {
-            "group": null,
-            "name": "ta_cisco_webex_add_on_for_splunk",
-            "version": "1.0.0"
-        },
-        "license": {
-            "name": null,
-            "text": null,
-            "uri": null
-        },
-        "privacyPolicy": {
-            "name": null,
-            "text": null,
-            "uri": null
-        },
-        "releaseDate": null,
-        "releaseNotes": {
-            "name": null,
-            "text": null,
-            "uri": null
-        },
-        "title": "Cisco Webex Add on for Splunk"
+  "schemaVersion": "1.0.0",
+  "info": {
+    "title": "Cisco Webex Add on for Splunk",
+    "id": {
+      "group": null,
+      "name": "ta_cisco_webex_add_on_for_splunk",
+      "version": "1.0.0"
     },
-    "inputGroups": {},
-    "platformRequirements": {
-        "splunk": {
-            "Enterprise": "*"
-        }
+    "author": [
+      {
+        "name": "FDSE",
+        "email": null,
+        "company": null
+      }
+    ],
+    "releaseDate": null,
+    "description": "",
+    "classification": {
+      "intendedAudience": null,
+      "categories": [],
+      "developmentStatus": null
     },
-    "schemaVersion": "1.0.0",
-    "tasks": []
+    "commonInformationModels": null,
+    "license": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "privacyPolicy": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "releaseNotes": {
+      "name": null,
+      "text": null,
+      "uri": null
+    }
+  },
+  "dependencies": {
+  },
+  "tasks": [],
+  "inputGroups": {
+  },
+  "incompatibleApps": {
+  },
+  "platformRequirements": {
+    "splunk": {
+      "Enterprise": "*"
+    }
+  }
 }
