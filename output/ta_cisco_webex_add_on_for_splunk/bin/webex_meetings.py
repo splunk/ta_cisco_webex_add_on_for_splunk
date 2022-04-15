@@ -13,6 +13,8 @@ from solnlib import log
 from solnlib.modular_input import checkpointer
 from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
 
+import input_module_webex_meetings as input_module
+
 bin_dir  = os.path.basename(__file__)
 app_name = os.path.basename(os.path.dirname(os.getcwd()))
 
@@ -71,51 +73,7 @@ class ModInputWEBEX_MEETINGS(base_mi.BaseModInput):
         return "app_name" 
 
     def collect_events(helper, ew):
-
-        #   Get the CloudConnect json file .cc.json
-        script_name = __file__
-        script_name = script_name[:-3]
-        config_file_name = '.'.join([script_name, 'cc.json'])
-
-        # Extract the url, method and headers for this input from the .cc.json file
-        with open(config_file_name) as f:
-            data = json.load(f)
-
-        url    = data["requests"][0]["request"]["url"]
-        method = data["requests"][0]["request"]["method"]
-        headers= json.dumps(data["requests"][0]["request"]["headers"])
-
-        # insert input values into the url and/or header (helper class handles credential store)
-        opt_global_account = helper.get_arg('global_account')
-        url = url.replace("{{"+'global_account'+"}}",opt_global_account)
-        headers = headers.replace("{{"+'global_account'+"}}",opt_global_account)
-        
-        opt_start_time = helper.get_arg('start_time')
-        url = url.replace("{{"+'start_time'+"}}",opt_start_time)
-        headers = headers.replace("{{"+'start_time'+"}}",opt_start_time)
-        
-        opt_end_time = helper.get_arg('end_time')
-        url = url.replace("{{"+'end_time'+"}}",opt_end_time)
-        headers = headers.replace("{{"+'end_time'+"}}",opt_end_time)
-        
-        # Now execute the api call
-        headers=json.loads(headers)
-        response = helper.send_http_request(url, method, headers=headers,  parameters="", payload=None, cookies=None, verify=True, cert=None, timeout=None, use_proxy=True)
-
-        try:
-            response.raise_for_status()
-            
-        except:
-            helper.log_error (response.text)
-        
-        if response.status_code == 200:
-            try:
-                data = json.dumps(response.json())
-                sourcetype=  "webex_meetings"  + "://" + helper.get_input_stanza_names()
-                event = helper.new_event(source="webex_meetings", index=helper.get_output_index(), sourcetype=sourcetype , data=data)
-                ew.write_event(event)
-            except:
-                helper.log_info("Error inserting event")
+        input_module.collect_events(helper, ew)
 
 
     def get_account_fields(self):
