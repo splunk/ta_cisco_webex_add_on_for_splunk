@@ -4,7 +4,7 @@
     "title": "Cisco Webex Add on for Splunk",
     "id": {
       "group": null,
-      "name": "TA-cisco-webex-add-on-for-splunk",
+      "name": "ta_cisco_webex_add_on_for_splunk",
       "version": "1.0.0"
     },
     "author": [
