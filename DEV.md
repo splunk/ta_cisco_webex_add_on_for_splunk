@@ -15,7 +15,7 @@ Two ways to change the Add-on Folder Name for AOB Add-on:
     - You can also manually modify it via updating `globalConfig.json` and `app. manifest`. Check the **Steps to change Add-on Folder name** section to see the details.
 
 2. In order to get the AOB-style modular input python script, you **MUST** add `"template": "input_with_helper"` entry in each of you input. Position of this entry is 
-    `globalConfig.json` > `pages` > `inputs` > `services` > next to `name`.
+    `globalConfig.json` > `"pages"` > `"inputs"` > `"services"` > next to `"name"`.
     ```
     "inputs": {
             "title": "Inputs",
@@ -235,11 +235,25 @@ Below is the explanation of each entry under `"entity"`:
     
     - `auth_code_endpoint` this must be present and its value should be endpoint value for getting the auth_code using the app. For example, for Webex the url to get auth_code is `https://webexapis.com/v1/authorize` then this will have value `/v1/authorize`.
     
-    - `access_token_endpoint` this must be present and its value should be endpoint value for getting access_token using the auth_code received. For example, for Webex the url to get access token is `https://webexapis.com/v1/access_token` then this will have value `/v1/access_token`.
+    - `access_token_endpoint` this must be present and its value should be endpoint value for getting access_token using the auth_code received. For example, for Webex the url to get access token is
+    `https://webexapis.com/v1/access_token` then this will have value `/v1/access_token`.
+    
 
-### 2. Add `Scopes` by leveraging custom hook (Optional)
-In most cases, you need to specify the permission scopes for your App, and you also need to include these scopes in the Authorization flow. Currently, the UCC framework doesn't have a built-in field for supporting adding scopes. You need to leverage a custom hook to tweak this. (**Note**: If your app doesn't need `scope` you can skip this step).
+### 2. Add `Scopes` (Optional)
+In most cases, you need to specify the permission scopes for your App, and you also need to include these scopes in the Authorization flow. Currently, the UCC framework doesn't have a built-in field for supporting adding scopes. There are two ways to help you tweak this. (**Note**: If your app doesn't need `scope` you can skip this step).
 
+#### **I. Leverage `auth_code_endpoint` field**
+As mentioned above, `auth_code_endpoint` is used to set the endpoint value for getting the auth_code. In general, the `scopes` are always to be appended to it as Query params. Therefore, you could easily add the scopes here, moreover, you can also add `state` here.
+e.g.
+
+```
+"auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:schedules_read meeting:participants_read&state=set_state_here",
+```
+**Note:**: Make sure `?response_type=code` is right behind endpoint, `/v1/authorize`, directly.
+
+If your case is much more complicated, you can leverage the custom hook, which has more flexibility.
+
+#### **II. Leverage custom hook**
 1. Add the custom hook, which is a javescript file (e.g. `account_hook.js`) , under `/package/appserver/static/js/build/custom/account_hook.js`. 
     You can find Custom Hook example with explaination [here](https://splunk.atlassian.net/wiki/spaces/PROD/pages/314016308892/UCC+5.X+Development+Guide#7.4.1.1.1.-Custom-Hook-Example).
 
@@ -334,7 +348,7 @@ In most cases, you need to specify the permission scopes for your App, and you a
     Here, the value of `"src"` is your javascript file's name without extension.
 
 ### 3. Add custom REST handler
-By taking advantage of built-in OAuth support we will have the required custom endpoint and corresponding custom REST handler auto-setup. What we only should do is modify the custom REST handler python script as needed. 
+By taking advantage of built-in OAuth support you will have the required custom endpoint and corresponding custom REST handler auto-setup. What you only should do is modify the custom REST handler python script as needed. 
 
 Once you complete the above steps you can run `ucc-gen`. You will see
 
@@ -364,7 +378,11 @@ Once you complete the above steps you can run `ucc-gen`. You will see
 
 
 - `Custom REST handler python script` is auto-generated under `/output/<YOUR-TA-NAME>/bin/<YOUR-TA-NAME>_rh_oauth.py`. It's a well-defined template, and you can modify it as needed. Typically, you don't need to modify it too much.
-In the Webex example, since we modified the `redirect_uri`  by adding  `scopes` and `state` in the `account_hook.js`. We need to correct it here so that it uses the correct `redirect_uri` to exchange the access token when it sends a POST request to the Webex server.
+
+    In the Webex example:
+
+    - By leveraging `auth_code_endpoint` to add scopes we didn't change anything related to the Oauth flow params, so we don't need to modify the Custom REST handler python script in this scenario.
+    - By leveraging `custom hook` since we modified the `redirect_uri`  by adding  `scopes` and `state` in the `account_hook.js`. We need to correct it here so that it uses the correct `redirect_uri` to exchange the access token when it sends a POST request to the Webex server.
 
     ```
     # /output/ta_cisco_webex_add_on_for_splunk/bin/ta_cisco_webex_add_on_for_splunk_rh_oauth.py
