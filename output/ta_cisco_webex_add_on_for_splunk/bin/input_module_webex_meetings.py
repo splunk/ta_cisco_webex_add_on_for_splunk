@@ -6,6 +6,9 @@ import sys
 import time
 import datetime
 
+from oauth_helper import update_access_token
+from webex_constants import _TOKEN_EXPIRES_CHECKPOINT_KEY
+
 '''
     IMPORTANT
     Edit only the validate_input and collect_events functions.
@@ -129,8 +132,6 @@ def collect_events(helper, ew):
     opt_global_account = helper.get_arg("global_account")
     helper.log_debug(f"[-] opt_start_time: {opt_start_time}")
     helper.log_debug(f"[-] opt_end_time: {opt_end_time}")
-    helper.log_debug(f"[-] opt_global_account: {opt_global_account}")
-
 
     account_name = opt_global_account.get("name")
     client_id = opt_global_account.get("client_id")
@@ -142,3 +143,10 @@ def collect_events(helper, ew):
     helper.log_debug(f"[-] client_secret: {client_secret}")
     helper.log_debug(f"[-] access_token: {access_token}")
     helper.log_debug(f"[-] refresh_token: {refresh_token}")
+
+    helper.log_debug("===============")
+
+    new_access_token, new_refresh_token, new_expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token)
+    helper.log_debug(f"[*] new_access_token: {new_access_token}")
+    helper.log_debug(f"[*] new_refresh_token: {new_refresh_token}")
+    helper.log_debug(f"[*] new_expires_in: {new_expires_in}")
