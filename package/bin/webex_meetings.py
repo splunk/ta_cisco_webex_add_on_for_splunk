@@ -70,7 +70,7 @@ class ModInputWEBEX_MEETINGS(base_mi.BaseModInput):
         pass
 
     def get_app_name(self):
-        return "app_name" 
+        return "ta_cisco_webex_add_on_for_splunk"
 
     def collect_events(helper, ew):
         input_module.collect_events(helper, ew)
