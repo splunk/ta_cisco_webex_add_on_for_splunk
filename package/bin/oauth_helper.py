@@ -7,7 +7,7 @@ from solnlib import conf_manager
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
 
 
-def update_access_token(helper, account_name, client_id, client_secret, refresh_token, proxies=None):
+def update_access_token(helper, account_name, client_id, client_secret, refresh_token):
     helper.log_debug("[-] Updating access token.....")
     oauth = OAuth(
         helper,
@@ -15,7 +15,7 @@ def update_access_token(helper, account_name, client_id, client_secret, refresh_
         client_secret,
         refresh_token,
     )
-    return oauth.refresh_token(account_name, proxies)
+    return oauth.refresh_token(account_name)
 
 
 class OAuth:
@@ -50,7 +50,7 @@ class OAuth:
             "client_secret": self._client_secret,
         }
     
-    def get_new_token(self, proxies=None):
+    def get_new_token(self):
         """
         Send a POST request to Webex Refresh token endpoint to get new access_token and refresh tokens
 
@@ -69,7 +69,18 @@ class OAuth:
         }
 
         try:
-            response = requests.request("POST", _REFRESH_TOKEN_ENDPOINT, headers=headers, data=payload, proxies=proxies)
+            response = self.helper.send_http_request(
+                _REFRESH_TOKEN_ENDPOINT,
+                "POST",
+                parameters=payload,
+                payload=None,
+                headers=headers,
+                cookies=None,
+                verify=True,
+                cert=None,
+                timeout=None,
+                use_proxy=True
+            )
             self.helper.log_info(
                 "[-] GET Access Token from Refresh Token: response.status_code: {}".format(
                     response.status_code
@@ -145,7 +156,7 @@ class OAuth:
         
 
 
-    def refresh_token(self, account_name, proxies=None):
+    def refresh_token(self, account_name):
         """
         Get the new access tokens and refresh tokens from Webex Server
         Overwrites the new tokens into  account conf/password storage endpoint
@@ -156,7 +167,7 @@ class OAuth:
         """
         try:
             # get new tokens from Webex server
-            new_access_token, new_refresh_token, new_expires_in = self.get_new_token(proxies)
+            new_access_token, new_refresh_token, new_expires_in = self.get_new_token()
             self.helper.log_debug("[-] Successfully got new tokens")
 
             # update the new tokens in account conf/ password storage endpoint

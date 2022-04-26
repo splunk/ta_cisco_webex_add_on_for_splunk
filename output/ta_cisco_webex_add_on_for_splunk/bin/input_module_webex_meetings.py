@@ -146,27 +146,9 @@ def collect_events(helper, ew):
     helper.log_debug(f"[-] access_token: {access_token}")
     helper.log_debug(f"[-] refresh_token: {refresh_token}")
 
-    # Get proxy
-    proxy = helper.get_proxy()
-    helper.log_debug(f"[-] proxy: {proxy}")
-    if proxy:
-        if proxy.get('proxy_username', None) and proxy.get('proxy_password', None):
-            proxies = {
-                "https": "{protocol}://{user}:{password}@{host}:{port}".format(protocol=proxy['proxy_type'], user=proxy['proxy_username'], password=proxy['proxy_password'], host=proxy['proxy_url'], port=proxy['proxy_port']),
-                "http": "{protocol}://{user}:{password}@{host}:{port}".format(protocol=proxy['proxy_type'], user=proxy['proxy_username'], password=proxy['proxy_password'], host=proxy['proxy_url'], port=proxy['proxy_port'])
-            }
-        else:
-            proxies = {
-                "https": "{protocol}://{host}:{port}".format(protocol=proxy['proxy_type'], host=proxy['proxy_url'], port=proxy['proxy_port']),
-                "http": "{protocol}://{host}:{port}".format(protocol=proxy['proxy_type'], host=proxy['proxy_url'], port=proxy['proxy_port'])
-            }
-    else:
-        proxies = None
-    helper.log_debug(f"[-] proxies: {proxies}")
-
     helper.log_debug("===============")
 
-    new_access_token, new_refresh_token, new_expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token, proxies)
+    new_access_token, new_refresh_token, new_expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token)
     helper.log_debug(f"[*] new_access_token: {new_access_token}")
     helper.log_debug(f"[*] new_refresh_token: {new_refresh_token}")
     helper.log_debug(f"[*] new_expires_in: {new_expires_in}")
