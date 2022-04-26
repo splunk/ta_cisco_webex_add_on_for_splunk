@@ -7,7 +7,7 @@ from solnlib import conf_manager
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
 
 
-def update_access_token(helper, account_name, client_id, client_secret, refresh_token):
+def update_access_token(helper, account_name, client_id, client_secret, refresh_token, proxies=None):
     helper.log_debug("[-] Updating access token.....")
     oauth = OAuth(
         helper,
@@ -15,7 +15,7 @@ def update_access_token(helper, account_name, client_id, client_secret, refresh_
         client_secret,
         refresh_token,
     )
-    return oauth.refresh_token(account_name)
+    return oauth.refresh_token(account_name, proxies)
 
 
 class OAuth:
@@ -50,7 +50,7 @@ class OAuth:
             "client_secret": self._client_secret,
         }
     
-    def get_new_token(self):
+    def get_new_token(self, proxies=None):
         """
         Send a POST request to Webex Refresh token endpoint to get new access_token and refresh tokens
 
@@ -69,7 +69,7 @@ class OAuth:
         }
 
         try:
-            response = requests.request("POST", _REFRESH_TOKEN_ENDPOINT, headers=headers, data=payload)
+            response = requests.request("POST", _REFRESH_TOKEN_ENDPOINT, headers=headers, data=payload, proxies=proxies)
             self.helper.log_info(
                 "[-] GET Access Token from Refresh Token: response.status_code: {}".format(
                     response.status_code
@@ -145,7 +145,7 @@ class OAuth:
         
 
 
-    def refresh_token(self, account_name):
+    def refresh_token(self, account_name, proxies=None):
         """
         Get the new access tokens and refresh tokens from Webex Server
         Overwrites the new tokens into  account conf/password storage endpoint
@@ -156,7 +156,7 @@ class OAuth:
         """
         try:
             # get new tokens from Webex server
-            new_access_token, new_refresh_token, new_expires_in = self.get_new_token()
+            new_access_token, new_refresh_token, new_expires_in = self.get_new_token(proxies)
             self.helper.log_debug("[-] Successfully got new tokens")
 
             # update the new tokens in account conf/ password storage endpoint
@@ -168,5 +168,6 @@ class OAuth:
             return new_access_token, new_refresh_token, new_expires_in
         except Exception as e:
             self.helper.log_error("[-] Error happened while refreshing token: {}".format(e))
+            raise e
 
         return None, None, None
