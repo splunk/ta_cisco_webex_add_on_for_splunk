@@ -50,23 +50,23 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
 
 The **webex_meetings** input is used to fetch the data from both [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint and [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting participants.
 
-**Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended with a 12 hours delay to reduce data gaps.
+**Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended.
 
-The `Start Time` for fetching the meeting & participant reports **MUST** fall be at least 12 hours before the current date and time. For example, if today is 2021-06-01 12:00:00 UTC, the Start Time **CANNOT** be a date after 2021-06-01 00:00:00 UTC. The input will return an error message if the Start Time is set more than 12 hours before current date and time. If you leave it blank, the API will default to the last 7 days.
+The `Start Time` is requred. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z).
 
-The `End Date` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. If you leave it blank, the API will default to 7 days after start time; or the current date and time if Start Time is not set.
+The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. If you leave it blank, it will use the current date and time End date and time is exclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ.
 
-The `Interval` is the time interval (in seconds) to run the input and **MUST** be set to a number greater than or equal to 43200 (12 hours) to avoid collecting duplicate events. The input will return an error message if the interval is set to a number less than 43200.
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second)for the next run.
 
 - Click on the `Inputs` button on the top left corner.
 - Click on `Create New Input` button on the top right corner.
 - Enter the following details in the pop-up box:
     - **Name** (_required_): Unique name for the data input.
-    - **Interval** (_required_): Time interval of input in seconds. Must be greater than or eqaul to 43200 (12 hours).
+    - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_optional_): Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z). Start Time must be prior to 12 hours before current time. Default is last 7 days
-    - **End Time** (_optional_): End date and time (exclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Default is 7 days after Start Time; or the current date and time if Start Time is not set. 
+    - **Start Time** (_required_): The Start date and time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ.
+    - **End Time** (_optional_): End date and time is exclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ, if inputted.
 - Click on the `Add` green button on the bottom right of the pop up box.
 
 ## Versions Supported
