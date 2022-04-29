@@ -50,6 +50,7 @@ def collect_events(helper, ew):
     #timestamp = None
     helper.log_debug("[-] last time timestamp: {}".format(timestamp))
 
+    # set up start time
     # first time start_time from UI
     if timestamp is None:
         start_time = opt_start_time
@@ -60,21 +61,33 @@ def collect_events(helper, ew):
         helper.log_debug("[-] no checkpoint timestamp exists, saving new timestamp: {}".format(start_time))
 
     else:
-        start_time = timestamp
+        # shift 1 second to avoid duplicate
+        start_time = (
+            datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ") + timedelta(seconds=1)
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # set up end time
+    now = datetime.utcnow()
+
+    if opt_end_time and opt_end_time < now:
+        end_time = opt_end_time
+    else:
+        end_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # compare if start_time ?> end_time, if so, break
+    if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(
+        end_time, "%Y-%m-%dT%H:%M:%SZ"
+    ):
+        helper.log_info(
+            "[-] Finished ingestion for time range {start_time} - {end_time}".format(
+                start_time=start_time, end_time=end_time
+            )
+        )
+        return
 
     meetings_params["from"] = start_time
-    if opt_end_time:
-        meetings_params["to"] = opt_end_time
-        # compare if start_time ?> end_time, if so, break
-        if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(
-            opt_end_time, "%Y-%m-%dT%H:%M:%SZ"
-        ):
-            helper.log_info(
-                "[-] Finished ingestion for time range {opt_start_time} - {opt_end_time}".format(
-                    opt_start_time=opt_start_time, opt_end_time=opt_end_time
-                )
-            )
-            return
+    meetings_params["to"] = end_time
+    helper.log_debug("[-] starting the ingestion for range [{start_time} - {end_time}]".format(start_time=meetings_params["from"], end_time=meetings_params["to"]))
 
     # check if the access token expired
     # get the access_token_expired_time checkpoint
@@ -116,100 +129,108 @@ def collect_events(helper, ew):
     )
     helper.log_debug("[-] meetings data size: {}".format(len(meetings)))
 
-    # only ingest the events that ended after the last checkpoint time
+    # only ingest the events that happened after the last checkpoint time
     # write meetings data into Splunk
 
     try:
+        checkpoint_time = datetime.strptime(helper.get_check_point(last_timestamp_checkpoint_key), "%Y-%m-%dT%H:%M:%SZ")
         for meeting in meetings:
-
-            # fetching the participants data
-            try:
-                # Use id as path params for participants endpoint
-                meeting_id = meeting["id"]
-
-                # get request params for participants endpoint
-                participants_params = {}
-                participants = paging_get_request_to_webex(
-                    helper,
-                    _MEETING_PARTICIPANTS_ENDPOINT.format(
-                        meeting_id=meeting_id
-                    ),
-                    access_token,
-                    refresh_token,
-                    account_name,
-                    client_id,
-                    client_secret,
-                    participants_params,
-                    _RESPONSE_TAG_MAP[_MEETING_PARTICIPANTS_ENDPOINT],
-                )
-                helper.log_debug(
-                    "[-] participants data size: {}".format(len(participants))
-                )
-            except Exception as e:
-                helper.log_error(
-                    "[-] Error happened while fetching participants data into Splunk: {}".format(
-                        e
-                    )
-                )
-                raise e
-            try:
-                # write participants into splunk
-                for participant in participants:
-                    # add meeting title
-                    participant["meeting_title"] = meeting["title"]
-                    # set join_time as event timestamp
-                    join_time = datetime.strptime(
-                        participant["joinedTime"], "%Y-%m-%dT%H:%M:%SZ"
-                    )
-                    event_timestamp = (
-                        join_time - datetime(1970, 1, 1)
-                    ).total_seconds()
-
-                    participant_event = helper.new_event(
-                        source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
-                        index=helper.get_output_index(),
-                        sourcetype="cisco:webex:meetings:participant",
-                        data=json.dumps(participant),
-                        time=event_timestamp,
-                    )
-                    ew.write_event(participant_event)
-                helper.log_debug(
-                    "[-] Successfully wrote {} participants for meeting {}".format(
-                        len(participants), meeting_id
-                    )
-                )
-            except Exception as e:
-                helper.log_error(
-                    "[-] Error happened while writing participants data into Splunk: {}".format(
-                        e
-                    )
-                )
-                raise e
-
-            # write the meeting into Splunk after all participants was successfully writtern to Splunk
-            # set the start_time as event timestamp
-            event_start_time = datetime.strptime(
-                meeting["start"], "%Y-%m-%dT%H:%M:%SZ"
+            # compare the meeting start time with the last checkpoint time
+            last_checkpoint_time = datetime.strptime(
+                helper.get_check_point(last_timestamp_checkpoint_key),
+                "%Y-%m-%dT%H:%M:%SZ",
             )
-            event_time = (event_start_time - datetime(1970, 1, 1)).total_seconds()
+            meeting_start_time = datetime.strptime(meeting["start"], "%Y-%m-%dT%H:%M:%SZ")
+            # ingest the meetings that happeed after the last ingestion
+            if meeting_start_time > last_checkpoint_time:
+                # fetching the participants data
+                try:
+                    # Use id as path params for participants endpoint
+                    meeting_id = meeting["id"]
 
-            meeting_event = helper.new_event(
-                source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
-                index=helper.get_output_index(),
-                sourcetype="cisco:webex:meetings",
-                data=json.dumps(meeting),
-                time=event_time,
+                    # get request params for participants endpoint
+                    participants_params = {}
+                    participants = paging_get_request_to_webex(
+                        helper,
+                        _MEETING_PARTICIPANTS_ENDPOINT.format(
+                            meeting_id=meeting_id
+                        ),
+                        access_token,
+                        refresh_token,
+                        account_name,
+                        client_id,
+                        client_secret,
+                        participants_params,
+                        _RESPONSE_TAG_MAP[_MEETING_PARTICIPANTS_ENDPOINT],
+                    )
+                    helper.log_debug(
+                        "[-] participants data size: {}".format(len(participants))
+                    )
+                except Exception as e:
+                    helper.log_error(
+                        "[-] Error happened while fetching participants data into Splunk: {}".format(
+                            e
+                        )
+                    )
+                    raise e
+                try:
+                    # write participants into splunk
+                    for participant in participants:
+                        # add meeting title
+                        participant["meeting_title"] = meeting["title"]
+                        # set join_time as event timestamp
+                        join_time = datetime.strptime(
+                            participant["joinedTime"], "%Y-%m-%dT%H:%M:%SZ"
+                        )
+                        event_timestamp = (
+                            join_time - datetime(1970, 1, 1)
+                        ).total_seconds()
+
+                        participant_event = helper.new_event(
+                            source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
+                            index=helper.get_output_index(),
+                            sourcetype="cisco:webex:meetings:participant",
+                            data=json.dumps(participant),
+                            time=event_timestamp,
+                        )
+                        ew.write_event(participant_event)
+                    helper.log_debug(
+                        "[-] Successfully wrote {} participants for meeting {}".format(
+                            len(participants), meeting_id
+                        )
+                    )
+                except Exception as e:
+                    helper.log_error(
+                        "[-] Error happened while writing participants data into Splunk: {}".format(
+                            e
+                        )
+                    )
+                    raise e
+
+                # write the meeting into Splunk after all participants was successfully writtern to Splunk
+                # set the start_time as event timestamp
+                event_start_time = datetime.strptime(
+                    meeting["start"], "%Y-%m-%dT%H:%M:%SZ"
+                )
+                event_time = (event_start_time - datetime(1970, 1, 1)).total_seconds()
+
+                meeting_event = helper.new_event(
+                    source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
+                    index=helper.get_output_index(),
+                    sourcetype="cisco:webex:meetings",
+                    data=json.dumps(meeting),
+                    time=event_time,
+                )
+                ew.write_event(meeting_event)
+
+                # save the max start_time as checkpoint for next ingestion
+                checkpoint_time = max(checkpoint_time, event_start_time)
+        helper.save_check_point(last_timestamp_checkpoint_key, checkpoint_time.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        helper.log_debug(
+            "[-] Saved checkpoint: Last run time saved: {}".format(
+                helper.get_check_point(last_timestamp_checkpoint_key)
             )
-            ew.write_event(meeting_event)
-
-        end_checkpoint_time = datetime.strftime(
-            datetime.now() - timedelta(hours = 12),"%Y-%m-%dT%H:%M:%SZ"
         )
-
-        helper.save_check_point(
-            last_timestamp_checkpoint_key, end_checkpoint_time
-        )
-
     except Exception as e:
         helper.log_error(
             "[-] Error happened while writing data into Splunk: {}".format(e)

@@ -91,7 +91,7 @@ class ta_cisco_webex_add_on_for_splunk_rh_oauth2_token(admin.MConfigHandler):
                     confInfo['token'][key] = val
             else:
                 # Else add the error message in the confinfo
-                confInfo['token']['error'] = content['error_description']
+                confInfo['token']['error'] = content['message']
             logger.info(
                 "Exiting OAuth rest handler after getting access token with response %s", resp.status)
         except Exception as exc:

@@ -43,7 +43,7 @@ fields = [
     ), 
     field.RestField(
         'start_time',
-        required=False,
+        required=True,
         encrypted=False,
         default=None,
         validator=validator.Pattern(
