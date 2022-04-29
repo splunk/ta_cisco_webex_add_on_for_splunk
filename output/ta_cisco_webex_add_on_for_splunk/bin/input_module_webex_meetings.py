@@ -1,13 +1,15 @@
+import json
+from datetime import datetime, timedelta
+from dateutil.relativedelta import *
 
-# encoding = utf-8
-
-import os
-import sys
-import time
-import datetime
-
+from webex_constants import (
+    _MEETINGS_ENDPOINT,
+    _MEETING_PARTICIPANTS_ENDPOINT,
+    _RESPONSE_TAG_MAP,
+    _TOKEN_EXPIRES_CHECKPOINT_KEY,
+)
+from webex_api_client import paging_get_request_to_webex
 from oauth_helper import update_access_token
-from webex_constants import _TOKEN_EXPIRES_CHECKPOINT_KEY
 
 '''
     IMPORTANT
@@ -21,117 +23,11 @@ def use_single_instance_mode():
     return True
 '''
 
-def validate_input(helper, definition):
-    """Implement your own validation logic to validate the input stanza configurations"""
-    # This example accesses the modular input variable
-    # start_time = definition.parameters.get('start_time', None)
-    # end_time = definition.parameters.get('end_time', None)
-    pass
-
 def collect_events(helper, ew):
-    """Implement your data collection logic here
 
-    # The following examples get the arguments of this input.
-    # Note, for single instance mod input, args will be returned as a dict.
-    # For multi instance mod input, args will be returned as a single value.
+    # insert input values into the url and/or header (helper class handles credential store)
     opt_start_time = helper.get_arg('start_time')
     opt_end_time = helper.get_arg('end_time')
-    # In single instance mode, to get arguments of a particular input, use
-    opt_start_time = helper.get_arg('start_time', stanza_name)
-    opt_end_time = helper.get_arg('end_time', stanza_name)
-
-    # get input type
-    helper.get_input_type()
-
-    # The following examples get input stanzas.
-    # get all detailed input stanzas
-    helper.get_input_stanza()
-    # get specific input stanza with stanza name
-    helper.get_input_stanza(stanza_name)
-    # get all stanza names
-    helper.get_input_stanza_names()
-
-    # The following examples get options from setup page configuration.
-    # get the loglevel from the setup page
-    loglevel = helper.get_log_level()
-    # get proxy setting configuration
-    proxy_settings = helper.get_proxy()
-    # get account credentials as dictionary
-    account = helper.get_user_credential_by_username("username")
-    account = helper.get_user_credential_by_id("account id")
-    # get global variable configuration
-    global_userdefined_global_var = helper.get_global_setting("userdefined_global_var")
-
-    # The following examples show usage of logging related helper functions.
-    # write to the log for this modular input using configured global log level or INFO as default
-    helper.log("log message")
-    # write to the log using specified log level
-    helper.log_debug("log message")
-    helper.log_info("log message")
-    helper.log_warning("log message")
-    helper.log_error("log message")
-    helper.log_critical("log message")
-    # set the log level for this modular input
-    # (log_level can be "debug", "info", "warning", "error" or "critical", case insensitive)
-    helper.set_log_level(log_level)
-
-    # The following examples send rest requests to some endpoint.
-    response = helper.send_http_request(url, method, parameters=None, payload=None,
-                                        headers=None, cookies=None, verify=True, cert=None,
-                                        timeout=None, use_proxy=True)
-    # get the response headers
-    r_headers = response.headers
-    # get the response body as text
-    r_text = response.text
-    # get response body as json. If the body text is not a json string, raise a ValueError
-    r_json = response.json()
-    # get response cookies
-    r_cookies = response.cookies
-    # get redirect history
-    historical_responses = response.history
-    # get response status code
-    r_status = response.status_code
-    # check the response status, if the status is not sucessful, raise requests.HTTPError
-    response.raise_for_status()
-
-    # The following examples show usage of check pointing related helper functions.
-    # save checkpoint
-    helper.save_check_point(key, state)
-    # delete checkpoint
-    helper.delete_check_point(key)
-    # get checkpoint
-    state = helper.get_check_point(key)
-
-    # To create a splunk event
-    helper.new_event(data, time=None, host=None, index=None, source=None, sourcetype=None, done=True, unbroken=True)
-    """
-
-    '''
-    # The following example writes a random number as an event. (Multi Instance Mode)
-    # Use this code template by default.
-    import random
-    data = str(random.randint(0,100))
-    event = helper.new_event(source=helper.get_input_type(), index=helper.get_output_index(), sourcetype=helper.get_sourcetype(), data=data)
-    ew.write_event(event)
-    '''
-
-    '''
-    # The following example writes a random number as an event for each input config. (Single Instance Mode)
-    # For advanced users, if you want to create single instance mod input, please use this code template.
-    # Also, you need to uncomment use_single_instance_mode() above.
-    import random
-    input_type = helper.get_input_type()
-    for stanza_name in helper.get_input_stanza_names():
-        data = str(random.randint(0,100))
-        event = helper.new_event(source=input_type, index=helper.get_output_index(stanza_name), sourcetype=helper.get_sourcetype(stanza_name), data=data)
-        ew.write_event(event)
-    '''
-    helper.log_debug("[-] Start collect_events...")
-    # Get params 
-    opt_start_time = helper.get_arg("start_time")
-    opt_end_time = helper.get_arg("end_time") 
-    helper.log_debug(f"[-] opt_start_time: {opt_start_time}")
-    helper.log_debug(f"[-] opt_end_time: {opt_end_time}")
 
     # Get account info
     opt_global_account = helper.get_arg("global_account")
@@ -140,15 +36,182 @@ def collect_events(helper, ew):
     client_secret = opt_global_account.get("client_secret")
     access_token = opt_global_account.get("access_token")
     refresh_token = opt_global_account.get("refresh_token")
-    helper.log_debug(f"[-] account_name: {account_name}")
-    helper.log_debug(f"[-] client_id: {client_id}")
-    helper.log_debug(f"[-] client_secret: {client_secret}")
-    helper.log_debug(f"[-] access_token: {access_token}")
-    helper.log_debug(f"[-] refresh_token: {refresh_token}")
 
-    helper.log_debug("===============")
+    # check the checkpoint
+    # get startdate from checkpoint
+    last_timestamp_checkpoint_key = "{}_meeting_report_last_timestamp".format(
+        helper.get_input_stanza_names()
+    )
 
-    new_access_token, new_refresh_token, new_expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token)
-    helper.log_debug(f"[*] new_access_token: {new_access_token}")
-    helper.log_debug(f"[*] new_refresh_token: {new_refresh_token}")
-    helper.log_debug(f"[*] new_expires_in: {new_expires_in}")
+    # construct the request params for meetings endpoint
+    meetings_params = {"state":"ended","meetingType":"meeting"}
+
+    timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
+    #timestamp = None
+    helper.log_debug("[-] last time timestamp: {}".format(timestamp))
+
+    # first time start_time from UI
+    if timestamp is None:
+        start_time = opt_start_time
+        # save the UI start_time as checkpoint
+        helper.save_check_point(
+            last_timestamp_checkpoint_key, start_time
+        )
+        helper.log_debug("[-] no checkpoint timestamp exists, saving new timestamp: {}".format(start_time))
+
+    else:
+        start_time = timestamp
+
+    meetings_params["from"] = start_time
+    if opt_end_time:
+        meetings_params["to"] = opt_end_time
+        # compare if start_time ?> end_time, if so, break
+        if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(
+            opt_end_time, "%Y-%m-%dT%H:%M:%SZ"
+        ):
+            helper.log_info(
+                "[-] Finished ingestion for time range {opt_start_time} - {opt_end_time}".format(
+                    opt_start_time=opt_start_time, opt_end_time=opt_end_time
+                )
+            )
+            return
+
+    # check if the access token expired
+    # get the access_token_expired_time checkpoint
+    expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(
+        account_name=account_name
+    )
+    access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
+
+    now = datetime.utcnow()
+
+    # update the access token if it expired
+    if (
+        not access_token_expired_time
+        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S") < now
+    ):
+
+        helper.log_debug(
+            "[*] The access token of account {account_name} expired! Updating now!".format(
+                account_name=account_name
+            )
+        )
+
+        # override the access_token and expires_in
+        access_token, refresh_token, expires_in = update_access_token(
+            helper, account_name, client_id, client_secret, refresh_token
+        )
+
+    # fetching the meetings data
+    meetings = paging_get_request_to_webex(
+        helper,
+        _MEETINGS_ENDPOINT,
+        access_token,
+        refresh_token,
+        account_name,
+        client_id,
+        client_secret,
+        meetings_params,
+        _RESPONSE_TAG_MAP[_MEETINGS_ENDPOINT],
+    )
+    helper.log_debug("[-] meetings data size: {}".format(len(meetings)))
+
+    # only ingest the events that ended after the last checkpoint time
+    # write meetings data into Splunk
+
+    try:
+        for meeting in meetings:
+
+            # fetching the participants data
+            try:
+                # Use id as path params for participants endpoint
+                meeting_id = meeting["id"]
+
+                # get request params for participants endpoint
+                participants_params = {}
+                participants = paging_get_request_to_webex(
+                    helper,
+                    _MEETING_PARTICIPANTS_ENDPOINT.format(
+                        meeting_id=meeting_id
+                    ),
+                    access_token,
+                    refresh_token,
+                    account_name,
+                    client_id,
+                    client_secret,
+                    participants_params,
+                    _RESPONSE_TAG_MAP[_MEETING_PARTICIPANTS_ENDPOINT],
+                )
+                helper.log_debug(
+                    "[-] participants data size: {}".format(len(participants))
+                )
+            except Exception as e:
+                helper.log_error(
+                    "[-] Error happened while fetching participants data into Splunk: {}".format(
+                        e
+                    )
+                )
+                raise e
+            try:
+                # write participants into splunk
+                for participant in participants:
+                    # add meeting title
+                    participant["meeting_title"] = meeting["title"]
+                    # set join_time as event timestamp
+                    join_time = datetime.strptime(
+                        participant["joinedTime"], "%Y-%m-%dT%H:%M:%SZ"
+                    )
+                    event_timestamp = (
+                        join_time - datetime(1970, 1, 1)
+                    ).total_seconds()
+
+                    participant_event = helper.new_event(
+                        source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
+                        index=helper.get_output_index(),
+                        sourcetype="cisco:webex:meetings:participant",
+                        data=json.dumps(participant),
+                        time=event_timestamp,
+                    )
+                    ew.write_event(participant_event)
+                helper.log_debug(
+                    "[-] Successfully wrote {} participants for meeting {}".format(
+                        len(participants), meeting_id
+                    )
+                )
+            except Exception as e:
+                helper.log_error(
+                    "[-] Error happened while writing participants data into Splunk: {}".format(
+                        e
+                    )
+                )
+                raise e
+
+            # write the meeting into Splunk after all participants was successfully writtern to Splunk
+            # set the start_time as event timestamp
+            event_start_time = datetime.strptime(
+                meeting["start"], "%Y-%m-%dT%H:%M:%SZ"
+            )
+            event_time = (event_start_time - datetime(1970, 1, 1)).total_seconds()
+
+            meeting_event = helper.new_event(
+                source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
+                index=helper.get_output_index(),
+                sourcetype="cisco:webex:meetings",
+                data=json.dumps(meeting),
+                time=event_time,
+            )
+            ew.write_event(meeting_event)
+
+        end_checkpoint_time = datetime.strftime(
+            datetime.now() - timedelta(hours = 12),"%Y-%m-%dT%H:%M:%SZ"
+        )
+
+        helper.save_check_point(
+            last_timestamp_checkpoint_key, end_checkpoint_time
+        )
+
+    except Exception as e:
+        helper.log_error(
+            "[-] Error happened while writing data into Splunk: {}".format(e)
+        )
+        raise e

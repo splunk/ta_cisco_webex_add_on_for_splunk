@@ -1,9 +1,8 @@
 import import_declare_test
 import sys
 import json
-
+from datetime import datetime, timedelta
 from splunklib import modularinput as smi
-
 import os
 import traceback
 import requests
@@ -11,18 +10,17 @@ from splunklib import modularinput as smi
 from solnlib import conf_manager
 from solnlib import log
 from solnlib.modular_input import checkpointer
-from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
-
+from splunktaucclib.modinput_wrapper import base_modinput  as base_mi
 import input_module_webex_meetings as input_module
 
 bin_dir  = os.path.basename(__file__)
 app_name = os.path.basename(os.path.dirname(os.getcwd()))
 
-class ModInputWEBEX_MEETINGS(base_mi.BaseModInput): 
+class ModInputWEBEX_MEETINGS(base_mi.BaseModInput):
 
     def __init__(self):
         use_single_instance = False
-        super(ModInputWEBEX_MEETINGS, self).__init__(app_name, "webex_meetings", use_single_instance) 
+        super(ModInputWEBEX_MEETINGS, self).__init__(app_name, "webex_meetings", use_single_instance)
         self.global_checkbox_fields = None
 
     def get_scheme(self):
@@ -40,41 +38,45 @@ class ModInputWEBEX_MEETINGS(base_mi.BaseModInput):
                 required_on_create=True
             )
         )
-        
+
         scheme.add_argument(
             smi.Argument(
                 'global_account',
                 required_on_create=True,
             )
         )
-        
+
         scheme.add_argument(
             smi.Argument(
                 'start_time',
                 required_on_create=False,
             )
         )
-        
+
         scheme.add_argument(
             smi.Argument(
                 'end_time',
                 required_on_create=False,
             )
         )
-        
+
         return scheme
 
     def validate_input(self, definition):
-        """validate the input stanza"""
-        """Implement your own validation logic to validate the input stanza configurations"""
-        pass
+        start_time_start = definition.parameters.get('start_time', None)
+        if start_time_start is not None:
+            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%SZ")
+
+            if start_time >= datetime.now() - timedelta(hours = 12):
+                raise ValueError(
+                    "Begin Date must be at least 12 hours before current time. Please enter a time before {}.".format(datetime.strftime(datetime.now() - timedelta(hours = 12),"%Y-%m-%dT%H:%M:%SZ")))
+            pass
 
     def get_app_name(self):
         return "ta_cisco_webex_add_on_for_splunk"
 
     def collect_events(helper, ew):
         input_module.collect_events(helper, ew)
-
 
     def get_account_fields(self):
         account_fields = []

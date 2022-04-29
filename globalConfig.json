@@ -20,10 +20,6 @@
                             {
                                 "field": "name",
                                 "label": "Account name"
-                            },
-                            {
-                                "label": "Authentication Type",
-                                "field": "auth_type"
                             }
                         ],
                         "actions": [
@@ -69,23 +65,7 @@
                             "type": "oauth",
                             "options": {
                                 "auth_type": [
-                                    "basic",
                                     "oauth"
-                                ],
-                                "basic": [
-                                    {
-                                        "oauth_field": "username",
-                                        "label": "User Name",
-                                        "field": "username",
-                                        "help": "Enter Account name."
-                                    },
-                                    {
-                                        "oauth_field": "password",
-                                        "label": "Password",
-                                        "field": "password",
-                                        "encrypted": true,
-                                        "help": "Enter Password."
-                                    }
                                 ],
                                 "oauth": [
                                     {
@@ -343,12 +323,13 @@
                             "label": "Interval",
                             "type": "text",
                             "required": true,
-                            "help": "Time interval of input in seconds.",
+                            "defaultValue": "43200",
+                            "help": "Time interval of input in seconds. Must be greater than or eqaul to 43200 (12 hours)",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\-[1-9]\\d*$|^\\d*$",
-                                    "errorMsg": "Interval must be an integer."
+                                    "pattern": "^([4-9][3-9][2-9]\\d{2,})|\\d{6,}$",
+                                    "errorMsg": "Interval must be an integer that is greater than or equal to 43200"
                                 }
                             ]
                         },
@@ -385,37 +366,35 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "Start date and time (inclusive) in any ISO 8601 compliant format for the meeting objects being requested.",
+                            "help": "Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time. Default is last 7 days",
                             "required": false,
                             "type": "text",
                             "validators": [
                                 {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Interval must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
                                 }
                             ],
                             "options": {
-                                "placeholder": "2022-01-01T00:00:00"
+                                "placeholder": "2022-01-01T00:00:00Z"
                             }
                         },
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "End date and time (exclusive) in any ISO 8601 compliant format for the meeting objects being requested.",
+                            "help": "End date and time (exclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Default is 7 days after Start Time; or the current date and time if Start Time is not set",
                             "required": false,
                             "type": "text",
                             "validators": [
                                 {
-                                    "type": "string",
-                                    "minLength": 0,
-                                    "maxLength": 8192,
-                                    "errorMsg": "Max length of text input is 8192"
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Interval must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
                                 }
                             ],
                             "options": {
-                                "placeholder": "2032-01-01T00:00:00"
+                                "placeholder": "2032-01-01T00:00:00Z"
                             }
                         }
                     ]

@@ -1,6 +1,5 @@
 import import_declare_test
 
-import requests
 from datetime import datetime, timedelta
 from solnlib import conf_manager
 
@@ -43,13 +42,13 @@ class OAuth:
         self._refresh_token = refresh_token
 
         # dict of encripted fields
-        # NOTE: MUST include all fields that need to be encripted. 
+        # NOTE: MUST include all fields that need to be encripted.
         self._password_storage_stanza = {
             "access_token": "",
             "refresh_token": "",
             "client_secret": self._client_secret,
         }
-    
+
     def get_new_token(self):
         """
         Send a POST request to Webex Refresh token endpoint to get new access_token and refresh tokens
@@ -122,7 +121,7 @@ class OAuth:
         account_conf = cfm.get_conf("ta_cisco_webex_add_on_for_splunk_account")
 
         self.helper.log_debug("[-] Updating new tokens in {} account".format(account_name))
-        # NOTE: MUST include all fields that need to be encripted. 
+        # NOTE: MUST include all fields that need to be encripted.
         self._password_storage_stanza["access_token"] = new_account_token
         self._password_storage_stanza["refresh_token"] = new_refresh_token
 
@@ -132,7 +131,7 @@ class OAuth:
         except Exception as e:
             self.helper.log_error("[-] Error happend while updating account: {}. Error: {}".format(account_name, e))
             raise e
-    
+
     def update_expiration_checkpoint(self, account_name, new_expires_in):
         """
         Update the expiration time of the new access token in checkpoint
@@ -149,11 +148,11 @@ class OAuth:
                 "%m/%d/%Y %H:%M:%S"
             )
 
-            # Save checkpoint 
+            # Save checkpoint
             self.helper.save_check_point(expiration_checkpoint_key, expired_time)
         except Exception as e:
             self.helper.log_error("[-] Error happened while saving expiration time in checkpoint : {}".format(e))
-        
+
 
 
     def refresh_token(self, account_name):

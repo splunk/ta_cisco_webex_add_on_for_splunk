@@ -23,20 +23,6 @@ fields = [
         validator=None
     ), 
     field.RestField(
-        'username',
-        required=False,
-        encrypted=False,
-        default=None,
-        validator=None
-    ), 
-    field.RestField(
-        'password',
-        required=False,
-        encrypted=True,
-        default=None,
-        validator=None
-    ), 
-    field.RestField(
         'client_id',
         required=False,
         encrypted=False,
@@ -73,13 +59,6 @@ fields = [
     ), 
     field.RestField(
         'instance_url',
-        required=False,
-        encrypted=False,
-        default=None,
-        validator=None
-    ), 
-    field.RestField(
-        'auth_type',
         required=False,
         encrypted=False,
         default=None,
