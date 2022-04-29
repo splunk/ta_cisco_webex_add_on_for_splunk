@@ -323,13 +323,12 @@
                             "label": "Interval",
                             "type": "text",
                             "required": true,
-                            "defaultValue": "43200",
-                            "help": "Time interval of input in seconds. Must be greater than or eqaul to 43200 (12 hours)",
+                            "help": "Time interval of input in seconds",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^([4-9][3-9][2-9]\\d{2,})|\\d{6,}$",
-                                    "errorMsg": "Interval must be an integer that is greater than or equal to 43200"
+                                    "pattern": "^\\d+$",
+                                    "errorMsg": "Interval must be an integer"
                                 }
                             ]
                         },
@@ -373,7 +372,7 @@
                                 {
                                     "type": "regex",
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-                                    "errorMsg": "Interval must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
+                                    "errorMsg": "Start time must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
                                 }
                             ],
                             "options": {
@@ -390,7 +389,7 @@
                                 {
                                     "type": "regex",
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-                                    "errorMsg": "Interval must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
+                                    "errorMsg": "End time must be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z)"
                                 }
                             ],
                             "options": {
