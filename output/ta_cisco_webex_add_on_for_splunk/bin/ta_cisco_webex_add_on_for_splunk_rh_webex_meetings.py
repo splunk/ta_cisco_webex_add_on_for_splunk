@@ -19,9 +19,9 @@ fields = [
         'interval',
         required=True,
         encrypted=False,
-        default=None,
+        default='43200',
         validator=validator.Pattern(
-            regex=r"""^\-[1-9]\d*$|^\d*$""", 
+            regex=r"""^([4-9][3-9][2-9]\d{2,})|\d{6,}$""", 
         )
     ), 
     field.RestField(
@@ -46,9 +46,8 @@ fields = [
         required=False,
         encrypted=False,
         default=None,
-        validator=validator.String(
-            max_len=8192, 
-            min_len=0, 
+        validator=validator.Pattern(
+            regex=r"""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$""", 
         )
     ), 
     field.RestField(
@@ -56,9 +55,8 @@ fields = [
         required=False,
         encrypted=False,
         default=None,
-        validator=validator.String(
-            max_len=8192, 
-            min_len=0, 
+        validator=validator.Pattern(
+            regex=r"""^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$""", 
         )
     ), 
 
