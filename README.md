@@ -65,7 +65,7 @@ The `Interval` is the time interval (in seconds) to run the input and **MUST** b
     - **Interval** (_required_): Time interval of input in seconds. Must be greater than or eqaul to 43200 (12 hours).
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z). Start Time must be prior to 12 hours before current time. Default is last 7 days
+    - **Start Time** (_optional_): Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z). Start Time must be prior to 12 hours before current time. Default is last 7 days
     - **End Time** (_optional_): End date and time (exclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Default is 7 days after Start Time; or the current date and time if Start Time is not set. 
 - Click on the `Add` green button on the bottom right of the pop up box.
 
