@@ -365,7 +365,7 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "Start date and time (inclusive) in any ISO 8601 compliant format for the meeting objects being requested.",
+                            "help": "Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.",
                             "required": true,
                             "type": "text",
                             "validators": [
@@ -382,7 +382,7 @@
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "End date and time (exclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Default is 7 days after Start Time; or the current date and time if Start Time is not set",
+                            "help": "End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
                             "required": false,
                             "type": "text",
                             "validators": [

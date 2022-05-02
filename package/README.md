@@ -50,11 +50,11 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
 
 The **webex_meetings** input is used to fetch the data from both [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint and [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting participants.
 
-**Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended.
+**Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended. To avoid ingesting incomplete data, the input will have a 12 hours delay.
 
-The `Start Time` is requred. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z).
+The `Start Time` is requred. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z). Start Time **MUST** be prior to 12 hours before current time.
 
-The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. If you leave it blank, it will use the current date and time End date and time is exclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ.
+The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. The format should be YYYY-Mon-DDTHH:MM:SSZ.
 
 The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second)for the next run.
 
@@ -65,8 +65,8 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): The Start date and time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ.
-    - **End Time** (_optional_): End date and time is exclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ, if inputted.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.
 - Click on the `Add` green button on the bottom right of the pop up box.
 
 ## Versions Supported
