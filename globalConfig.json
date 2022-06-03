@@ -51,12 +51,10 @@
                         },
                         {
                             "type": "text",
-                            "label": "Endpoint",
+                            "label": "Webex API Base Endpoint",
                             "field": "endpoint",
-                            "help": "Enter Endpoint",
-                            "options": {
-                                "display": false
-                            },
+                            "required": true,
+                            "help": "Enter the Webex API Base Endpoint",
                             "defaultValue": "webexapis.com"
                         },
                         {

@@ -36,6 +36,7 @@ def collect_events(helper, ew):
     client_secret = opt_global_account.get("client_secret")
     access_token = opt_global_account.get("access_token")
     refresh_token = opt_global_account.get("refresh_token")
+    base_endpoint = opt_global_account.get("endpoint")
 
     # check the checkpoint
     # get startdate from checkpoint
@@ -113,12 +114,13 @@ def collect_events(helper, ew):
 
         # override the access_token and expires_in
         access_token, refresh_token, expires_in = update_access_token(
-            helper, account_name, client_id, client_secret, refresh_token
+            helper, account_name, client_id, client_secret, refresh_token, base_endpoint
         )
 
     # fetching the meetings data
     meetings = paging_get_request_to_webex(
         helper,
+        base_endpoint,
         _MEETINGS_ENDPOINT,
         access_token,
         refresh_token,
@@ -153,6 +155,7 @@ def collect_events(helper, ew):
                     participants_params = {}
                     participants = paging_get_request_to_webex(
                         helper,
+                        base_endpoint,
                         _MEETING_PARTICIPANTS_ENDPOINT.format(
                             meeting_id=meeting_id
                         ),

@@ -7,6 +7,7 @@ from oauth_helper import update_access_token
 
 def paging_get_request_to_webex(
     helper,
+    base_endpoint,
     endpoint,
     access_token,
     refresh_token,
@@ -25,6 +26,7 @@ def paging_get_request_to_webex(
         while paging:
             data,response_header = make_get_request_to_webex(
                 helper,
+                base_endpoint,
                 endpoint,
                 access_token,
                 refresh_token,
@@ -41,7 +43,7 @@ def paging_get_request_to_webex(
 
             if next_page_link:
                 # update endpoint to next page link
-                endpoint = response_header["link"].split('<' + _BASE_URL, 1)[1].split('>')[0]
+                endpoint = response_header["link"].split('<' + _BASE_URL.format(base_endpoint=base_endpoint), 1)[1].split('>')[0]
                 params={}
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
@@ -58,6 +60,7 @@ def paging_get_request_to_webex(
 
 def make_get_request_to_webex(
     helper,
+    base_endpoint,
     endpoint,
     access_token,
     refresh_token,
@@ -67,7 +70,7 @@ def make_get_request_to_webex(
     params,
     retry=True,
 ):
-    url = _BASE_URL + endpoint
+    url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
     }
@@ -97,7 +100,7 @@ def make_get_request_to_webex(
         data = None
         if response.status_code != 200:
             helper.log_error(
-                "[-] Error happend while getting date from webex {} API: code: {} - body: {}\n[!] You need to re-configure the account in configuration page".format(
+                "[-] Error happened while getting date from webex {} API: code: {} - body: {}\n[!] You need to re-configure the account in configuration page".format(
                     response.url, response.status_code, response.text
                 )
             )
@@ -126,7 +129,7 @@ def make_get_request_to_webex(
                     )
                 except Exception as e:
                     helper.error(
-                        "[-] Error happend while updating access token in endpoint-{}: {}".format(
+                        "[-] Error happened while updating access token in endpoint-{}: {}".format(
                             endpoint, e
                         )
                     )
@@ -135,6 +138,7 @@ def make_get_request_to_webex(
                 # get webex users using new access token
                 make_get_request_to_webex(
                     helper,
+                    base_endpoint,
                     endpoint,
                     new_access_token,
                     new_refresh_token,
