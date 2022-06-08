@@ -36,6 +36,9 @@ def paging_get_request_to_webex(
                 params,
             )
 
+            if data is None:
+                break
+
             # append paging data
             results.extend(data.get(response_tag))
 
