@@ -1,5 +1,5 @@
-# Cisco Webex Add on for Splunk
-> **Cisco Webex Add on for Splunk** is an Add-on to pull in data from _[Webex REST API](https://developer.webex.com/docs/basics)_ to Splunk.
+# Cisco Webex Add-on for Splunk
+> **Cisco Webex Add-on for Splunk** is an Add-on to pull in data from _[Webex REST API](https://developer.webex.com/docs/basics)_ to Splunk.
 
 Here are the endpoints and their mapping soucetypes.
 | Webex Endpoint                                                                                                   | Splunk Sourcetype               |
@@ -17,14 +17,14 @@ This Add-on can be installed in **Splunk Enterprise**.
 - Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/released/Overview/Distributedinstall) to install the Add-on in a distributed Splunk Enterprise deployment.
 
 ### Create a Webex Integration
-The Cisco Webex Add on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating a Webex integration is required to work along with this Add-on. Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations)
+The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating a Webex integration is required to work along with this Add-on. Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations)
 1. **Registering your Integration**: visit the [Webex for Developers](https://developer.webex.com/) select `My Webex Apps` from the menu under your avatar at the top of this page, click `Create a New App` then `Create an Integration` to start the wizard.
 2. **Provide app related information**:
     - **Integration name**: Enter a name for yor integration. `e.g. Webex Integration for Splunk`
     - **Icon**: Upload your own or select from the defaults
     - **Description**: Provide some details about your integration
     - **Redirect URI(s)**: Follow the following steps to retrieve your Redirect URI:
-        - Open **Cisco Webex Add on for Splunk** in Splunk. Go to `Configuration > Account > Add`. The Redirect URI will show up in the `Redirect url` field. Please copy and paste it to the `Redirect URI(s)` field in the Webex Integration.
+        - Open **Cisco Webex Add-on for Splunk** in Splunk. Go to `Configuration > Account > Add`. The Redirect URI will show up in the `Redirect url` field. Please copy and paste it to the `Redirect URI(s)` field in the Webex Integration.
         - **For Splunk Heavy Forwarders (or IDM)**: please replace the `{domain}` with the domain of your Splunk Heavy Forwarder (or IDM). For example, if the domain of your HF or IDM is `example.splunk.link`, then the Redirect URI you have to enter is:  `https://example.splunk.link/en-US/app/ta_cisco_webex_add_on_for_splunk/ta_cisco_webex_add_on_for_splunk_redirect`
     
     - **Scopes**. Please add the following scopes: 
