@@ -90,7 +90,7 @@
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:schedules_read meeting:participants_read&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read&state=set_state_here",
                                 "access_token_endpoint": "/v1/access_token"
                             }
                         }
