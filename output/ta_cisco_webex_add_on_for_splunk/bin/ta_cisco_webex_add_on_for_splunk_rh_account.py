@@ -17,7 +17,7 @@ util.remove_http_proxy_env_vars()
 fields = [
     field.RestField(
         'endpoint',
-        required=False,
+        required=True,
         encrypted=False,
         default='webexapis.com',
         validator=None

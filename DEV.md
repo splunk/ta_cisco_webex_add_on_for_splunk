@@ -582,7 +582,7 @@ Re-run `ucc-gen` the desired `input.conf` and `props.conf` will be copied into y
 ```
 "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
-        "displayName": "Cisco Webex Add on for Splunk",
+        "displayName": "Cisco Webex Add-on for Splunk",
         "version": "1.0.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "apiVersion": "4.1.10",
@@ -593,7 +593,7 @@ Re-run `ucc-gen` the desired `input.conf` and `props.conf` will be copied into y
 2. app.manifest > info > id > name
 ```
 "info": {
-    "title": "Cisco Webex Add on for Splunk",
+    "title": "Cisco Webex Add-on for Splunk",
     "id": {
       "group": null,
       "name": "ta_cisco_webex_add_on_for_splunk",

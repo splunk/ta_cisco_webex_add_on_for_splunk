@@ -6,13 +6,14 @@ from solnlib import conf_manager
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
 
 
-def update_access_token(helper, account_name, client_id, client_secret, refresh_token):
+def update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint):
     helper.log_debug("[-] Updating access token.....")
     oauth = OAuth(
         helper,
         client_id,
         client_secret,
         refresh_token,
+        base_endpoint
     )
     return oauth.refresh_token(account_name)
 
@@ -26,6 +27,7 @@ class OAuth:
         client_id,
         client_secret,
         refresh_token,
+        base_endpoint
     ):
         """[summary]
 
@@ -40,6 +42,7 @@ class OAuth:
         self._client_id = client_id
         self._client_secret = client_secret
         self._refresh_token = refresh_token
+        self._base_endpoint = base_endpoint
 
         # dict of encripted fields
         # NOTE: MUST include all fields that need to be encripted.
@@ -69,7 +72,7 @@ class OAuth:
 
         try:
             response = self.helper.send_http_request(
-                _REFRESH_TOKEN_ENDPOINT,
+                _REFRESH_TOKEN_ENDPOINT.format(base_endpoint=self._base_endpoint),
                 "POST",
                 parameters=payload,
                 payload=None,
@@ -81,13 +84,14 @@ class OAuth:
                 use_proxy=True
             )
             self.helper.log_info(
-                "[-] GET Access Token from Refresh Token: response.status_code: {}".format(
+                "[-] GET Access Token from Refresh Token: URL: {} - response.status_code: {}".format(
+                    _REFRESH_TOKEN_ENDPOINT.format(base_endpoint=self._base_endpoint),
                     response.status_code
                 )
             )
             if response.status_code != 200:
                 self.helper.log_error(
-                    "\t[-] Error happend while getting Access Token from Refresh Token: {}\nYou may need to re-configure the account in configuration page.".format(
+                    "\t[-] Error happened while getting Access Token from Refresh Token : {}\nYou may need to re-configure the account in configuration page.".format(
                         response.text
                     )
                 )
