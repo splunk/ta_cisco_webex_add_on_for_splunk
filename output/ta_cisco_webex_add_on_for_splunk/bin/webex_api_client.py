@@ -74,6 +74,7 @@ def make_get_request_to_webex(
     retry=True,
 ):
     url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+    helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
     }
