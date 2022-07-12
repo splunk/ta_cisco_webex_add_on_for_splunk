@@ -17,8 +17,8 @@ This Add-on can be installed in **Splunk Enterprise**.
 - Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/released/Overview/Distributedinstall) to install the Add-on in a distributed Splunk Enterprise deployment.
 
 ### Create a Webex Integration
-The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating an **Admin level Webex integration** using a Webex **Admin Account** is required to work along with this Add-on. Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations).
-1. **Webex Admin Account**: The user authorizing the integration would need to be a full admin of the organization.
+The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating an **Admin level Webex integration** using a Webex **Admin Account with Compliance Officer role** is required to work along with this Add-on. Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations).
+1. **Webex Admin&Compliance Officer Account**: The user authorizing the integration would need to be a full `Admin` of the organization with `Compliance Officer` role assigned.
 2. **Registering your Integration**:
     - Visit the [Webex for Developers](https://developer.webex.com/) and then log in using your **Webex Admin Account**
     - Select `My Webex Apps` from the menu under your avatar at the top of this page
@@ -34,6 +34,7 @@ The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows t
     - **Scopes**: Please select the following scopes:
         - `meeting:admin_schedule_read`
         - `meeting:admin_participants_read`
+        - `spark-compliance:meetings_read`
 5. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
 ### Configuration Instructions
