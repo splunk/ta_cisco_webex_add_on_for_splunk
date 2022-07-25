@@ -138,6 +138,12 @@ def collect_events(helper, ew):
     try:
         checkpoint_time = datetime.strptime(helper.get_check_point(last_timestamp_checkpoint_key), "%Y-%m-%dT%H:%M:%SZ")
         for meeting in meetings:
+            # Note: Due to known Webex API issue, it may ingests some bad meeting records with "state:inProgress"
+            # skip thoes false positive meeting records
+            if meeting.get("state", None) and "inProgress".lower() in meeting["state"].lower():
+                helper.log_debug("[-] skip a inProgress meeting. MeetingId {}".format(meeting.get("id", None)))
+                continue
+
             # compare the meeting start time with the last checkpoint time
             last_checkpoint_time = datetime.strptime(
                 helper.get_check_point(last_timestamp_checkpoint_key),
