@@ -78,7 +78,7 @@ class OAuth:
                 payload=None,
                 headers=headers,
                 cookies=None,
-                verify=True,
+                verify=False,
                 cert=None,
                 timeout=None,
                 use_proxy=True
