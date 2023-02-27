@@ -15,6 +15,7 @@ from solnlib import log
 from solnlib import conf_manager
 from solnlib.utils import is_true
 import json
+import requests
 
 
 log.Logs.set_context()
@@ -67,6 +68,7 @@ class ta_cisco_webex_add_on_for_splunk_rh_oauth2_token(admin.MConfigHandler):
             url = self.callerArgs.data['url'][0]
             logger.debug("oAUth url %s", url)
             proxy_info = self.getProxyDetails()
+            logger.info("[-] proxy_info -- {}".format(proxy_info))
 
             http = Http(proxy_info=proxy_info)
             method = self.callerArgs.data['method'][0]
@@ -79,24 +81,32 @@ class ta_cisco_webex_add_on_for_splunk_rh_oauth2_token(admin.MConfigHandler):
                 'redirect_uri': self.callerArgs.data['redirect_uri'][0],
             }
             headers = {"Content-Type": "application/x-www-form-urlencoded", }
-            # Send http request to get the accesstoken
-            resp, content = http.request(url,
-                                         method=method,
-                                         headers=headers,
-                                         body=urlencode(payload))
-            content = json.loads(content)
+            # Send http request to get the access token
+            # resp, content = http.request(url,
+            #                              method=method,
+            #                              headers=headers,
+            #                              body=urlencode(payload))
+            # content = json.loads(content)
+
+            response = requests.request(
+                "POST", url, headers=headers, data=urlencode(payload), proxies=proxy_info, verify=False
+            )
+
+            logger.info("[-] response code -- {}".format(response.status_code))
+            content = response.json()
+
             # Check for any errors in response. If no error then add the content values in confInfo
-            if resp.status == 200:
+            if response.status_code == 200:
                 for key, val in content.items():
                     confInfo['token'][key] = val
             else:
                 # Else add the error message in the confinfo
                 confInfo['token']['error'] = content['message']
             logger.info(
-                "Exiting OAuth rest handler after getting access token with response %s", resp.status)
+                "Exiting OAuth rest handler after getting access token with response %s", response.status_code)
         except Exception as exc:
             logger.exception(
-                "Error occurred while getting accesstoken using auth code")
+                "Error occurred while getting access token using auth code")
             raise exc()
 
     """
