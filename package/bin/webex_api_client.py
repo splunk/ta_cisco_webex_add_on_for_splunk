@@ -37,7 +37,7 @@ def paging_get_request_to_webex(
                 params,
             )
 
-            if data is None:
+            if data is None or len(data)==0:
                 break
 
             # append paging data
