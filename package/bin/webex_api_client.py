@@ -4,6 +4,7 @@ import json
 
 from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS
 from oauth_helper import update_access_token
+import re
 
 def paging_get_request_to_webex(
     helper,
@@ -43,10 +44,12 @@ def paging_get_request_to_webex(
             results.extend(data.get(response_tag))
 
             next_page_link = response_header.get("link", None)
+            helper.log_debug("[--] next_page_link {}".format(next_page_link))
 
             if next_page_link:
                 # update endpoint to next page link
-                endpoint = response_header["link"].split('<' + _BASE_URL.format(base_endpoint=base_endpoint), 1)[1].split('>')[0]
+                regex = '<https:.*\/v1\/'
+                endpoint = re.split(regex, response_header["link"])[1].split('>')[0]
                 params={}
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
