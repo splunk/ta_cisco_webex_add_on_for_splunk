@@ -6,9 +6,13 @@ _BASE_URL = "https://{base_endpoint}/v1/"
 _MAX_PAGE_SIZE = 100
 _MEETINGS_ENDPOINT = "meetings"
 _MEETING_PARTICIPANTS_ENDPOINT = "meetingParticipants?meetingId={meeting_id}"
+_ORGANIZATIONS_ENDPOINT = "organizations"
+_ADMIN_AUDIT_EVENTS_ENDPOINT = "adminAudit/events"
 UNAUTHORIZED_STATUS = 401
 
 _RESPONSE_TAG_MAP = {
     _MEETINGS_ENDPOINT: "items",
     _MEETING_PARTICIPANTS_ENDPOINT: "items",
+    _ORGANIZATIONS_ENDPOINT: "items",
+    _ADMIN_AUDIT_EVENTS_ENDPOINT: "items"
 }
