@@ -199,7 +199,7 @@ def collect_events(helper, ew):
                         participant_event = helper.new_event(
                             source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
                             index=helper.get_output_index(),
-                            sourcetype="cisco:webex:meetings:participant",
+                            sourcetype="cisco:webex:meetings:participants",
                             data=json.dumps(participant),
                             time=event_timestamp,
                         )
