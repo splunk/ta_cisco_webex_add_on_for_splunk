@@ -5,16 +5,19 @@ Here are the endpoints and their mapping soucetypes.
 | Webex Endpoint                                                                                                   | Splunk Sourcetype               |
 |-------------------------------------------------------------------------------------------------------------------------|---------------------------------|
 | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         |
-| [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants)                       | cisco:webex:meetings:participant             |
+| [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants)                       | cisco:webex:meetings:participants             |
+| [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events               |
 
 ## Getting Started
 ### Installation Instructions
-This Add-on can be installed in **Splunk Enterprise**.
 
 #### Installation Steps for `Splunk Enterprise`
 - Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/released/Overview/Singleserverinstall) to install the Add-on in a single-instance Splunk Enterprise deployment.
 
 - Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/released/Overview/Distributedinstall) to install the Add-on in a distributed Splunk Enterprise deployment.
+
+#### Installation Steps for `Splunk Cloud`
+Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/released/Overview/SplunkCloudinstall) to install the Add-on in Splunk Cloud.
 
 ### Create a Webex Integration
 The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating an **Admin level Webex integration** using a Webex **Admin Account with Compliance Officer role** is required to work along with this Add-on. Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations).
@@ -35,6 +38,8 @@ The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows t
         - `meeting:admin_schedule_read`
         - `meeting:admin_participants_read`
         - `spark-compliance:meetings_read`
+        -  `spark:organizations_read`
+        -  `audit:events_read`
 5. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
 ### Configuration Instructions
@@ -55,15 +60,17 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
 
 #### 2. Create Input
 
-The **webex_meetings** input is used to fetch the data from both [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint and [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting participants.
+**Webex Meetings Input**
+
+The **Webex Meetings** input is used to fetch the data from both [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint and [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting participants.
 
 **Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended. To avoid ingesting incomplete data, the input will have a 12 hours delay.
 
-The `Start Time` is requred. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-Mon-DDTHH:MM:SSZ (example:2022-01-01T00:00:00Z). Start Time **MUST** be prior to 12 hours before current time.
+The `Start Time` is required. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). Start Time **MUST** be prior to 12 hours before current time.
 
-The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. The format should be YYYY-Mon-DDTHH:MM:SSZ.
+The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z).
 
-The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second)for the next run.
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
 
 - Click on the `Inputs` button on the top left corner.
 - Click on `Create New Input` button on the top right corner.
@@ -72,13 +79,36 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-Mon-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.
-    - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. Start Time must be prior to 12 hours before current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.
+- Click on the `Add` green button on the bottom right of the pop up box.
+
+**Webex Admin Audit Events**
+
+The **Webex Admin Audit Events** input is used to fetch the data from [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events) endpoint. It allows users to retrieve organization-wide audit logs all over the account.
+
+The `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-01-01T00:00:00.000Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+
+The `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-02-01T00:00:00.000Z).
+
+**Please Note**: Due to the API behavior, the selected time range cannot be more than a year. Therefore, If you want to obtain the audit logs that happened more than one year ago, you **MUST** fill in both `Start Time` and `End Time`, and ensure that the range does not exceed one year.
+
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest audit event created time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
+
+- Click on the `Inputs` button on the top left corner.
+- Click on `Create New Input` button on the top right corner.
+- Enter the following details in the pop-up box:
+    - **Name** (_required_): Unique name for the data input.
+    - **Interval** (_required_): Time interval of input in seconds.
+    - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Select the account created during Configuration.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional), `example:2023-02-01T00:00:00.000Z`. End Time must be after the Start Time.
 - Click on the `Add` green button on the bottom right of the pop up box.
 
 ## Versions Supported
 
-  - Tested for installation and basic ingestion on Splunk 8.2 for **CentOS** system.
+  - Tested for installation and basic ingestion on Splunk 9.X and 8.2 for **CentOS** system.
 
 > Built by Splunk's FDSE Team (#team-fdse).
 
