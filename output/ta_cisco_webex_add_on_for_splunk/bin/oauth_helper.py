@@ -44,8 +44,8 @@ class OAuth:
         self._refresh_token = refresh_token
         self._base_endpoint = base_endpoint
 
-        # dict of encripted fields
-        # NOTE: MUST include all fields that need to be encripted.
+        # dict of encrypted fields
+        # NOTE: MUST include all fields that need to be encrypted.
         self._password_storage_stanza = {
             "access_token": "",
             "refresh_token": "",
@@ -118,14 +118,14 @@ class OAuth:
 
         session_key = self.helper.context_meta["session_key"]
 
-        # Create confmanger object for the app with account realm
+        # Create confManager object for the app with account realm
         cfm = conf_manager.ConfManager(session_key, app=_APP_NAME , realm=_REALM)
 
         # Get Conf object of apps account
         account_conf = cfm.get_conf("ta_cisco_webex_add_on_for_splunk_account")
 
         self.helper.log_debug("[-] Updating new tokens in {} account".format(account_name))
-        # NOTE: MUST include all fields that need to be encripted.
+        # NOTE: MUST include all fields that need to be encrypted.
         self._password_storage_stanza["access_token"] = new_account_token
         self._password_storage_stanza["refresh_token"] = new_refresh_token
 
@@ -133,7 +133,7 @@ class OAuth:
         try:
             account_conf.update(account_name, self._password_storage_stanza, ["access_token", "refresh_token", "client_secret"])
         except Exception as e:
-            self.helper.log_error("[-] Error happend while updating account: {}. Error: {}".format(account_name, e))
+            self.helper.log_error("[-] Error happened while updating account: {}. Error: {}".format(account_name, e))
             raise e
 
     def update_expiration_checkpoint(self, account_name, new_expires_in):
@@ -142,7 +142,7 @@ class OAuth:
         """
         self.helper.log_debug("[-] Updating expiration checkpoint for {} account".format(account_name))
         try:
-            # Get checpoint key
+            # Get checkpoint key
             expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(account_name=account_name)
 
             # Calculate expired time for new access token

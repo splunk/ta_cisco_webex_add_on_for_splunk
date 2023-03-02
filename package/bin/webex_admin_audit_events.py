@@ -1,7 +1,7 @@
 import import_declare_test
 import sys
 import json
-
+from datetime import datetime, timedelta
 from splunklib import modularinput as smi
 
 import os
@@ -66,7 +66,6 @@ class ModInputWEBEX_ADMIN_AUDIT_EVENTS(base_mi.BaseModInput):
     def validate_input(self, definition):
         """validate the input stanza"""
         """Implement your own validation logic to validate the input stanza configurations"""
-        # TODO: add the validation later
         pass
 
     def get_app_name(self):

@@ -139,7 +139,7 @@ def collect_events(helper, ew):
         checkpoint_time = datetime.strptime(helper.get_check_point(last_timestamp_checkpoint_key), "%Y-%m-%dT%H:%M:%SZ")
         for meeting in meetings:
             # Note: Due to known Webex API issue, it may ingests some bad meeting records with "state:inProgress"
-            # skip thoes false positive meeting records
+            # skip those false positive meeting records
             if meeting.get("state", None) and "inProgress".lower() in meeting["state"].lower():
                 helper.log_debug("[-] skip a inProgress meeting. MeetingId {}".format(meeting.get("id", None)))
                 continue
@@ -150,7 +150,7 @@ def collect_events(helper, ew):
                 "%Y-%m-%dT%H:%M:%SZ",
             )
             meeting_start_time = datetime.strptime(meeting["start"], "%Y-%m-%dT%H:%M:%SZ")
-            # ingest the meetings that happeed after the last ingestion
+            # ingest the meetings that happened after the last ingestion
             if meeting_start_time > last_checkpoint_time:
                 # fetching the participants data
                 try:
@@ -199,7 +199,7 @@ def collect_events(helper, ew):
                         participant_event = helper.new_event(
                             source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
                             index=helper.get_output_index(),
-                            sourcetype="cisco:webex:meetings:participant",
+                            sourcetype="cisco:webex:meetings:participants",
                             data=json.dumps(participant),
                             time=event_timestamp,
                         )
@@ -217,7 +217,7 @@ def collect_events(helper, ew):
                     )
                     raise e
 
-                # write the meeting into Splunk after all participants was successfully writtern to Splunk
+                # write the meeting into Splunk after all participants was successfully written to Splunk
                 # set the start_time as event timestamp
                 event_start_time = datetime.strptime(
                     meeting["start"], "%Y-%m-%dT%H:%M:%SZ"

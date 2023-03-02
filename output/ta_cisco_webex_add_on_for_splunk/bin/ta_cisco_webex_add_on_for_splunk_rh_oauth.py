@@ -68,10 +68,7 @@ class ta_cisco_webex_add_on_for_splunk_rh_oauth2_token(admin.MConfigHandler):
             url = self.callerArgs.data['url'][0]
             logger.debug("oAUth url %s", url)
             proxy_info = self.getProxyDetails()
-            logger.info("[-] proxy_info -- {}".format(proxy_info))
 
-            http = Http(proxy_info=proxy_info)
-            method = self.callerArgs.data['method'][0]
             # Create payload from the arguments received
             payload = {
                 'grant_type': self.callerArgs.data['grant_type'][0],
@@ -81,18 +78,11 @@ class ta_cisco_webex_add_on_for_splunk_rh_oauth2_token(admin.MConfigHandler):
                 'redirect_uri': self.callerArgs.data['redirect_uri'][0],
             }
             headers = {"Content-Type": "application/x-www-form-urlencoded", }
-            # Send http request to get the access token
-            # resp, content = http.request(url,
-            #                              method=method,
-            #                              headers=headers,
-            #                              body=urlencode(payload))
-            # content = json.loads(content)
 
             response = requests.request(
                 "POST", url, headers=headers, data=urlencode(payload), proxies=proxy_info, verify=False
             )
 
-            logger.info("[-] response code -- {}".format(response.status_code))
             content = response.json()
 
             # Check for any errors in response. If no error then add the content values in confInfo

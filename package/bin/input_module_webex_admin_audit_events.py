@@ -85,9 +85,7 @@ def collect_events(helper, ew):
             raise e
 
     for org in organizations:
-        helper.log_debug("[-] org: {}".format(org))
         org_id = org["id"]
-        helper.log_debug("[-] org_id: {}".format(org_id))
 
         # check the checkpoint for each org
         # get start date from checkpoint
@@ -99,7 +97,7 @@ def collect_events(helper, ew):
         admin_audit_event_params = {}
 
         timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
-        helper.log_debug("[-] [-] For orgID-{}, last time timestamp: {}".format(org_id, timestamp))
+        helper.log_debug("[-] For orgID-{}, last time timestamp: {}".format(org_id, timestamp))
 
         # set up start time
         # first time start_time from UI
@@ -125,9 +123,6 @@ def collect_events(helper, ew):
         else:
             end_time = now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
         
-        helper.log_debug("[-] start_time: {}".format(start_time))
-        helper.log_debug("[-] end_time: {}".format(end_time))
-
         # compare if start_time ?> end_time, if so, break
         if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ"):
             helper.log_info(
