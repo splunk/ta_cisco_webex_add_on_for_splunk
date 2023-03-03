@@ -93,7 +93,7 @@ The `End Time` is optional. If you set it to be a specific date, only logs withi
 
 **Please Note**: Due to the API behavior, the selected time range cannot be more than a year. Therefore, If you want to obtain the audit logs that happened more than one year ago, you **MUST** fill in both `Start Time` and `End Time`, and ensure that the range does not exceed one year.
 
-The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest audit event created time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest audit event created time as the checkpoint, and will be used as the `Start Time` (advancing by one millisecond) for the next run.
 
 - Click on the `Inputs` button on the top left corner.
 - Click on `Create New Input` button on the top right corner.

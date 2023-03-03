@@ -111,7 +111,7 @@ def collect_events(helper, ew):
         else:
             # shift 1 second to avoid duplicate
             start_time = (
-                datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(seconds=1)
+                datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(milliseconds=1)
             ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
 
         # set up end time
