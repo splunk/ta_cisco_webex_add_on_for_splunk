@@ -38,8 +38,9 @@ The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows t
         - `meeting:admin_schedule_read`
         - `meeting:admin_participants_read`
         - `spark-compliance:meetings_read`
-        -  `spark:organizations_read`
-        -  `audit:events_read`
+        - `spark:organizations_read`
+        - `audit:events_read`
+        - `meeting:admin_config_read`
 5. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
 ### Configuration Instructions
