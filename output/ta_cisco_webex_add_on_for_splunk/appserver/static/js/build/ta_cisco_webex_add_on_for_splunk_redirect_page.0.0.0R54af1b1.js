@@ -1,0 +1,1 @@
+(()=>{const e=e=>{let t=window.location.search.substring(1);t=t.split("&");for(let o=0;o<t.length;o+=1){const r=t[o].split("=");if(r[0]===e)return r[1]}},t=e("error");let o={};o=void 0!==t?{error:t}:{code:e("code"),state:e("state")},window.opener.getMessage(o),window.close()})();
