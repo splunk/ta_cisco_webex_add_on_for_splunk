@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "0.0.0R54af1b1",
+        "version": "1.0.5",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "apiVersion": "4.1.10",
         "schemaVersion": "2.0.0"
@@ -90,7 +90,7 @@
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark-compliance:meetings_read spark:organizations_read audit:events_read meeting:admin_config_read&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read&state=set_state_here",
                                 "access_token_endpoint": "/v1/access_token"
                             }
                         }
@@ -298,7 +298,7 @@
                 {
                     "template": "input_with_helper",
                     "name": "webex_meetings",
-                    "title": "Webex Meetings",
+                    "title": "Webex Scheduled Meetings",
                     "entity": [
                         {
                             "field": "name",
@@ -367,7 +367,7 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.",
+                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. It's recommended to set Start Time to the current time.",
                             "required": true,
                             "type": "text",
                             "validators": [

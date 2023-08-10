@@ -298,7 +298,7 @@
                 {
                     "template": "input_with_helper",
                     "name": "webex_meetings",
-                    "title": "Webex Meetings",
+                    "title": "Webex Scheduled Meetings",
                     "entity": [
                         {
                             "field": "name",
@@ -367,7 +367,7 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.",
+                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. It's recommended to set Start Time to the current time.",
                             "required": true,
                             "type": "text",
                             "validators": [
