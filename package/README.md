@@ -4,8 +4,7 @@
 Here are the endpoints and their mapping soucetypes.
 | Splunk Input       | Webex Endpoint        | Splunk Sourcetype               |
 |--------------------|-----------------------|---------------------------------|
-| Webex Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         |
-| Webex Meetings       | [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants)                       | cisco:webex:meetings:participants             |
+| Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         |
 | Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         |
 | Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             |
 | Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events               |
@@ -23,11 +22,6 @@ Please follow the steps [here](https://docs.splunk.com/Documentation/AddOns/rele
 
 ### Create a Webex Integration
 The Cisco Webex Add-on for Splunk supports OAuth2 Authentication, which allows third-party integrations to get a temporary access token for authenticating API calls. Therefore, creating an **Admin-level Webex integration** is required to work along with this Add-on.
-
-**Note**: The [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint requires the `spark-compliance:meetings_read` scope. If you need to use **Webex Meetings** Input, the Webex account need to have the **Compliance Officer role** assigned.
-
-**Only the Webex Meetings Input needs the Compliance Officer role. The other two Inputs don’t require your account to have this role.**
-
 Please follow the following steps to create a dedicated Webex integration for this Add-on. Further documentation can be found [here](https://developer.webex.com/docs/integrations).
 
 1. **Registering your Integration**:
@@ -46,10 +40,10 @@ Please follow the following steps to create a dedicated Webex integration for th
     **Note**: No matter whether you will use Webex Meetings Input or not, you **MUST** select all the following scopes.
         - `meeting:admin_schedule_read`
         - `meeting:admin_participants_read`
-        - `spark-compliance:meetings_read`
         - `spark:organizations_read`
         - `audit:events_read`
         - `meeting:admin_config_read`
+        - `spark-admin:people_read`
 
 3. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
@@ -71,17 +65,23 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
 
 #### 2. Create Input
 
-**Webex Meetings Input**
+**Webex Scheduled Meetings Input**
 
-The **Webex Meetings** input is used to fetch the data from both [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint and [Meeting Participants](https://developer.webex.com/docs/api/v1/meeting-participants/list-meeting-participants) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting participants.
+The **Webex Scheduled Meetings** input is used to fetch the active scheduled meetings from [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint. It allows users to retrieve account-wide scheduled meetings of all users in your organization.
 
-**Please Note**: The input only returns the **historical** meeting reports and participant reports. The reports are only ingested into Splunk after the meetings have ended. To avoid ingesting incomplete data, the input will have a 12 hours delay.
+Query parameters used for this input:
+- `meetingType: scheduledMeeting`
+- `hostEmail: <HOST_EMAIL>`, where all HOST_EMAILs are getting from [List People](https://developer.webex.com/docs/api/v1/people/list-people) endpoint
 
-The `Start Time` is required. Set the starting date and time to fetch meetings & participants. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). Start Time **MUST** be prior to 12 hours before current time.
+**Note: In order to avoid ingesting duplicate meetings, each scheduled meeting will be only ingested when it reaches its start time. It doesn’t pull in the future scheduled meetings whose start time is in the future.**
 
-The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z).
+The `Interval` is required. It's used to specify how often it hits the Webex Meetings endpoint to pull the scheduled meetings in. The ingestion time increase as the number of users increases. If you have more than 100 users in your organization, it's recommended to set the interval to be at least 300 (5 mins).
 
-The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
+The `Start Time` is required. Set the starting date and time to fetch the scheduled meetings. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). This input aims to get active scheduled meetings, it's recommended to set Start Time to the current time. For example, the current time is `2023-08-01T10:05:28Z`, you can set it as `2023-08-01T00:00:00Z`. If you'd like to get all historical meetings, please use the **Webex Meetings Summary Report Input**.
+
+The `End Time` is optional. If you set it to be a specific date, only the scheduled meetings within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z).
+
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the end time of the last round as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
 
 - Click on the `Inputs` button on the top left corner.
 - Click on `Create New Input` button on the top right corner.
@@ -90,7 +90,7 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. Start Time must be prior to 12 hours before current time.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. It's recommended to set Start Time to the current time. For example, the current time is `2023-08-01T10:05:28Z`, you can set it as `2023-08-01T00:00:00Z`.
     - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.
 - Click on the `Add` green button on the bottom right of the pop up box.
 
@@ -153,3 +153,4 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 ## Credits & Acknowledgements
 * Yuan Ling
 * Marie Duran
+* Ashley Hoang
