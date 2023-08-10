@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "apiVersion": "4.1.10",
         "schemaVersion": "2.0.0"
