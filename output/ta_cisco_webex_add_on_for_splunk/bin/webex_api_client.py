@@ -48,8 +48,8 @@ def paging_get_request_to_webex(
 
             if next_page_link:
                 # update endpoint to next page link
-                regex = '<https:.*\/v1\/'
-                endpoint = re.split(regex, response_header["link"])[1].split('>')[0]
+                regex = endpoint.replace('?', '\?')
+                endpoint = endpoint + re.split(regex, response_header["link"])[1].split('>')[0]
                 params={}
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
