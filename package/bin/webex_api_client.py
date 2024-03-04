@@ -47,10 +47,9 @@ def paging_get_request_to_webex(
             helper.log_debug("[--] next_page_link {}".format(next_page_link))
 
             if next_page_link:
-                # update endpoint to next page link
-                regex = '<https:.*\/v1\/'
-                endpoint = re.split(regex, response_header["link"])[1].split('>')[0]
-                params={}
+                # update offset to get the next page
+                offset = int(params.get("offset", 0)) + len(data.get(response_tag))
+                params["offset"] = offset
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
                 paging = False
