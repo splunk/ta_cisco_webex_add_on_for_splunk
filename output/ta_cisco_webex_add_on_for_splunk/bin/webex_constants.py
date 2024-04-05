@@ -11,6 +11,7 @@ _ADMIN_AUDIT_EVENTS_ENDPOINT = "adminAudit/events"
 _MEETING_USAGE_REPORTS_ENDPOINT = "meetingReports/usage"
 _MEETING_ATTENDEE_REPORTS_ENDPOINT = "meetingReports/attendees?meetingId={meeting_id}"
 _LIST_PEOPLE_ENDPOINT = "people"
+_GET_MEETING_QUALITIES =  "meeting/qualities"
 
 UNAUTHORIZED_STATUS = 401
 
@@ -21,5 +22,6 @@ _RESPONSE_TAG_MAP = {
     _ADMIN_AUDIT_EVENTS_ENDPOINT: "items",
     _MEETING_USAGE_REPORTS_ENDPOINT: "items",
     _MEETING_ATTENDEE_REPORTS_ENDPOINT: "items",
-    _LIST_PEOPLE_ENDPOINT: "items"
+    _LIST_PEOPLE_ENDPOINT: "items",
+    _GET_MEETING_QUALITIES: "items",
 }

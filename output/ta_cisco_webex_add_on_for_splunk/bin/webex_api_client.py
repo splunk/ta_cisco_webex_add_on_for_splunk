@@ -20,7 +20,7 @@ def paging_get_request_to_webex(
 ):
     results = []
     # set the page_size
-    params["max"] = _MAX_PAGE_SIZE
+    params["max"] = _MAX_PAGE_SIZE if not params.get("max") else params["max"]
 
     paging = True
     try:
@@ -76,6 +76,12 @@ def make_get_request_to_webex(
     retry=True,
 ):
     url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+
+    # reconstruct the url for meeting/qualities endpoint
+    if endpoint == "meeting/qualities":
+        protocol, rest = url.split("//")
+        url = f"{protocol}//analytics.{rest}"
+
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
