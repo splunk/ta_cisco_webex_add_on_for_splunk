@@ -8,6 +8,7 @@ Here are the endpoints and their mapping soucetypes.
 | Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         |
 | Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             |
 | Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events               |
+| Webex Meeting Qualities       | [Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities)                               | cisco:webex:meeting:qualities              |
 
 ## Getting Started
 ### Installation Instructions
@@ -44,6 +45,7 @@ Please follow the following steps to create a dedicated Webex integration for th
         - `audit:events_read`
         - `meeting:admin_config_read`
         - `spark-admin:people_read`
+        - `analytics:read_all`
 
 3. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
@@ -92,7 +94,7 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Global Account** (_required_): Select the account created during Configuration.
     - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. It's recommended to set Start Time to the current time. For example, the current time is `2023-08-01T10:05:28Z`, you can set it as `2023-08-01T00:00:00Z`.
     - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.
-- Click on the `Add` green button on the bottom right of the pop up box.
+- Click on the `Add` green button on the bottom right of the pop-up box.
 
 **Webex Meetings Summary Report Input**
 
@@ -116,7 +118,7 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Site Name** (_required_): Site Name of the Webex Meeting account. `example: example.webex.com`
     - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The interval between Start Time and End Time cannot exceed 30 days and Start Time cannot be earlier than 90 days ago.
     - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. The interval between Start Time and End Time cannot exceed 30 days.
-- Click on the `Add` green button on the bottom right of the pop up box.
+- Click on the `Add` green button on the bottom right of the pop-up box.
 
 **Webex Admin Audit Events Input**
 
@@ -139,7 +141,28 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Global Account** (_required_): Select the account created during Configuration.
     - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
     - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional), `example:2023-02-01T00:00:00.000Z`. End Time must be after the Start Time.
-- Click on the `Add` green button on the bottom right of the pop up box.
+- Click on the `Add` green button on the bottom right of the pop-up box.
+
+**Webex Meeting Qualities**
+
+The **Webex Meeting Qualities** input is used to fetch the data from [Webex Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities) endpoint. It allows users to retrieve quality data for meetings. Only organization administrators can retrieve meeting quality data.
+
+The `Start Time` is required. Set the starting date and time to fetch meeting quality data. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). Due to the Webex API limitation, Quality information may be retrieved for up to 7 days. The Start Time **MUST** be within 7 days from the current time.
+
+The `End Time` is optional. If you set it to be a specific date, only data within the time range from Start time to End time will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z). Leave it blank if an ongoing ingestion mode is needed.
+
+The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one millisecond) for the next run.
+
+- Click on the `Inputs` button on the top left corner.
+- Click on `Create New Input` button on the top right corner.
+- Enter the following details in the pop-up box:
+    - **Name** (_required_): Unique name for the data input.
+    - **Interval** (_required_): Time interval of input in seconds.
+    - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Select the account created during Configuration.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The Start Time **MUST** be within 7 days from the current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed.
+- Click on the `Add` green button on the bottom right of the pop-up box.
 
 ## Versions Supported
 
