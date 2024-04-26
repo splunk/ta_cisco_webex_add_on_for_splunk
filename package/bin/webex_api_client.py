@@ -138,9 +138,10 @@ def make_get_request_to_webex(
                         client_id,
                         client_secret,
                         refresh_token,
+                        base_endpoint
                     )
                 except Exception as e:
-                    helper.error(
+                    helper.log_error(
                         "[-] Error happened while updating access token in endpoint-{}: {}".format(
                             endpoint, e
                         )
