@@ -1,6 +1,5 @@
 # encoding = utf-8
 import import_declare_test
-import json
 
 from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS
 from oauth_helper import update_access_token
@@ -48,8 +47,19 @@ def paging_get_request_to_webex(
 
             if next_page_link:
                 # update offset to get the next page
-                offset = int(params.get("offset", 0)) + len(data.get(response_tag))
-                params["offset"] = offset
+                if "offset" in next_page_link:
+                    offset = int(params.get("offset", 0)) + len(data.get(response_tag))
+                    params["offset"] = offset
+                else:
+                    # Regular expression to find the cursor value
+                    # This will capture characters following 'cursor=' until it hits either '&' or the end of the string
+                    match = re.search(r'cursor=([^&>]+)', next_page_link)
+                    # Extract the cursor value if it is found
+                    if match:
+                        cursor_value = match.group(1)
+                        params["cursor"] = cursor_value
+                    else:
+                        raise Exception("Cursor value not found for next page")
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
                 paging = False

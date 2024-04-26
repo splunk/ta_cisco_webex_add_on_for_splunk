@@ -118,7 +118,7 @@ def collect_events(helper, ew):
         )
 
     # get user list
-    people_params = {}
+    people_params = {"max": 1000}
     users = paging_get_request_to_webex(
         helper,
         base_endpoint,
