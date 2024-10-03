@@ -1,6 +1,5 @@
 # encoding = utf-8
 import import_declare_test
-import json
 
 from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS
 from oauth_helper import update_access_token
@@ -20,7 +19,7 @@ def paging_get_request_to_webex(
 ):
     results = []
     # set the page_size
-    params["max"] = _MAX_PAGE_SIZE
+    params["max"] = _MAX_PAGE_SIZE if not params.get("max") else params["max"]
 
     paging = True
     try:
@@ -47,10 +46,20 @@ def paging_get_request_to_webex(
             helper.log_debug("[--] next_page_link {}".format(next_page_link))
 
             if next_page_link:
-                # update endpoint to next page link
-                regex = '<https:.*\/v1\/'
-                endpoint = re.split(regex, response_header["link"])[1].split('>')[0]
-                params={}
+                # update offset to get the next page
+                if "offset" in next_page_link:
+                    offset = int(params.get("offset", 0)) + len(data.get(response_tag))
+                    params["offset"] = offset
+                else:
+                    # Regular expression to find the cursor value
+                    # This will capture characters following 'cursor=' until it hits either '&' or the end of the string
+                    match = re.search(r'cursor=([^&>]+)', next_page_link)
+                    # Extract the cursor value if it is found
+                    if match:
+                        cursor_value = match.group(1)
+                        params["cursor"] = cursor_value
+                    else:
+                        raise Exception("Cursor value not found for next page")
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
                 paging = False
@@ -77,6 +86,12 @@ def make_get_request_to_webex(
     retry=True,
 ):
     url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+
+    # reconstruct the url for meeting/qualities endpoint
+    if endpoint == "meeting/qualities":
+        protocol, rest = url.split("//")
+        url = f"{protocol}//analytics.{rest}"
+
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
@@ -133,9 +148,10 @@ def make_get_request_to_webex(
                         client_id,
                         client_secret,
                         refresh_token,
+                        base_endpoint
                     )
                 except Exception as e:
-                    helper.error(
+                    helper.log_error(
                         "[-] Error happened while updating access token in endpoint-{}: {}".format(
                             endpoint, e
                         )

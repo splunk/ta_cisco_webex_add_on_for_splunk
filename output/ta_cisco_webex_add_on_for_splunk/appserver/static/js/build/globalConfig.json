@@ -2,10 +2,11 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.0.5",
+        "version": "1.0.7",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "apiVersion": "4.1.10",
-        "schemaVersion": "0.0.3"
+        "schemaVersion": "2.0.0",
+        "_uccVersion": "5.39.1"
     },
     "pages": {
         "configuration": {
@@ -90,7 +91,7 @@
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark-compliance:meetings_read spark:organizations_read audit:events_read meeting:admin_config_read&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read analytics:read_all&state=set_state_here",
                                 "access_token_endpoint": "/v1/access_token"
                             }
                         }
@@ -298,7 +299,7 @@
                 {
                     "template": "input_with_helper",
                     "name": "webex_meetings",
-                    "title": "Webex Meetings",
+                    "title": "Webex Scheduled Meetings",
                     "entity": [
                         {
                             "field": "name",
@@ -367,7 +368,7 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. Start Time must be prior to 12 hours before current time.",
+                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ. It's recommended to set Start Time to the current time.",
                             "required": true,
                             "type": "text",
                             "validators": [
@@ -624,6 +625,111 @@
                             ],
                             "options": {
                                 "placeholder": "2033-01-01T00:00:00.000Z"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_meeting_qualities",
+                    "title": "Webex Meeting Qualities",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "interval",
+                            "label": "Interval",
+                            "type": "text",
+                            "required": true,
+                            "help": "Time interval of input in seconds",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d+$",
+                                    "errorMsg": "Interval must be an integer"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "Start Time can NOT be earlier than 7 days ago. Start time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2023-01-01T00:00:00Z"
+                            }
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "End time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ],
+                            "options": {
+                                "placeholder": "2033-01-01T00:00:00Z"
                             }
                         }
                     ]

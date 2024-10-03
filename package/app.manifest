@@ -1,53 +1,41 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "2.0.0", 
   "info": {
-    "title": "Cisco Webex Add-on for Splunk",
+    "title": "Cisco Webex Add-on for Splunk", 
     "id": {
-      "group": null,
-      "name": "ta_cisco_webex_add_on_for_splunk",
-      "version": "1.0.5"
-    },
+      "group": null, 
+      "name": "ta_cisco_webex_add_on_for_splunk", 
+      "version": "1.0.7"
+    }, 
     "author": [
       {
-        "name": "FDSE",
+        "name": "FDSE", 
         "email": null,
         "company": null
       }
     ],
     "releaseDate": null,
-    "description": "",
+    "description": "", 
     "classification": {
       "intendedAudience": null,
       "categories": [],
       "developmentStatus": null
-    },
-    "commonInformationModels": null,
+    }, 
+    "commonInformationModels": null, 
     "license": {
       "name": null,
       "text": null,
       "uri": null
-    },
-    "privacyPolicy": {
-      "name": null,
-      "text": null,
-      "uri": null
-    },
+    }, 
     "releaseNotes": {
-      "name": null,
+      "name": null, 
       "text": null,
       "uri": null
     }
-  },
+  }, 
   "dependencies": {
   },
   "tasks": [],
-  "inputGroups": {
-  },
-  "incompatibleApps": {
-  },
-  "platformRequirements": {
-    "splunk": {
-      "Enterprise": "*"
-    }
-  }
+  "supportedDeployments": ["_standalone", "_distributed", "_search_head_clustering"],
+  "targetWorkloads": ["_search_heads"]
 }

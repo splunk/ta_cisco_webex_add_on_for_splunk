@@ -63,19 +63,14 @@ class OAuth:
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
-        payload = {
-            "grant_type": "refresh_token",
-            "client_id": self._client_id,
-            "client_secret": self._client_secret,
-            "refresh_token": self._refresh_token,
-        }
+        payload = f'grant_type=refresh_token&client_id={self._client_id}&client_secret={self._client_secret}&refresh_token={self._refresh_token}'
 
         try:
             response = self.helper.send_http_request(
                 _REFRESH_TOKEN_ENDPOINT.format(base_endpoint=self._base_endpoint),
                 "POST",
-                parameters=payload,
-                payload=None,
+                parameters=None,
+                payload=payload,
                 headers=headers,
                 cookies=None,
                 verify=False,

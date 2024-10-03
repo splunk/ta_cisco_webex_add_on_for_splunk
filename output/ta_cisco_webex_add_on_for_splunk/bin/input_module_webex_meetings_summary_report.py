@@ -151,6 +151,8 @@ def collect_events(helper, ew):
 
                     # get request params for attendees endpoint
                     attendees_params = meeting_usage_reports_params.copy()
+                    # reset offset to 0 at the beginning of each meeting
+                    attendees_params["offset"] = 0
                     attendees = paging_get_request_to_webex(
                         helper,
                         base_endpoint,
