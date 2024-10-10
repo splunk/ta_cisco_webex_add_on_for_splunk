@@ -109,7 +109,7 @@ def make_get_request_to_webex(
             cookies=None,
             verify=False,
             cert=None,
-            timeout=None,
+            timeout=30,
             use_proxy=True,
         )
         helper.log_debug(
