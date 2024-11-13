@@ -1,4 +1,0 @@
-<?xml version="1.0" ?>
-<view isDashboard="False" template="ta_cisco_webex_add_on_for_splunk:/templates/base.html" type="html">
-    <label>Configuration</label>
-</view>
