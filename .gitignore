@@ -134,7 +134,7 @@ local
 #  However we must preserve metadata/default.meta so that eventgen works.)
 local.meta
 
-.tar*
-.tgz
+*.tgz
+*.tar.gz
 
 output
