@@ -7,6 +7,8 @@ pip3 install splunk-add-on-ucc-framework
 ### 2. Create `globalConfig.json` and `app.manifest`
 An easy way to create desired `globalConfig.json` and `app.manifest` is by leveraging AOB. You can create a TA with desired UI components using AOB, and then use the generated `globalConfig.json` and `app.manifest` directly.
 
+**Note**: For newer versions of the Splunk UCC Framework, the meta property "apiVersion" is deprecated.
+
 **If you use AOB, please pay attention to the following points**:
 1. AOB auto-generates an `Add-on Folder Name` for your add-on, which has the format  `TA-your-add-on-name`. This format is not consistent with the built-in OAuth redirect URL format. You'd better change it to a format that only contains **lowercase** and **"_"**. 
 e. g. `ta_your_add_on_name`
@@ -32,10 +34,6 @@ Two ways to change the Add-on Folder Name for AOB Add-on:
                     "title": "Webex Meetings",
                     ...
     ```
-
-3. Pay attention to `"meta"` section inside `globalConfig.json`. Make sure you have `"apiVersion"` under `"meta"` 
-e.g. `"apiVersion": "4.1.10".`
-
 
 ### 3. Create required file structure
 ```
@@ -585,8 +583,7 @@ Re-run `ucc-gen` the desired `input.conf` and `props.conf` will be copied into y
         "displayName": "Cisco Webex Add-on for Splunk",
         "version": "1.0.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
-        "apiVersion": "4.1.10",
-        "schemaVersion": "0.0.3"
+        "schemaVersion": "0.0.9"
     }
 ```
 
@@ -603,8 +600,6 @@ Re-run `ucc-gen` the desired `input.conf` and `props.conf` will be copied into y
 
 
 ## Troubleshooting
-### ERROR: Config is not valid. Error: 'apiVersion' is a required property
-- Make sure you have `"apiVersion": "3.2.0"` under `meta` section in `globalConfig.json`
 
 ### ModuleNotFoundError: No module named 'mmap'
 - If you encounter this error after running `ucc-gen`, please try to setup a new python3 (>=v3.7) virtual environment and re-run `ucc-gen`
