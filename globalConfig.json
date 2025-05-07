@@ -2,11 +2,13 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.0.7",
+        "version": "1.0.8",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
-        "apiVersion": "4.1.10",
-        "schemaVersion": "2.0.0",
-        "_uccVersion": "5.39.1"
+        "schemaVersion": "0.0.9",
+        "supportedThemes": [
+            "light",
+            "dark"
+        ]
     },
     "pages": {
         "configuration": {
@@ -92,7 +94,8 @@
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
                                 "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read analytics:read_all&state=set_state_here",
-                                "access_token_endpoint": "/v1/access_token"
+                                "access_token_endpoint": "/v1/access_token",
+                                "oauth_state_enabled": false
                             }
                         }
                     ]
@@ -194,41 +197,7 @@
                     }
                 },
                 {
-                    "name": "logging",
-                    "title": "Logging",
-                    "entity": [
-                        {
-                            "field": "loglevel",
-                            "label": "Log level",
-                            "type": "singleSelect",
-                            "options": {
-                                "disableSearch": true,
-                                "autoCompleteFields": [
-                                    {
-                                        "label": "DEBUG",
-                                        "value": "DEBUG"
-                                    },
-                                    {
-                                        "label": "INFO",
-                                        "value": "INFO"
-                                    },
-                                    {
-                                        "label": "WARNING",
-                                        "value": "WARNING"
-                                    },
-                                    {
-                                        "label": "ERROR",
-                                        "value": "ERROR"
-                                    },
-                                    {
-                                        "label": "CRITICAL",
-                                        "value": "CRITICAL"
-                                    }
-                                ]
-                            },
-                            "defaultValue": "INFO"
-                        }
-                    ]
+                    "type": "loggingTab"
                 }
             ]
         },
@@ -290,7 +259,6 @@
                 ],
                 "actions": [
                     "edit",
-                    "enable",
                     "delete",
                     "clone"
                 ]
@@ -322,18 +290,11 @@
                             ]
                         },
                         {
+                            "type": "interval",
                             "field": "interval",
                             "label": "Interval",
-                            "type": "text",
-                            "required": true,
                             "help": "Time interval of input in seconds",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\d+$",
-                                    "errorMsg": "Interval must be an integer"
-                                }
-                            ]
+                            "required": true
                         },
                         {
                             "field": "index",
@@ -377,10 +338,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2023-01-01T00:00:00Z"
-                            }
+                            ]
                         },
                         {
                             "field": "end_time",
@@ -394,10 +352,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2033-01-01T00:00:00Z"
-                            }
+                            ]
                         }
                     ]
                 },
@@ -427,18 +382,11 @@
                             ]
                         },
                         {
+                            "type": "interval",
                             "field": "interval",
                             "label": "Interval",
-                            "type": "text",
-                            "required": true,
                             "help": "Time interval of input in seconds",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\d+$",
-                                    "errorMsg": "Interval must be an integer"
-                                }
-                            ]
+                            "required": true
                         },
                         {
                             "field": "index",
@@ -483,10 +431,7 @@
                                     "maxLength": 8192,
                                     "errorMsg": "Max length of text input is 8192"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "example.webex.com"
-                            }
+                            ]
                         },
                         {
                             "field": "start_time",
@@ -500,10 +445,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2023-01-01T00:00:00Z"
-                            }
+                            ]
                         },
                         {
                             "field": "end_time",
@@ -517,10 +459,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2033-01-01T00:00:00Z"
-                            }
+                            ]
                         }
                     ]
                 },
@@ -550,18 +489,11 @@
                             ]
                         },
                         {
+                            "type": "interval",
                             "field": "interval",
                             "label": "Interval",
-                            "type": "text",
-                            "required": true,
                             "help": "Time interval of input in seconds",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\d+$",
-                                    "errorMsg": "Interval must be an integer"
-                                }
-                            ]
+                            "required": true
                         },
                         {
                             "field": "index",
@@ -605,10 +537,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
                                     "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2023-01-01T00:00:00.000Z"
-                            }
+                            ]
                         },
                         {
                             "field": "end_time",
@@ -622,10 +551,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
                                     "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2033-01-01T00:00:00.000Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2033-01-01T00:00:00.000Z"
-                            }
+                            ]
                         }
                     ]
                 },
@@ -655,18 +581,11 @@
                             ]
                         },
                         {
+                            "type": "interval",
                             "field": "interval",
                             "label": "Interval",
-                            "type": "text",
-                            "required": true,
                             "help": "Time interval of input in seconds",
-                            "validators": [
-                                {
-                                    "type": "regex",
-                                    "pattern": "^\\d+$",
-                                    "errorMsg": "Interval must be an integer"
-                                }
-                            ]
+                            "required": true
                         },
                         {
                             "field": "index",
@@ -710,10 +629,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2023-01-01T00:00:00Z"
-                            }
+                            ]
                         },
                         {
                             "field": "end_time",
@@ -727,10 +643,7 @@
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
                                 }
-                            ],
-                            "options": {
-                                "placeholder": "2033-01-01T00:00:00Z"
-                            }
+                            ]
                         }
                     ]
                 }
