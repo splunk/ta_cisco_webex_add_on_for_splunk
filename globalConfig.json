@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.0.8",
+        "version": "1.0.9",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.9",
         "supportedThemes": [
@@ -93,7 +93,7 @@
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read analytics:read_all&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read spark-admin:calling_cdr_read analytics:read_all&state=set_state_here",
                                 "access_token_endpoint": "/v1/access_token",
                                 "oauth_state_enabled": false
                             }
@@ -642,6 +642,112 @@
                                     "type": "regex",
                                     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
                                     "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_detailed_call_history",
+                    "title": "Webex Detailed Call History",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "The specified time must be between 5 minutes ago and 48 hours ago, and be formatted as YYYY-MM-DDTHH:MM:SS.mmmZ",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "The specified time should be later than start time but no later than 48 hours, and be formatted as YYYY-MM-DDTHH:MM:SS.mmmZ",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "locations",
+                            "label": "Locations",
+                            "help": "Name of the location (as shown in Control Hub). Up to 10 comma-separated locations can be provided.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^([a-z],)*[a-z]$",
+                                    "errorMsg": "Locations value should be comma-separated. Example: A, B, C"
                                 }
                             ]
                         }

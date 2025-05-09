@@ -138,3 +138,5 @@ local.meta
 *.tar.gz
 
 output
+
+.DS_Store

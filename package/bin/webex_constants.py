@@ -12,6 +12,7 @@ _MEETING_USAGE_REPORTS_ENDPOINT = "meetingReports/usage"
 _MEETING_ATTENDEE_REPORTS_ENDPOINT = "meetingReports/attendees?meetingId={meeting_id}"
 _LIST_PEOPLE_ENDPOINT = "people"
 _GET_MEETING_QUALITIES =  "meeting/qualities"
+_GET_DETAILED_CALL_HISTORY = "cdr_feed"
 
 UNAUTHORIZED_STATUS = 401
 
@@ -24,4 +25,5 @@ _RESPONSE_TAG_MAP = {
     _MEETING_ATTENDEE_REPORTS_ENDPOINT: "items",
     _LIST_PEOPLE_ENDPOINT: "items",
     _GET_MEETING_QUALITIES: "items",
+    _GET_DETAILED_CALL_HISTORY: "items"
 }
