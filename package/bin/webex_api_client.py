@@ -87,8 +87,8 @@ def make_get_request_to_webex(
 ):
     url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
 
-    # reconstruct the url for meeting/qualities endpoint
-    if endpoint == "meeting/qualities":
+    # reconstruct the url for meeting/qualities and cdr_feed endpoints
+    if endpoint == "meeting/qualities" or endpoint == "cdr_feed":
         protocol, rest = url.split("//")
         url = f"{protocol}//analytics.{rest}"
 
