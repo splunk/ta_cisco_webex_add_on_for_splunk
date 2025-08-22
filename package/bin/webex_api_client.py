@@ -5,6 +5,16 @@ from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS
 from oauth_helper import update_access_token
 import re
 
+def extract_link_regex(link_header_string):
+    """
+    Extracts the URL from a Link header-like string using regex.
+    """
+    match = re.search(r'<([^>]+)>;', link_header_string)
+    if match:
+        return match.group(1)
+    else:
+        raise ValueError(f"Next page link string does not match expected link header format: '{link_header_string}'")
+
 def paging_get_request_to_webex(
     helper,
     base_endpoint,
@@ -22,8 +32,10 @@ def paging_get_request_to_webex(
     params["max"] = _MAX_PAGE_SIZE if not params.get("max") else params["max"]
 
     paging = True
+    next_page_link = None
     try:
         while paging:
+            helper.log_debug("[-] next_page_link {}".format(next_page_link))
             data,response_header = make_get_request_to_webex(
                 helper,
                 base_endpoint,
@@ -34,6 +46,7 @@ def paging_get_request_to_webex(
                 client_id,
                 client_secret,
                 params,
+                next_page_link
             )
 
             if data is None or len(data)==0:
@@ -42,24 +55,15 @@ def paging_get_request_to_webex(
             # append paging data
             results.extend(data.get(response_tag))
 
-            next_page_link = response_header.get("link", None)
-            helper.log_debug("[--] next_page_link {}".format(next_page_link))
+            next_page_link_header = response_header.get("link", None)
+            helper.log_debug("[--] next_page_link_header {}".format(next_page_link_header))
 
-            if next_page_link:
-                # update offset to get the next page
-                if "offset" in next_page_link:
-                    offset = int(params.get("offset", 0)) + len(data.get(response_tag))
-                    params["offset"] = offset
-                else:
-                    # Regular expression to find the cursor value
-                    # This will capture characters following 'cursor=' until it hits either '&' or the end of the string
-                    match = re.search(r'cursor=([^&>]+)', next_page_link)
-                    # Extract the cursor value if it is found
-                    if match:
-                        cursor_value = match.group(1)
-                        params["cursor"] = cursor_value
-                    else:
-                        raise Exception("Cursor value not found for next page")
+            if next_page_link_header:
+                try:
+                    next_page_link=extract_link_regex(next_page_link_header)
+                    helper.log_debug("[--] next_page_link {}".format(next_page_link))
+                except ValueError as e:
+                    helper.log_error(f"Next page link extraction failed (regex): {e}")
             else:
                 helper.log_debug("[--] This is the last page for {}".format(endpoint))
                 paging = False
@@ -83,14 +87,19 @@ def make_get_request_to_webex(
     client_id,
     client_secret,
     params,
-    retry=True,
+    next_page_link,
+    retry=True
 ):
-    url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+    if next_page_link:
+        url = next_page_link
+        params = None
+    else:
+        url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
 
-    # reconstruct the url for meeting/qualities and cdr_feed endpoints
-    if endpoint == "meeting/qualities" or endpoint == "cdr_feed":
-        protocol, rest = url.split("//")
-        url = f"{protocol}//analytics.{rest}"
+        # reconstruct the url for meeting/qualities and cdr_feed endpoints
+        if endpoint == "meeting/qualities" or endpoint == "cdr_feed":
+            protocol, rest = url.split("//")
+            url = f"{protocol}//analytics.{rest}"
 
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
