@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.0.11",
+        "version": "1.1.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.9",
         "supportedThemes": [
@@ -748,6 +748,98 @@
                                     "type": "regex",
                                     "pattern": "^([a-z],)*[a-z]$",
                                     "errorMsg": "Locations value should be comma-separated. Example: A, B, C"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_security_audit_events",
+                    "title": "Webex Security Audit Events",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "List events which occurred after a specific date and time. Start date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "List events which occurred before a specific date and time. End date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional). End Time must be after the Start Time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2033-01-01T00:00:00.000Z)"
                                 }
                             ]
                         }
