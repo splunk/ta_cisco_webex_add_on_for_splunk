@@ -718,8 +718,8 @@
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
                                 }
                             ]
                         },
