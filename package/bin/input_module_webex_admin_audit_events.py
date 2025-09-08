@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import *
 
 from webex_constants import (
@@ -45,12 +45,12 @@ def collect_events(helper, ew):
     )
     access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # update the access token if it expired
     if (
         not access_token_expired_time
-        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S") < now
+        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S").replace(tzinfo=timezone.utc) < now
     ):
 
         helper.log_debug(
@@ -115,10 +115,10 @@ def collect_events(helper, ew):
             ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
 
         # set up end time
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         helper.log_debug("[-] now: {}".format(now))
 
-        if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%S.%fZ") < now:
+        if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)  < now:
             end_time = opt_end_time
         else:
             end_time = now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'

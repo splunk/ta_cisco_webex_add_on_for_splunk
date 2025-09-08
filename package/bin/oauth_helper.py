@@ -1,6 +1,6 @@
 import import_declare_test
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from solnlib import conf_manager
 
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
@@ -141,7 +141,7 @@ class OAuth:
             expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(account_name=account_name)
 
             # Calculate expired time for new access token
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             delta = int(new_expires_in)
             expired_time = (now + timedelta(seconds=delta)).strftime(
                 "%m/%d/%Y %H:%M:%S"

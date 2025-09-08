@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import *
 
 from webex_constants import (
@@ -57,19 +57,19 @@ def collect_events(helper, ew):
     else:
         # shift 1 second to avoid duplicate
         start_time = (
-            datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ") + timedelta(seconds=1)
-        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(seconds=1)
+        ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
 
     # set up end time
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
-    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ") < now:
+    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc) < now:
         end_time = opt_end_time
     else:
-        end_time = (now - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        end_time = (now - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
 
     # compare if start_time ?> end_time, if so, break
-    if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%SZ"):
+    if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ"):
         helper.log_info(
             "[-] Finished ingestion for time range {start_time} - {end_time}".format(
                 start_time=start_time, end_time=end_time
@@ -89,14 +89,15 @@ def collect_events(helper, ew):
     expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(
         account_name=account_name
     )
+    
     access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # update the access token if it expired
     if (
         not access_token_expired_time
-        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S") < now
+        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S").replace(tzinfo=timezone.utc) < now
     ):
 
         helper.log_debug(
