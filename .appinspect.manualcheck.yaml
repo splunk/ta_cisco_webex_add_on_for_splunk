@@ -1,0 +1,10 @@
+check_for_file_and_directory_access:
+  comment: 'Ok'
+check_for_builtin_functions:
+  comment: 'Ok'
+check_for_environment_variable_use_in_python:
+  comment: 'Ok'
+check_for_data_compression_and_archiving:
+  comment: 'Ok'
+check_for_supported_tls:
+  comment: 'Ok'
