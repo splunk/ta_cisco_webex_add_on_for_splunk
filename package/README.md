@@ -1,16 +1,16 @@
 # Cisco Webex Add-on for Splunk
 > **Cisco Webex Add-on for Splunk** is an Add-on to pull in data from _[Webex REST API](https://developer.webex.com/docs/basics)_ to Splunk.
 
-Here are the endpoints and their mapping soucetypes.
-| Splunk Input       | Webex Endpoint        | Splunk Sourcetype               |
-|--------------------|-----------------------|---------------------------------|
-| Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         |
-| Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         |
-| Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             |
-| Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events               |
-| Webex Meeting Qualities       | [Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities)                               | cisco:webex:meeting:qualities              |
-| Webex Detailed Call History       | [Detailed Call History](https://developer.webex.com/docs/api/v1/reports-detailed-call-history/get-detailed-call-history)                               | cisco:webex:call:detailed_history             |
-| Webex Security Audit Events       | [Security Audit Events](https://developer.webex.com/admin/docs/api/v1/security-audit-events/list-security-audit-events)                               | cisco:webex:security:audit:events            |
+#### Here are the endpoints, their corresponding source types, and the required scopes.
+| Splunk Input       | Webex Endpoint        | Splunk Sourcetype               | Required Scopes                 |
+|--------------------|-----------------------|---------------------------------|---------------------------------|
+| Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         | meeting:admin_schedule_read spark-admin:people_read   |
+| Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         | meeting:admin_schedule_read meeting:admin_participants_read   |
+| Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             | meeting:admin_schedule_read meeting:admin_participants_read   |
+| Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events              | audit:events_read spark:organizations_read  |
+| Webex Meeting Qualities       | [Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities)                               | cisco:webex:meeting:qualities              | analytics:read_all   |
+| Webex Detailed Call History       | [Detailed Call History](https://developer.webex.com/docs/api/v1/reports-detailed-call-history/get-detailed-call-history)                               | cisco:webex:call:detailed_history             | spark-admin:calling_cdr_read |
+| Webex Security Audit Events       | [Security Audit Events](https://developer.webex.com/admin/docs/api/v1/security-audit-events/list-security-audit-events)                               | cisco:webex:security:audit:events            | audit:events_read spark:organizations_read |
 
 ## Getting Started
 ### Installation Instructions
@@ -39,16 +39,8 @@ Please follow the following steps to create a dedicated Webex integration for th
         - Open **Cisco Webex Add-on for Splunk** in Splunk. Go to `Configuration > Account > Add`. The Redirect URI will show up in the `Redirect url` field. Please copy and paste it to the `Redirect URI(s)` field in the Webex Integration.
         - **For Splunk Heavy Forwarders (or IDM)**: please replace the `{domain}` with the domain of your Splunk Heavy Forwarder (or IDM). For example, if the domain of your HF or IDM is `example.splunk.link`, then the Redirect URI you have to enter is:  `https://example.splunk.link/en-US/app/ta_cisco_webex_add_on_for_splunk/ta_cisco_webex_add_on_for_splunk_redirect`
     
-    - **Scopes**: Please select the following scopes:
-    **Note**: No matter whether you will use Webex Meetings Input or not, you **MUST** select all the following scopes.
-        - `meeting:admin_schedule_read`
-        - `meeting:admin_participants_read`
-        - `spark:organizations_read`
-        - `audit:events_read`
-        - `meeting:admin_config_read`
-        - `spark-admin:people_read`
-        - `analytics:read_all`
-        - `spark-admin:calling_cdr_read`
+    - **Scopes**: Please select only the scopes you need.
+    **Note**: Refer to the table above to identify which scopes are required for the inputs you are interested in.
 
 3. Click **Add Integration** on the bottom of the page, your `Client ID` and `Client Secret` are ready to use.
 
@@ -65,6 +57,7 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
     - **Client ID**: Enter the `Client ID` that you obtained above here.
     - **Client Secret**: Enter the `Client Secret` that you obtained above here.
     - **Redirect URI**: The Redirect URI will auto show up. 
+    - **Scopes**: Enter the authorization scopes after 'spark:kms', separating each scope with a space. Example: spark:kms <Scope1> <Scope2> ... <ScopeN>. Please ensure that the scopes entered here match those selected in your Webex Integration.
     - Click on the `Add` button.
 
 
@@ -231,4 +224,3 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 * Yuan Ling
 * Marie Duran
 * Ashley Hoang
-* Isaac Fonseca
