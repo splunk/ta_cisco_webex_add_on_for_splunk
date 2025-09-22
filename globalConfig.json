@@ -92,7 +92,7 @@
                                         "oauth_field": "scope",
                                         "label": "Scope",
                                         "field": "scope",
-                                        "help": "Enter the authorization scopes after 'spark:kms', separating each scope with a space. Example: spark:kms <Scope1> <Scope2> ... <ScopeN>",
+                                        "help": "Enter the authorization scopes after 'spark:kms', separating each scope with a space. Example: spark:kms <Scope1> <Scope2> ... <ScopeN>. Please ensure that the scopes entered here match those selected in your Webex Integration.",
                                         "required": true,
                                         "defaultValue": "spark:kms meeting:admin_schedule_read meeting:admin_participants_read"
                                     }
