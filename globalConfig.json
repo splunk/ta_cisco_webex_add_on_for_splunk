@@ -87,13 +87,21 @@
                                         "label": "Redirect url",
                                         "field": "redirect_url",
                                         "help": "Please add this redirect URL in your app."
+                                    },
+                                    {
+                                        "oauth_field": "scope",
+                                        "label": "Scope",
+                                        "field": "scope",
+                                        "help": "Enter the authorization scopes after 'spark:kms', separating each scope with a space. Example: spark:kms <Scope1> <Scope2> ... <ScopeN>",
+                                        "required": true,
+                                        "defaultValue": "spark:kms meeting:admin_schedule_read meeting:admin_participants_read"
                                     }
                                 ],
                                 "auth_label": "Auth Type",
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read spark-admin:calling_cdr_read analytics:read_all&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize",
                                 "access_token_endpoint": "/v1/access_token",
                                 "oauth_state_enabled": false
                             }
