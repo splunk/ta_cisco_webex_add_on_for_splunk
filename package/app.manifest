@@ -1,15 +1,15 @@
 {
-  "schemaVersion": "2.0.0", 
+  "schemaVersion": "2.0.0",
   "info": {
-    "title": "Cisco Webex Add-on for Splunk", 
+    "title": "Cisco Webex Add-on for Splunk",
     "id": {
-      "group": null, 
-      "name": "ta_cisco_webex_add_on_for_splunk", 
+      "group": null,
+      "name": "ta_cisco_webex_add_on_for_splunk",
       "version": "1.1.0"
-    }, 
+    },
     "author": [
       {
-        "name": "FDSE", 
+        "name": "FDSE",
         "email": null,
         "company": "Splunk Inc."
       }
