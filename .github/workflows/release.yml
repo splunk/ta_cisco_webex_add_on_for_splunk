@@ -20,6 +20,7 @@ jobs:
         python-version: [ 3.9 ]
     outputs:
       artifact_name: ${{ steps.artifact.outputs.name }}
+      ta_version: ${{ steps.app.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -77,6 +78,15 @@ jobs:
         with:
           command: query
           version: latest
+      - name: Validate version consistency
+        env:
+          VERSION: ${{ steps.changelog.outputs.version }}
+          TA_VERSION: ${{ needs.build.outputs.ta_version }}
+        run: |
+          if [ "$VERSION" != "$TA_VERSION" ]; then
+            echo "❌ Add-On and Changelog version mismatch. Did you forget to bump the Add-On version?"
+            exit 1
+          fi
       - name: Create GitHub release
         env:
           VERSION: v${{ steps.changelog.outputs.version }}
