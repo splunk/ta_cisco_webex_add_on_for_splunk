@@ -24,9 +24,6 @@ Here are the endpoints and their mapping soucetypes.
 
 > Built by Splunk's FDSE Team (#team-fdse).
 
-## Reference 
-- This Add-on was built via splunk-add-on-ucc-framework
-
 ## Credits & Acknowledgements
 * Yuan Ling
 * Isaac Fonseca Monge
