@@ -92,7 +92,16 @@
                                         "oauth_field": "scope",
                                         "label": "Scope",
                                         "field": "scope",
-                                        "help": "Enter the authorization scopes and separate each scope with a space. Example: <Scope1> <Scope2> ... <ScopeN>. Please ensure that the scopes entered here match those selected in your Webex Integration.",
+                                        "help": {
+                                            "text": "Enter the authorization scopes, separated by spaces (e.g., <Scope1> <Scope2> ... <ScopeN>). You can copy and paste the required scopes from the [[scope_table_link]] . Please ensure that the scopes entered here match those selected in your Webex Integration.",
+                                            "links": [
+                                                {
+                                                    "slug": "scope_table_link",
+                                                    "link": "https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/tree/main/package#cisco-webex-add-on-for-splunk",
+                                                    "linkText": "Scope Table"
+                                                }
+                                            ]
+                                        },
                                         "required": true
                                     }
                                 ],
