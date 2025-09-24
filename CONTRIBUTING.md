@@ -38,7 +38,6 @@ A CI/CD workflow will automatically create a release. To trigger it:
 On push to `main`, the following checks will be executed before releasing a new version of the Add-On:
 
 - **Build**: Creates app package
-- **Sanity Test**: Validates app functionality for the Splunk Cloud environment via AppInspect CLI
 - **Sanity Check**: Validates version consistency between the `CHANGELOG` file and the Add-On. They must match.
 
 ### Changelog
