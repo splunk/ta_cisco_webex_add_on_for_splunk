@@ -57,7 +57,7 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
     - **Client ID**: Enter the `Client ID` that you obtained above here.
     - **Client Secret**: Enter the `Client Secret` that you obtained above here.
     - **Redirect URI**: The Redirect URI will auto show up. 
-    - **Scopes**: Enter the authorization scopes and separate each scope with a space. Example: <Scope1> <Scope2> ... <ScopeN>. Please ensure that the scopes entered here match those selected in your Webex Integration.
+    - **Scopes**: Enter the authorization scopes, separated by spaces (e.g., <Scope1> <Scope2> ... <ScopeN>). You can copy and paste the required scopes from [here](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/tree/main/package#cisco-webex-add-on-for-splunk). Please ensure that the scopes entered here match those selected in your Webex Integration.
     - Click on the `Add` button.
 
 
