@@ -28,7 +28,7 @@
       "uri": null
     },
     "releaseNotes": {
-      "name": "Cisco WebEx Add-On for Splunk Release Notes",
+      "name": "Cisco Webex Add-On for Splunk Release Notes",
       "text": null,
       "uri": "https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/releases"
     }
