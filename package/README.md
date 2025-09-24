@@ -224,3 +224,5 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 * Yuan Ling
 * Marie Duran
 * Ashley Hoang
+* Isaac Fonseca
+* Erica Pescio
