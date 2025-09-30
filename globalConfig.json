@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.9",
         "supportedThemes": [
@@ -70,30 +70,321 @@
                                 ],
                                 "oauth": [
                                     {
-                                        "oauth_field": "client_id",
                                         "label": "Client Id",
                                         "field": "client_id",
                                         "help": "Enter Client Id."
                                     },
                                     {
-                                        "oauth_field": "client_secret",
                                         "label": "Client Secret",
                                         "field": "client_secret",
                                         "encrypted": true,
                                         "help": "Enter Client Secret."
                                     },
                                     {
-                                        "oauth_field": "redirect_url",
                                         "label": "Redirect url",
                                         "field": "redirect_url",
                                         "help": "Please add this redirect URL in your app."
+                                    },
+                                    {
+                                        "label": "Scope",
+                                        "field": "scope",
+                                        "type": "multipleSelect",
+                                        "options": {
+                                            "delimiter": " ",
+                                            "items": [
+                                                {
+                                                    "value": "spark-admin:events_read",
+                                                    "label": "spark-admin:events_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:events_read",
+                                                    "label": "spark-compliance:events_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:messages_read",
+                                                    "label": "spark-admin:messages_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:messages_read",
+                                                    "label": "spark-compliance:messages_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:recordings_read",
+                                                    "label": "spark-compliance:recordings_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:memberships_read",
+                                                    "label": "spark-compliance:memberships_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:meetings_read",
+                                                    "label": "spark-compliance:meetings_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:rooms_read",
+                                                    "label": "spark-compliance:rooms_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:teams_read",
+                                                    "label": "spark-compliance:teams_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:team_memberships_read",
+                                                    "label": "spark-compliance:team_memberships_read"
+                                                },
+                                                {
+                                                    "value": "spark-compliance:webhooks_read",
+                                                    "label": "spark-compliance:webhooks_read"
+                                                },
+                                                {
+                                                    "value": "audit:events_read",
+                                                    "label": "audit:events_read"
+                                                },
+                                                {
+                                                    "value": "analytics:read_all",
+                                                    "label": "analytics:read_all"
+                                                },
+                                                {
+                                                    "value": "spark-admin:calling_cdr_read",
+                                                    "label": "spark-admin:calling_cdr_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:recordings_read",
+                                                    "label": "spark-admin:recordings_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:reports_read",
+                                                    "label": "spark-admin:reports_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:broadworks_billing_reports_read",
+                                                    "label": "spark-admin:broadworks_billing_reports_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:broadworks_subscribers_read",
+                                                    "label": "spark-admin:broadworks_subscribers_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:broadworks_enterprises_read",
+                                                    "label": "spark-admin:broadworks_enterprises_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:wholesale_billing_reports_read",
+                                                    "label": "spark-admin:wholesale_billing_reports_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:wholesale_sub_partners_read",
+                                                    "label": "spark-admin:wholesale_sub_partners_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:wholesale_customers_read",
+                                                    "label": "spark-admin:wholesale_customers_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:wholesale_subscribers_read",
+                                                    "label": "spark-admin:wholesale_subscribers_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:people_read",
+                                                    "label": "spark-admin:people_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:licenses_read",
+                                                    "label": "spark-admin:licenses_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:roles_read",
+                                                    "label": "spark-admin:roles_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:telephony_config_read",
+                                                    "label": "spark-admin:telephony_config_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:telephony_pstn_read",
+                                                    "label": "spark-admin:telephony_pstn_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:workspaces_read",
+                                                    "label": "spark-admin:workspaces_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:workspace_locations_read",
+                                                    "label": "spark-admin:workspace_locations_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:workspace_metrics_read",
+                                                    "label": "spark-admin:workspace_metrics_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:places_read",
+                                                    "label": "spark-admin:places_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:locations_read",
+                                                    "label": "spark-admin:locations_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:devices_read",
+                                                    "label": "spark-admin:devices_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:organizations_read",
+                                                    "label": "spark-admin:organizations_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:resource_groups_read",
+                                                    "label": "spark-admin:resource_groups_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:resource_group_memberships_read",
+                                                    "label": "spark-admin:resource_group_memberships_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:call_qualities_read",
+                                                    "label": "spark-admin:call_qualities_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:hybrid_clusters_read",
+                                                    "label": "spark-admin:hybrid_clusters_read"
+                                                },
+                                                {
+                                                    "value": "spark-admin:hybrid_connectors_read",
+                                                    "label": "spark-admin:hybrid_connectors_read"
+                                                },
+                                                {
+                                                    "value": "identity:tokens_read",
+                                                    "label": "identity:tokens_read"
+                                                },
+                                                {
+                                                    "value": "identity:people_read",
+                                                    "label": "identity:people_read"
+                                                },
+                                                {
+                                                    "value": "identity:groups_read",
+                                                    "label": "identity:groups_read"
+                                                },
+                                                {
+                                                    "value": "identity:organizations_read",
+                                                    "label": "identity:organizations_read"
+                                                },
+                                                {
+                                                    "value": "cjp:config_read",
+                                                    "label": "cjp:config_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_recordings_read",
+                                                    "label": "meeting:admin_recordings_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_transcripts_read",
+                                                    "label": "meeting:admin_transcripts_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_participants_read",
+                                                    "label": "meeting:admin_participants_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_schedule_read",
+                                                    "label": "meeting:admin_schedule_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_preferences_read",
+                                                    "label": "meeting:admin_preferences_read"
+                                                },
+                                                {
+                                                    "value": "meeting:admin_config_read",
+                                                    "label": "meeting:admin_config_read"
+                                                },
+                                                {
+                                                    "value": "spark:all",
+                                                    "label": "spark:all"
+                                                },
+                                                {
+                                                    "value": "spark:messages_read",
+                                                    "label": "spark:messages_read"
+                                                },
+                                                {
+                                                    "value": "spark:memberships_read",
+                                                    "label": "spark:memberships_read"
+                                                },
+                                                {
+                                                    "value": "spark:xsi",
+                                                    "label": "spark:xsi"
+                                                },
+                                                {
+                                                    "value": "spark:xapi_statuses",
+                                                    "label": "spark:xapi_statuses"
+                                                },
+                                                {
+                                                    "value": "spark:calls_read",
+                                                    "label": "spark:calls_read"
+                                                },
+                                                {
+                                                    "value": "spark:webrtc_calling",
+                                                    "label": "spark:webrtc_calling"
+                                                },
+                                                {
+                                                    "value": "spark:people_read",
+                                                    "label": "spark:people_read"
+                                                },
+                                                {
+                                                    "value": "spark:rooms_read",
+                                                    "label": "spark:rooms_read"
+                                                },
+                                                {
+                                                    "value": "spark:teams_read",
+                                                    "label": "spark:teams_read"
+                                                },
+                                                {
+                                                    "value": "spark:team_memberships_read",
+                                                    "label": "spark:team_memberships_read"
+                                                },
+                                                {
+                                                    "value": "spark:devices_read",
+                                                    "label": "spark:devices_read"
+                                                },
+                                                {
+                                                    "value": "spark:telephony_config_read",
+                                                    "label": "spark:telephony_config_read"
+                                                },
+                                                {
+                                                    "value": "spark:places_read",
+                                                    "label": "spark:places_read"
+                                                },
+                                                {
+                                                    "value": "spark:organizations_read",
+                                                    "label": "spark:organizations_read"
+                                                },
+                                                {
+                                                    "value": "application:webhooks_read",
+                                                    "label": "application:webhooks_read"
+                                                },
+                                                {
+                                                    "value": "wxc-dedicateduc:admin_perfmon_read",
+                                                    "label": "wxc-dedicateduc:admin_perfmon_read"
+                                                },
+                                                {
+                                                    "value": "cjds:admin_org_read",
+                                                    "label": "cjds:admin_org_read"
+                                                },
+                                                {
+                                                    "value": "cloud-contact-center:pod_conv",
+                                                    "label": "cloud-contact-center:pod_conv"
+                                                }
+                                            ]
+                                        },
+                                        "help": {
+                                            "text": "Select the authorization scopes. Please ensure that the scopes entered here match those selected in your Webex Integration."
+                                        },
+                                        "required": true
                                     }
                                 ],
                                 "auth_label": "Auth Type",
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
                                 "oauth_timeout": 180,
-                                "auth_code_endpoint": "/v1/authorize?response_type=code&scope=spark:kms meeting:admin_participants_read meeting:admin_schedule_read spark:organizations_read audit:events_read meeting:admin_config_read spark-admin:people_read spark-admin:calling_cdr_read analytics:read_all&state=set_state_here",
+                                "auth_code_endpoint": "/v1/authorize",
                                 "access_token_endpoint": "/v1/access_token",
                                 "oauth_state_enabled": false
                             }
