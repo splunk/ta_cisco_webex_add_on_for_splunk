@@ -3,17 +3,10 @@
   "info": {
     "title": "Cisco Webex Add-on for Splunk",
     "id": {
-<<<<<<< HEAD
-      "group": null,
-      "name": "ta_cisco_webex_add_on_for_splunk",
-      "version": "1.1.0"
-    },
-=======
       "group": null, 
       "name": "ta_cisco_webex_add_on_for_splunk", 
       "version": "1.2.0"
     }, 
->>>>>>> 8aafd72 (bump version to 1.2.0)
     "author": [
       {
         "name": "FDSE",
