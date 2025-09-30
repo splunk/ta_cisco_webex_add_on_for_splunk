@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.2.0] - 2025-09-30
+
+### Added
+
+- Added a multi-select Scope field to the UI.
+
+### Changed
+
+- Removed the redudant app.conf.
+- Minor updates to globalConfig.json – removed redundant 'oauth_field' keys.
 
 ## [v1.1.0] - 2025-09-08
 
