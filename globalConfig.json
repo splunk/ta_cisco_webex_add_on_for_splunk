@@ -557,6 +557,146 @@
             "services": [
                 {
                     "template": "input_with_helper",
+                    "name": "webex_api_input",
+                    "title": "Webex API Input",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "webex_endpoint",
+                            "label": "API Endpoint",
+                            "help": "The endpoint of the Webex API, if the endpoint requires a path param please use {} to add it. Example: devices, devices/<device_id>, messages",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^(?!/).*",
+                                    "errorMsg": "Don't add the slash character (/) before the endpoint."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "webex_base_url",
+                            "label": "Webex Base API URL",
+                            "type": "radio",
+                            "defaultValue": "webexapis.com",
+                            "required": true,
+                            "help": "Select the base API URL for the endpoint, please refer to the endpoint documentation to select the right one.",
+                            "options": {
+                                "items": [
+                                    {
+                                        "value": "webexapis.com",
+                                        "label": "webexapis.com"
+                                    },
+                                    {
+                                        "value": "analytics.webexapis.com",
+                                        "label": "analytics.webexapis.com"
+                                    }
+                                ],
+                                "display": true
+                            }
+                        },
+                        {
+                            "type": "checkbox",
+                            "label": "Gov Account",
+                            "help": "Check this option is you are using a Gov Account.",
+                            "field": "is_gov_account"
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "If required by the endpoint, add a start date and time in the format YYYY-MM-DDTHH:MM:SSZ (inclusive). It is recommended to set the start time to the current time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "End date and time in the format YYYY-MM-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "query_params",
+                            "label": "Query Params",
+                            "help": "Add as comma-separated values additional query params to be included in the call of the API, each param will be concatenated to the URL you previously entered. Example: locationId=0000000, messageId=0000000, teamId=0000000.",
+                            "required": false,
+                            "type": "text"
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
                     "name": "webex_meetings",
                     "title": "Webex Scheduled Meetings",
                     "entity": [

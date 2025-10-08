@@ -1,9 +1,42 @@
 # encoding = utf-8
 import import_declare_test
+from datetime import datetime, timedelta, timezone
 
 from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS
 from oauth_helper import update_access_token
 import re
+
+def get_time_span(helper, opt_start_time, opt_end_time, input_name, last_timestamp_checkpoint_key):
+    start_time = None
+    end_time = None
+        
+    # check if the start_time arg was provided by the user
+    if opt_start_time:
+        # get the last timestamp saved
+        last_timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
+        helper.log_debug(f"[-] Last timestamp recorded for {input_name}: {last_timestamp}")
+        
+        if last_timestamp is None:
+            start_time = opt_start_time
+        else:
+            # add 1 more second to avoid duplicates
+            start_time = (
+                datetime.strptime(last_timestamp, "%Y-%m-%dT%H:%M:%SZ") + timedelta(seconds=1)
+            ).strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+        # set up end time
+        now = datetime.now(timezone.utc)
+
+        if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now:
+            end_time = opt_end_time
+        else:
+            end_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+            
+        if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%SZ"):
+            helper.log_info(f"[-] Finished ingestion for {input_name} for time range {start_time} - {end_time}")
+            return None, None
+        
+        return start_time, end_time
 
 def extract_link_regex(link_header_string):
     """
@@ -26,6 +59,7 @@ def paging_get_request_to_webex(
     client_secret,
     params,
     response_tag,
+    is_custom_endpoint=False
 ):
     results = []
     # set the page_size
@@ -46,7 +80,8 @@ def paging_get_request_to_webex(
                 client_id,
                 client_secret,
                 params,
-                next_page_link
+                next_page_link,
+                is_custom_endpoint=is_custom_endpoint
             )
 
             if data is None or len(data)==0:
@@ -88,19 +123,20 @@ def make_get_request_to_webex(
     client_secret,
     params,
     next_page_link,
-    retry=True
+    retry=True,
+    is_custom_endpoint=False
 ):
     if next_page_link:
         url = next_page_link
         params = None
     else:
         url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
-
+        
         # reconstruct the url for meeting/qualities and cdr_feed endpoints
-        if endpoint == "meeting/qualities" or endpoint == "cdr_feed":
+        if not is_custom_endpoint and (endpoint == "meeting/qualities" or endpoint == "cdr_feed"):
             protocol, rest = url.split("//")
             url = f"{protocol}//analytics.{rest}"
-
+       
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
@@ -179,6 +215,7 @@ def make_get_request_to_webex(
                     client_secret,
                     params,
                     retry=False,
+                    is_custom_endpoint=False
                 )
 
         else:
@@ -187,7 +224,7 @@ def make_get_request_to_webex(
     except Exception as e:
         helper.log_error(
             "[-] Request failed to get date from webex {} API: {}".format(
-                response.url, repr(e)
+                endpoint, repr(e)
             )
         )
         raise e
