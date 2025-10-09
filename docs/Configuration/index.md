@@ -68,10 +68,10 @@ Some endpoints require specific query parameters to function correctly. Users ca
     - **Global Account** (_required_): Select the account created during Configuration.
     - **API Endpoint** (_required_): The Webex API endpoint. It is not neccesary to include a leading slash `example: device, device/<DEVICE_ID>`.
     - **Webex Base API URL** (_required_): Select the base URL for the endpoint.
-    - **Gov Account** (_required_): Select this option if you are using a Webex Gov Account.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`.  Be aware of the endpoint’s limitations and valid ranges.
+    - **Gov Account** (_optional_): Select this option if you are using a Webex Gov Account.
+    - **Start Time** (_optional_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`.  Be aware of the endpoint’s limitations and valid ranges.
     - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. Be aware of the endpoint’s limitations and valid ranges.
-     - **Query Params** (_required_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values `example: locationId=0000000, messageId=0000000, teamId=0000000.`.
+     - **Query Params** (_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values `example: locationId=0000000, messageId=0000000, teamId=0000000.`.
 - Click on the `Add` green button on the bottom right of the pop-up box.
 
 
