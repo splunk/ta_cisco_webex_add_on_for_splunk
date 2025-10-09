@@ -48,6 +48,33 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
 
 #### 2. Create Input
 
+**Webex API Input**
+
+The **Webex API Input** provides the flexibility to create a custom input using the Webex API endpoint of your choice. If you encounter scenarios where the predefined input options do not meet your requirements, you can use this option to enable data ingestion from a different Webex API endpoint.
+
+Keep in mind that the endpoint you want to use may require special permissions, roles, and/or scopes. Please refer to the API documentation to see the requirements needed to enable data ingestion for this endpoint.
+
+When the `Start Time` is available the input uses it for checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
+
+Some endpoints require specific query parameters to function correctly. Users can add these parameters using the `Query Params` field. The input also supports path parameters in the URL, which should be included in the `API Endpoint` field.
+
+- Click on the `Inputs` button on the top left corner.
+- Click on `Create New Input` button on the top right corner.
+- Click on `Webex API Input`
+- Enter the following details in the pop-up box:
+    - **Name** (_required_): Unique name for the data input.
+    - **Interval** (_required_): Time interval of input in seconds.
+    - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Select the account created during Configuration.
+    - **API Endpoint** (_required_): The Webex API endpoint. It is not neccesary to include a leading slash `example: device, device/<DEVICE_ID>`.
+    - **Webex Base API URL** (_required_): Select the base URL for the endpoint.
+    - **Gov Account** (_required_): Select this option if you are using a Webex Gov Account.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`.  Be aware of the endpoint’s limitations and valid ranges.
+    - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. Be aware of the endpoint’s limitations and valid ranges.
+     - **Query Params** (_required_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values `example: locationId=0000000, messageId=0000000, teamId=0000000.`.
+- Click on the `Add` green button on the bottom right of the pop-up box.
+
+
 **Webex Scheduled Meetings Input**
 
 The **Webex Scheduled Meetings** input is used to fetch the active scheduled meetings from [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings) endpoint. It allows users to retrieve account-wide scheduled meetings of all users in your organization.

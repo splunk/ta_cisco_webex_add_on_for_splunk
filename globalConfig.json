@@ -620,14 +620,14 @@
                         {
                             "field": "webex_endpoint",
                             "label": "API Endpoint",
-                            "help": "The endpoint of the Webex API, if the endpoint requires a path param please use {} to add it. Example: devices, devices/<device_id>, messages",
+                            "help": "The endpoint of the Webex API. Example: devices, devices/<device_id>, messages",
                             "required": true,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
                                     "pattern": "^(?!/).*",
-                                    "errorMsg": "Don't add the slash character (/) before the endpoint."
+                                    "errorMsg": "Do not include a leading slash (/) before the endpoint."
                                 }
                             ]
                         },
