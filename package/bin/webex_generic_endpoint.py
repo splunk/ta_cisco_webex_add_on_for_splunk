@@ -3,6 +3,8 @@ import import_declare_test
 import sys
 import json
 
+from splunklib import modularinput as smi
+
 import os
 import traceback
 import requests
@@ -10,23 +12,23 @@ from splunklib import modularinput as smi
 from solnlib import conf_manager
 from solnlib import log
 from solnlib.modular_input import checkpointer
-from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
+from splunktaucclib.modinput_wrapper import base_modinput  as base_mi
+import input_module_webex_generic_endpoint as input_module
+
 
 bin_dir  = os.path.basename(__file__)
 app_name = os.path.basename(os.path.dirname(os.getcwd()))
 
-import input_module_webex_api as input_module
-
-class ModInputWEBEX_API_INPUT(base_mi.BaseModInput): 
+class ModInputWEBEX_GENERIC_ENDPOINT(base_mi.BaseModInput): 
 
     def __init__(self):
         use_single_instance = False
-        super(ModInputWEBEX_API_INPUT, self).__init__(app_name, "webex_api_input", use_single_instance) 
+        super(ModInputWEBEX_GENERIC_ENDPOINT, self).__init__(app_name, "webex_generic_endpoint", use_single_instance) 
         self.global_checkbox_fields = None
 
     def get_scheme(self):
-        scheme = smi.Scheme('webex_api_input')
-        scheme.description = 'Webex API Input'
+        scheme = smi.Scheme('webex_generic_endpoint')
+        scheme.description = 'Webex Generic Endpoint'
         scheme.use_external_validation = True
         scheme.streaming_mode_xml = True
         scheme.use_single_instance = False
@@ -50,13 +52,6 @@ class ModInputWEBEX_API_INPUT(base_mi.BaseModInput):
             smi.Argument(
                 'webex_endpoint',
                 required_on_create=True,
-            )
-        )
-        
-        scheme.add_argument(
-            smi.Argument(
-                'is_gov_account',
-                required_on_create=False,
             )
         )
         
@@ -127,7 +122,7 @@ class ModInputWEBEX_API_INPUT(base_mi.BaseModInput):
 
 
 if __name__ == '__main__':
-    exit_code = ModInputWEBEX_API_INPUT().run(sys.argv)
+    exit_code = ModInputWEBEX_GENERIC_ENDPOINT().run(sys.argv)
     sys.exit(exit_code)
 
 

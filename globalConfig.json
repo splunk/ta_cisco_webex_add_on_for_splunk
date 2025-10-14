@@ -388,6 +388,21 @@
                                 "access_token_endpoint": "/v1/access_token",
                                 "oauth_state_enabled": false
                             }
+                        },
+                        {
+                            "type": "checkbox",
+                            "label": "Gov Account",
+                            "help": "Check this option if you are using a Gov Account.",
+                            "field": "is_gov_account"
+                        },
+                        {
+                            "field": "gov_api_reference_link",
+                            "label": "",
+                            "type": "helpLink",
+                            "options": {
+                                "text": "Click here to learn more about the FedRAMP API limitations.",
+                                "link": "https://developer-usgov.webex.com/docs/api/guides/api-support"
+                            }
                         }
                     ]
                 },
@@ -557,8 +572,8 @@
             "services": [
                 {
                     "template": "input_with_helper",
-                    "name": "webex_api_input",
-                    "title": "Webex API Input",
+                    "name": "webex_generic_endpoint",
+                    "title": "Webex Generic Endpoint",
                     "entity": [
                         {
                             "field": "name",
@@ -620,7 +635,7 @@
                         {
                             "field": "webex_endpoint",
                             "label": "API Endpoint",
-                            "help": "The endpoint of the Webex API. Example: devices, devices/<device_id>, messages",
+                            "help": "The endpoint of the Webex API. Example: devices, devices/12345678, messages",
                             "required": true,
                             "type": "text",
                             "validators": [
@@ -651,12 +666,6 @@
                                 ],
                                 "display": true
                             }
-                        },
-                        {
-                            "type": "checkbox",
-                            "label": "Gov Account",
-                            "help": "Check this option is you are using a Gov Account.",
-                            "field": "is_gov_account"
                         },
                         {
                             "field": "start_time",

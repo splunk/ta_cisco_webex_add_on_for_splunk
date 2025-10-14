@@ -14,7 +14,7 @@ _LIST_PEOPLE_ENDPOINT = "people"
 _GET_MEETING_QUALITIES =  "meeting/qualities"
 _GET_DETAILED_CALL_HISTORY = "cdr_feed"
 _SECURITY_AUDIT_EVENTS_ENDPOINT = "admin/securityAudit/events"
-_WEBEX_FEDRAMP_BASE_URL = "api-usgov.webex.com"
+_FEDRAMP_BASE_URL = "api-usgov.webex.com"
 
 UNAUTHORIZED_STATUS = 401
 
@@ -30,3 +30,10 @@ _RESPONSE_TAG_MAP = {
     _GET_DETAILED_CALL_HISTORY: "items",
     _SECURITY_AUDIT_EVENTS_ENDPOINT: "items"
 }
+
+_TIME_FIELDS = [
+    "start",
+    "startDate",
+    "created",
+    "createdAt"
+]
