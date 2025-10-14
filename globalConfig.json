@@ -4,7 +4,7 @@
         "displayName": "Cisco Webex Add-on for Splunk",
         "version": "1.2.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
-        "schemaVersion": "0.0.9",
+        "schemaVersion": "0.0.10",
         "supportedThemes": [
             "light",
             "dark"
