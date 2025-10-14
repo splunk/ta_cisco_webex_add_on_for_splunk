@@ -42,17 +42,18 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
     - **Webex API Base Endpoint**: Enter your Webex API Base Endpoint. The default one is `webexapis.com`.
     - **Client ID**: Enter the `Client ID` that you obtained above here.
     - **Client Secret**: Enter the `Client Secret` that you obtained above here.
-    - **Redirect URI**: The Redirect URI will auto show up. 
+    - **Redirect URI**: The Redirect URI will auto show up.
+    - **Gov Account**: Select this option if you are using a Webex Gov Account. Please refer to this [link](https://developer-usgov.webex.com/docs/api/guides/api-support) to read about the FedRAMP API limitations.
     - Click on the `Add` button.
 
 
 #### 2. Create Input
 
-**Webex API Input**
+**Webex Generic Endpoint**
 
-The **Webex API Input** provides the flexibility to create a custom input using the Webex API endpoint of your choice. If you encounter scenarios where the predefined input options do not meet your requirements, you can use this option to enable data ingestion from a different Webex API endpoint.
+The **Webex Generic Endpoint** provides the flexibility to create a custom input using the Webex API endpoint of your choice. If you encounter scenarios where the predefined input options do not meet your requirements, you can use this option to enable data ingestion from a different source.
 
-Keep in mind that the endpoint you want to use may require special permissions, roles, and/or scopes. Please refer to the API documentation to see the requirements needed to enable data ingestion for this endpoint.
+Keep in mind that the endpoint you want to use may require special permissions, roles, and/or scopes. Please refer to the API documentation to see the requirements needed to enable data ingestion for the endpoint.
 
 When the `Start Time` is available the input uses it for checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest meeting start time as the checkpoint, and will be used as the `Start Time` (advancing by one second) for the next run.
 
@@ -66,12 +67,11 @@ Some endpoints require specific query parameters to function correctly. Users ca
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **API Endpoint** (_required_): The Webex API endpoint. It is not neccesary to include a leading slash `example: device, device/<DEVICE_ID>`.
+    - **API Endpoint** (_required_): The Webex API endpoint. It is not necessary to include a leading slash as for example: `device`, or `devices/12345678`.
     - **Webex Base API URL** (_required_): Select the base URL for the endpoint.
-    - **Gov Account** (_optional_): Select this option if you are using a Webex Gov Account.
-    - **Start Time** (_optional_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`.  Be aware of the endpoint’s limitations and valid ranges.
-    - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. Be aware of the endpoint’s limitations and valid ranges.
-     - **Query Params** (_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values `example: locationId=0000000, messageId=0000000, teamId=0000000.`.
+    - **Start Time** (_optional_): Inclusive start date and time in the format `YYYY-MM-DDTHH:MM:SSZ`, e.g. `2023-01-01T00:00:00Z`.  Be aware of the endpoint limitations and valid ranges.
+    - **End Time** (_optional_): End date and time in the format `YYYY-Mon-DDTHH:MM:SSZ`, e.g. `2023-02-01T00:00:00Z`. Leave blank if an ongoing ingestion mode is needed. Be aware of the endpoint limitations and valid ranges.
+     - **Query Params** (_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values (e.g. `locationId=0000000, messageId=0000000, teamId=0000000`).
 - Click on the `Add` green button on the bottom right of the pop-up box.
 
 
