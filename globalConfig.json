@@ -649,23 +649,10 @@
                         {
                             "field": "webex_base_url",
                             "label": "Webex Base API URL",
-                            "type": "radio",
+                            "type": "text",
                             "defaultValue": "webexapis.com",
                             "required": true,
-                            "help": "Select the base API URL for the endpoint, please refer to the endpoint documentation to select the right one.",
-                            "options": {
-                                "items": [
-                                    {
-                                        "value": "webexapis.com",
-                                        "label": "webexapis.com"
-                                    },
-                                    {
-                                        "value": "analytics.webexapis.com",
-                                        "label": "analytics.webexapis.com"
-                                    }
-                                ],
-                                "display": true
-                            }
+                            "help": "Enter the base URL for the endpoint (usually webexapis.com). If the endpoint requires the analytics:read_all scope, you may need to use analytics.webexapis.com. Please check the endpoint documentation to confirm which to use."
                         },
                         {
                             "field": "start_time",

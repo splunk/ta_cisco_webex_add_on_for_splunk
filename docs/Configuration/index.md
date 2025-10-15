@@ -68,7 +68,7 @@ Some endpoints require specific query parameters to function correctly. Users ca
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
     - **API Endpoint** (_required_): The Webex API endpoint. It is not necessary to include a leading slash as for example: `device`, or `devices/12345678`.
-    - **Webex Base API URL** (_required_): Select the base URL for the endpoint.
+    - **Webex Base API URL** (_required_): Enter the base URL for the endpoint. Most Webex APIs use `webexapis.com`, but some may require a different base URL. For example, endpoints that require the `analytics:read_all` scope often use `analytics.webexapis.com`. Always refer to the endpoint documentation to confirm the correct base URL.
     - **Start Time** (_optional_): Inclusive start date and time in the format `YYYY-MM-DDTHH:MM:SSZ`, e.g. `2023-01-01T00:00:00Z`.  Be aware of the endpoint limitations and valid ranges.
     - **End Time** (_optional_): End date and time in the format `YYYY-Mon-DDTHH:MM:SSZ`, e.g. `2023-02-01T00:00:00Z`. Leave blank if an ongoing ingestion mode is needed. Be aware of the endpoint limitations and valid ranges.
      - **Query Params** (_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values (e.g. `locationId=0000000, messageId=0000000, teamId=0000000`).
