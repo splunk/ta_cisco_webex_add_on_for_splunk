@@ -10,7 +10,7 @@ from webex_constants import (
 )
 
 # Handle Webex API date formats %Y-%m-%dT%H:%M:%SZ - "%Y-%m-%dT%H:%M:%S.%fZ"
-def parse_start_date_to_ts(string_date):
+def parse_date_to_ts(string_date):
     if string_date.endswith("Z"):
         string_date = string_date[:-1]
         dt = datetime.fromisoformat(string_date).replace(tzinfo=timezone.utc)
@@ -97,15 +97,34 @@ def collect_events(helper, ew):
                 is_custom_endpoint=True
             )
             
+            # used to save the last "end time" registered in the reponse
+            last_item_timestamp = 0
+            
             # iterate and save into Splunk each item of the result
             for item in data:
+                # check if "end time" field exists in the reponse
+                if ("end" in item or "endTime" in item) and end_time:
+                    
+                    end_time_key = "end" if "end" in item else "endTime"
+                    
+                    item_end_time = parse_date_to_ts(item[end_time_key])
+                    
+                    # if this is not the first run, and the event has an older date than the one saved in the checkpoint, ignore it as it is a duplicate
+                    if last_timestamp and item_end_time < parse_date_to_ts(end_time):
+                        continue
+                    
+                    # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
+                    if item_end_time > last_item_timestamp:
+                        last_item_timestamp = item_end_time
+                
+                
                 normalized_sourcetype = opt_webex_endpoint.replace("/",":")
                 
                 event_time = datetime.now(timezone.utc)
                 
                 for key in _TIME_FIELDS:
                     if key in item:
-                        event_time = parse_start_date_to_ts(item[key])
+                        event_time = parse_date_to_ts(item[key])
                         break
                 
                 event = helper.new_event(
@@ -115,10 +134,14 @@ def collect_events(helper, ew):
                                 data=json.dumps(item)
                 )
                 ew.write_event(event)
-            if end_time:
-                # save the end_time of the last round as checkpoint for next ingestion
-                helper.save_check_point(last_timestamp_checkpoint_key, end_time)
-                helper.log_debug(f"[-] Saved checkpoint: Last run time saved: {end_time}.")
+            
+            # save the latest end time as a checkpoint for the next ingestion
+            if last_item_timestamp:
+                formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                helper.save_check_point(last_timestamp_checkpoint_key, formatted_time)
+                helper.log_debug(f"[-] Saved checkpoint: Last run time saved: {formatted_time}.")
+            else:
+                helper.log_debug(f"[-] No checkpoint was saved in this run.")
             
             helper.log_info(f"Execution for {input_name} completed.")
         except Exception as e:
