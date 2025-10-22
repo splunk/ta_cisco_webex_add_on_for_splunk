@@ -31,7 +31,7 @@ _RESPONSE_TAG_MAP = {
     _SECURITY_AUDIT_EVENTS_ENDPOINT: "items"
 }
 
-_TIME_FIELDS = [
+_START_TIME_FIELDS = [
     "start",
     "startDate",
     "created",

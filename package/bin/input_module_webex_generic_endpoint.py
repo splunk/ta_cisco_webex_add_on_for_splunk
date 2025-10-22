@@ -6,7 +6,7 @@ from webex_utils import get_time_span
 
 from webex_constants import (
    _FEDRAMP_BASE_URL,
-   _TIME_FIELDS
+   _START_TIME_FIELDS
 )
 
 # Handle Webex API date formats %Y-%m-%dT%H:%M:%SZ - "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -16,7 +16,7 @@ def parse_date_to_ts(string_date):
         dt = datetime.fromisoformat(string_date).replace(tzinfo=timezone.utc)
     else:
         dt = datetime.fromisoformat(string_date)
-    return dt.timestamp()
+    return int(dt.timestamp())
 
 def collect_events(helper, ew):
         
@@ -42,23 +42,18 @@ def collect_events(helper, ew):
         start_time = None
         end_time = None
         
-        last_timestamp_checkpoint_key = f"{input_name}_webex_generic_endpoint_input_last_timestamp"
-        last_timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
+        last_run_timestamp_checkpoint_key = f"{input_name}_webex_generic_endpoint_input_last_timestamp"
+        last_run_timestamp = helper.get_check_point(last_run_timestamp_checkpoint_key)
+          
+        # retrieve the start and end time according to the checkpoiting logic
+        start_time, end_time = get_time_span(opt_start_time, opt_end_time, last_run_timestamp)
         
-        # check if the start_time arg was provided
-        if opt_start_time:
-            
-            # retrieve the start and end time according to the checkpoiting logic
-            start_time, end_time = get_time_span(opt_start_time, opt_end_time, last_timestamp)
-            
-            # check if there is a value for the start and end time, otherwise don't do anything
-            if not start_time and not end_time:
-                helper.log_info(f"[-] Finished ingestion for {input_name} for time range {start_time} - {end_time}.")
-                return
-            
-            helper.log_debug(f"[-] Using start_time: {start_time} and end_time: {end_time}.")
-        else:
-            helper.log_debug("No start time was passed for this input.")
+        # check if there is a value for the start and end time, otherwise don't do anything
+        if not start_time and not end_time:
+            helper.log_info(f"[-] Finished ingestion for {input_name} for time range {start_time} - {end_time}.")
+            return
+        
+        helper.log_debug(f"[-] Using start_time: {start_time} and end_time: {end_time}.")
         
         # get a valid access token    
         access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint)
@@ -102,46 +97,42 @@ def collect_events(helper, ew):
             
             # iterate and save into Splunk each item of the result
             for item in data:
-                # check if "end time" field exists in the reponse
-                if ("end" in item or "endTime" in item) and end_time:
-                    
-                    end_time_key = "end" if "end" in item else "endTime"
-                    
-                    item_end_time = parse_date_to_ts(item[end_time_key])
-                    
-                    # if this is not the first run, and the event has an older date than the one saved in the checkpoint, ignore it as it is a duplicate
-                    if last_timestamp and item_end_time < parse_date_to_ts(end_time):
-                        continue
-                    
-                    # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
-                    if item_end_time > last_item_timestamp:
-                        last_item_timestamp = item_end_time
                 
+                event_start_time = datetime.now(timezone.utc)
                 
-                normalized_sourcetype = opt_webex_endpoint.replace("/",":")
-                
-                event_time = datetime.now(timezone.utc)
-                
-                for key in _TIME_FIELDS:
+                for key in _START_TIME_FIELDS:
                     if key in item:
-                        event_time = parse_date_to_ts(item[key])
+                        event_start_time = parse_date_to_ts(item[key])
                         break
+                
+                # if the start/create time from the event is earlier than the last run time, it is a duplicate, so ignore it.
+                if last_run_timestamp and event_start_time <= parse_date_to_ts(last_run_timestamp):
+                    continue
+                
+                # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
+                if event_start_time > last_item_timestamp:
+                    last_item_timestamp = event_start_time
+                    
+                normalized_sourcetype = opt_webex_endpoint.replace("/",":")
                 
                 event = helper.new_event(
                                 index=helper.get_output_index(),
                                 sourcetype=f"cisco:webex:{normalized_sourcetype}",
-                                time=event_time,
+                                time=event_start_time,
                                 data=json.dumps(item)
                 )
                 ew.write_event(event)
             
-            # save the latest end time as a checkpoint for the next ingestion
+            
+            # if available, save the lastest time from the events as checkpoint, else save current time
             if last_item_timestamp:
                 formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                helper.save_check_point(last_timestamp_checkpoint_key, formatted_time)
-                helper.log_debug(f"[-] Saved checkpoint: Last run time saved: {formatted_time}.")
+                helper.save_check_point(last_run_timestamp_checkpoint_key, formatted_time)
+                helper.log_debug(f"[-] Saved checkpoint — latest event time: {formatted_time}.")
             else:
-                helper.log_debug(f"[-] No checkpoint was saved in this run.")
+                now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                helper.save_check_point(last_run_timestamp_checkpoint_key, now)
+                helper.log_debug(f"[-] Saved checkpoint - current time: {now}.")
             
             helper.log_info(f"Execution for {input_name} completed.")
         except Exception as e:

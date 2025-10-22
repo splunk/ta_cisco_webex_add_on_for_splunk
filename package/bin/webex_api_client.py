@@ -184,7 +184,8 @@ def make_get_request_to_webex(
                     retry=False,
                     is_custom_endpoint=False
                 )
-
+            else:
+                response.raise_for_status()
         else:
             data = response.json()
         return data, response.headers

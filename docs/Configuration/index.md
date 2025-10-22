@@ -55,7 +55,7 @@ The **Webex Generic Endpoint** provides the flexibility to create a custom input
 
 Keep in mind that the endpoint you want to use may require special permissions, roles, and/or scopes. Please refer to the API documentation to see the requirements needed to enable data ingestion for the endpoint.
 
-Enter a `Start Time` whenever it is supported by the endpoint to help avoid duplicates. If an `End Time` is specified, data will be fetched up to that time; otherwise, data will be fetched up to the current time. If an `End Time` is present in the response, the input will record the latest value and store it as a checkpoint to prevent duplicates.
+Enter a `Start Time` whenever it is supported by the endpoint to help avoid duplicates. If an `End Time` is specified, data will be fetched up to that time; otherwise, data will be fetched up to the current time. If a `Start` or `Created` time is present in the response, it will be saved as a checkpoint and used as the `Start Time` for the next run.
 
 Some endpoints require specific query parameters to function correctly. Users can add these parameters using the `Query Params` field. The input also supports path parameters in the URL, which should be included in the `API Endpoint` field.
 
