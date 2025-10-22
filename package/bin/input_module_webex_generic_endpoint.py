@@ -109,12 +109,6 @@ def collect_events(helper, ew):
                 if last_run_timestamp and event_start_time <= parse_date_to_ts(last_run_timestamp):
                     continue
                 
-                # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
-                if event_start_time > last_item_timestamp:
-                    last_item_timestamp = event_start_time
-                    formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                    helper.save_check_point(last_run_timestamp_checkpoint_key, formatted_time)
-                    
                 normalized_sourcetype = opt_webex_endpoint.replace("/",":")
                 
                 event = helper.new_event(
@@ -124,6 +118,12 @@ def collect_events(helper, ew):
                                 data=json.dumps(item)
                 )
                 ew.write_event(event)
+                
+                # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
+                if event_start_time > last_item_timestamp:
+                    last_item_timestamp = event_start_time
+                    formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    helper.save_check_point(last_run_timestamp_checkpoint_key, formatted_time)
             
             # log the saved checkpoint time, if it doesn't exist then save the end time as the checkpoint
             if last_item_timestamp:
