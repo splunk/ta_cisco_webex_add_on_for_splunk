@@ -112,6 +112,8 @@ def collect_events(helper, ew):
                 # keep track of the timestamp on each event to update the last_item_timestamp variable, which will be used for checkpointing.
                 if event_start_time > last_item_timestamp:
                     last_item_timestamp = event_start_time
+                    formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                    helper.save_check_point(last_run_timestamp_checkpoint_key, formatted_time)
                     
                 normalized_sourcetype = opt_webex_endpoint.replace("/",":")
                 
@@ -123,16 +125,13 @@ def collect_events(helper, ew):
                 )
                 ew.write_event(event)
             
-            
-            # if available, save the lastest time from the events as checkpoint, else save current time
+            # log the saved checkpoint time, if it doesn't exist then save the end time as the checkpoint
             if last_item_timestamp:
                 formatted_time = datetime.fromtimestamp(last_item_timestamp, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                helper.save_check_point(last_run_timestamp_checkpoint_key, formatted_time)
                 helper.log_debug(f"[-] Saved checkpoint — latest event time: {formatted_time}.")
             else:
-                now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                helper.save_check_point(last_run_timestamp_checkpoint_key, now)
-                helper.log_debug(f"[-] Saved checkpoint - current time: {now}.")
+                helper.save_check_point(last_run_timestamp_checkpoint_key, end_time)
+                helper.log_debug(f"[-] Saved checkpoint - end time: {end_time}.")
             
             helper.log_info(f"Execution for {input_name} completed.")
         except Exception as e:
