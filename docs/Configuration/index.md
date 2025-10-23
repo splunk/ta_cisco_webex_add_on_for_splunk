@@ -42,11 +42,38 @@ Open the Web UI for the Heavy Forwarder (or IDM). Access the Add-on from the lis
     - **Webex API Base Endpoint**: Enter your Webex API Base Endpoint. The default one is `webexapis.com`.
     - **Client ID**: Enter the `Client ID` that you obtained above here.
     - **Client Secret**: Enter the `Client Secret` that you obtained above here.
-    - **Redirect URI**: The Redirect URI will auto show up. 
+    - **Redirect URI**: The Redirect URI will auto show up.
+    - **Gov Account**: Select this option if you are using a Webex Gov Account. Please refer to this [link](https://developer-usgov.webex.com/docs/api/guides/api-support) to read about the FedRAMP API limitations.
     - Click on the `Add` button.
 
 
 #### 2. Create Input
+
+**Webex Generic Endpoint**
+
+The **Webex Generic Endpoint** provides the flexibility to create a custom input using the Webex API endpoint of your choice. If you encounter scenarios where the predefined input options do not meet your requirements, you can use this option to enable data ingestion from a different source.
+
+Keep in mind that the endpoint you want to use may require special permissions, roles, and/or scopes. Please refer to the API documentation to see the requirements needed to enable data ingestion for the endpoint.
+
+Enter a `Start Time` whenever it is supported by the endpoint to help avoid duplicates. If an `End Time` is specified, data will be fetched up to that time; otherwise, data will be fetched up to the current time. If a `Start` or `Created` time is present in the response, it will be saved as a checkpoint and used as the `Start Time` for the next run.
+
+Some endpoints require specific query parameters to function correctly. Users can add these parameters using the `Query Params` field. The input also supports path parameters in the URL, which should be included in the `API Endpoint` field.
+
+- Click on the `Inputs` button on the top left corner.
+- Click on `Create New Input` button on the top right corner.
+- Click on `Webex API Input`
+- Enter the following details in the pop-up box:
+    - **Name** (_required_): Unique name for the data input.
+    - **Interval** (_required_): Time interval of input in seconds.
+    - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Select the account created during Configuration.
+    - **API Endpoint** (_required_): The Webex API endpoint. It is not necessary to include a leading slash as for example: `device`, or `devices/12345678`.
+    - **Webex Base API URL** (_required_): Enter the base URL for the endpoint. Most Webex APIs use `webexapis.com`, but some may require a different base URL. For example, endpoints that require the `analytics:read_all` scope often use `analytics.webexapis.com`. Always refer to the endpoint documentation to confirm the correct base URL.
+    - **Start Time** (_optional_): Inclusive start date and time in the format `YYYY-MM-DDTHH:MM:SSZ`, e.g. `2023-01-01T00:00:00Z`.  Be aware of the endpoint limitations and valid ranges.
+    - **End Time** (_optional_): End date and time in the format `YYYY-Mon-DDTHH:MM:SSZ`, e.g. `2023-02-01T00:00:00Z`. Leave blank if an ongoing ingestion mode is needed. Be aware of the endpoint limitations and valid ranges.
+     - **Query Params** (_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values (e.g. `locationId=0000000, messageId=0000000, teamId=0000000`).
+- Click on the `Add` green button on the bottom right of the pop-up box.
+
 
 **Webex Scheduled Meetings Input**
 

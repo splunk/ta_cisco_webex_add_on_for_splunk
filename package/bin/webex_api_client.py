@@ -26,6 +26,7 @@ def paging_get_request_to_webex(
     client_secret,
     params,
     response_tag,
+    is_custom_endpoint=False
 ):
     results = []
     # set the page_size
@@ -46,7 +47,8 @@ def paging_get_request_to_webex(
                 client_id,
                 client_secret,
                 params,
-                next_page_link
+                next_page_link,
+                is_custom_endpoint=is_custom_endpoint
             )
 
             if data is None or len(data)==0:
@@ -88,19 +90,20 @@ def make_get_request_to_webex(
     client_secret,
     params,
     next_page_link,
-    retry=True
+    retry=True,
+    is_custom_endpoint=False
 ):
     if next_page_link:
         url = next_page_link
         params = None
     else:
         url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
-
+        
         # reconstruct the url for meeting/qualities and cdr_feed endpoints
-        if endpoint == "meeting/qualities" or endpoint == "cdr_feed":
+        if not is_custom_endpoint and (endpoint == "meeting/qualities" or endpoint == "cdr_feed"):
             protocol, rest = url.split("//")
             url = f"{protocol}//analytics.{rest}"
-
+       
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
@@ -179,15 +182,17 @@ def make_get_request_to_webex(
                     client_secret,
                     params,
                     retry=False,
+                    is_custom_endpoint=False
                 )
-
+            else:
+                response.raise_for_status()
         else:
             data = response.json()
         return data, response.headers
     except Exception as e:
         helper.log_error(
             "[-] Request failed to get date from webex {} API: {}".format(
-                response.url, repr(e)
+                endpoint, repr(e)
             )
         )
         raise e

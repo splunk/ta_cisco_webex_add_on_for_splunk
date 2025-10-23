@@ -5,7 +5,25 @@ from solnlib import conf_manager
 
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
 
-
+def get_valid_access_token(helper, account_name, client_id, client_secret, access_token, refresh_token, base_endpoint):
+   try:
+        expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(account_name=account_name)
+           
+        access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
+        
+        now = datetime.now(timezone.utc)
+        
+        # check if the token has expired to get a new one
+        if (not access_token_expired_time or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S").replace(tzinfo=timezone.utc) < now):
+            helper.log_debug(f"[*] The access token of account {account_name} expired! Updating now!")
+            
+            # override the access_token and expires_in
+            access_token, refresh_token, expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint)
+        
+        return access_token, refresh_token
+   except Exception as e:
+       helper.log_error(f"Error validating the access token {e}")
+        
 def update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint):
     helper.log_debug("[-] Updating access token.....")
     oauth = OAuth(
