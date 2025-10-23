@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Added
 
 - Added a new generic input that allows retrieving data from custom endpoints.
+- Added a new field to the account configuration to indicate whether it is a Gov account.
+
+### Changed
+
+- Minor updates to globalConfig.json – bumped schemaVersion to 0.0.10
 
 ## [v1.2.0] - 2025-09-30
 
