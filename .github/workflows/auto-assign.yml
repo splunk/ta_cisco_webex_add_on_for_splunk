@@ -1,0 +1,17 @@
+name: Auto Assign Issues
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write # Grant write permission to issues
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: pozil/auto-assign-issue@v2
+        with:
+          assignees: lingy1028,ahoang-splunk,ifonsecam
+          numOfAssignee: 1
+          allowSelfAssign: false
