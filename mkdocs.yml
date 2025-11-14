@@ -1,0 +1,59 @@
+site_name: Cisco Webex Add-on for Splunk
+site_author: Splunk Community
+remote_branch: gh-pages
+
+repo_name: Cisco Webex Add-on for Splunk
+repo_url: "https://github.com/splunk/ta_cisco_webex_add_on_for_splunk"
+
+markdown_extensions:
+  - toc:
+      permalink: True
+  - smarty
+  - fenced_code
+  - sane_lists
+  - codehilite
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+
+theme:
+  name: material
+  logo: "static/splunk-logo-corporate.png"
+  favicon: "static/splunk.png"
+  palette:
+    primary: "black"
+    accent: "orange"
+
+extra_css:
+  - stylesheets/styles.css
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+strict: true
+
+plugins:
+  - search
+  - print-site
+
+# copyright: 'Splunk Documentation covered by: <a href="https://www.splunk.com/en_us/legal.html">Legal</a> | <a href="https://www.splunk.com/en_us/legal/terms/terms-of-use.html">Terms</a> | <a href="https://www.splunk.com/en_us/legal/privacy/privacy-policy.html">Privacy</a></br>© Copyright 2024 Splunk Inc. All rights reserved. <br/>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">GitHub Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a>'
+copyright: 'This Add-On is developed and maintained by the Splunk Community. <br/>Webpages built on GitHub Pages | <a href="https://docs.github.com/en/site-policy/github-terms/github-terms-of-service">GitHub Terms</a> | <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement">GitHub Privacy</a>'
+
+nav:
+  - Overview:
+    - Introduction: 'index.md'
+  - Installation:
+    - Install: 'Installation/index.md'
+  - Configuration:
+    - Configure a Webex integration : 'ConfigureWebexIntegration/index.md'
+    - Configure an Account : 'ConfigureAccount/index.md'
+    - Configure a Scheduled Meetings Input : 'ConfigureScheduledMeetingsInput/index.md'
+    - Configure a Meeting Summary Report Input : 'ConfigureMeetingSummaryReportInput/index.md'
+    - Configure an Admin Audit Events Input : 'ConfigureAdminAuditEventInput/index.md'
+    - Configure a Meeting Qualities Input : 'ConfigureMeetingQualitiesInput/index.md'
+    - Configure a Detailed Call History Input : 'ConfigureDetailedCallHistoryInput/index.md'
+    - Configure a Security Audit Event Input : 'ConfigureSecurityAuditEventInput/index.md'
+    - Configure a Generic Input : 'ConfigureGenericInput/index.md'
