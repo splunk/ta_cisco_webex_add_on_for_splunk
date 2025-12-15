@@ -8,6 +8,21 @@ The **Webex Security Audit Events** input is used to fetch the data from [Securi
 
 The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest audit event created time as the checkpoint, and will be used as the `Start Time` (advancing by one millisecond) for the next run.
 
-#### Query Parameters 
-- `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-01-01T00:00:00.000Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
-- `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-02-01T00:00:00.000Z).
+## Configure Webex Security Audit Events input through Splunk Web 
+
+1. In the **Inputs** tab select **Create New Input**.
+2. Choose **Webex Security Audit Events**.
+3. Enter the information in the related fields using the following input parameters table.
+
+## Input Parameters 
+
+Each attribute in the following table corresponds to a field in Splunk Web.
+
+|Input name               |Corresponding field in Splunk Web | Description|
+|-------------------------|----------------------------------|------------|
+|`name`                   |Name                              |A unique name for your input.|
+|`interval`               |Interval                          |Time interval of input in seconds.|
+|`index`                  |Index                             |The index in which the data should be stored. The default is <code>default</code>.|
+|`account`                |Global Account                    |The Webex account created in the Configuration tab.|
+|`start_time`             |Start Time                        |Required, Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.|
+|`end_time`               |End Time                          |Optional, End date and time in the format YYYY-Mon-DDTHH:MM:SSZ. `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.|

@@ -45,15 +45,18 @@ copyright: 'This Add-On is developed and maintained by the Splunk Community. <br
 nav:
   - Overview:
     - Introduction: 'index.md'
+    - Sourcetypes: 'Sourcetypes/index.md'
   - Installation:
     - Install: 'Installation/index.md'
   - Configuration:
-    - Configure a Webex integration : 'ConfigureWebexIntegration/index.md'
-    - Configure an Account : 'ConfigureAccount/index.md'
-    - Configure a Scheduled Meetings Input : 'ConfigureScheduledMeetingsInput/index.md'
-    - Configure a Meeting Summary Report Input : 'ConfigureMeetingSummaryReportInput/index.md'
-    - Configure an Admin Audit Events Input : 'ConfigureAdminAuditEventInput/index.md'
-    - Configure a Meeting Qualities Input : 'ConfigureMeetingQualitiesInput/index.md'
-    - Configure a Detailed Call History Input : 'ConfigureDetailedCallHistoryInput/index.md'
-    - Configure a Security Audit Event Input : 'ConfigureSecurityAuditEventInput/index.md'
-    - Configure a Generic Input : 'ConfigureGenericInput/index.md'
+    - Configure Accounts:
+      - Prerequisites: 'ConfigureAccount/index.md'
+      - Configure Webex Account: 'ConfigureWebexAccount/index.md'
+    - Configure Inputs:
+      - Webex Generic Input : 'ConfigureGenericInput/index.md'
+      - Webex Scheduled Meetings Input : 'ConfigureScheduledMeetingsInput/index.md'
+      - Webex Meeting Summary Report Input : 'ConfigureMeetingSummaryReportInput/index.md'
+      - Webex Admin Audit Events Input : 'ConfigureAdminAuditEventInput/index.md'
+      - Webex Meeting Qualities Input : 'ConfigureMeetingQualitiesInput/index.md'
+      - Webex Detailed Call History Input : 'ConfigureDetailedCallHistoryInput/index.md'
+      - Webex Security Audit Event Input : 'ConfigureSecurityAuditEventInput/index.md'

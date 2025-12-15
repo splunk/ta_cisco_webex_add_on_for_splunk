@@ -220,7 +220,7 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 
 ## Versions Supported
 
-  - Tested for installation and basic ingestion on Splunk 9.X and 8.2 for **CentOS** system.
+  - Tested for installation and basic ingestion on Splunk 9.X and 8.2.
 
 > Built by Splunk's FDSE Team (#team-fdse).
 
