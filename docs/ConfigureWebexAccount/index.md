@@ -12,4 +12,6 @@
     - **Client ID**: Enter the `Client ID` that you obtained above here.
     - **Client Secret**: Enter the `Client Secret` that you obtained above here.
     - **Redirect URI**: The Redirect URI will auto show up. 
-    - Click on the `Add` button.
+    - **Scopes**: Select the authorization scopes. Please ensure that the scopes entered here match those selected in your Webex Integration.
+    - **Gov Account**: Please check this box if you are using a Webex Gov Account. 
+6. Click on the `Add` button.
