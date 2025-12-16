@@ -21,8 +21,11 @@ jobs:
       - name: Add label "external"
         if: steps.is_org_member.outputs.result == 'false'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh issue edit ${{ github.event.issue.number }} --add-label external
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          LABELS: external
+        run: gh issue edit "$NUMBER" --add-label "$LABELS"
 
       - uses: pozil/auto-assign-issue@v2
         if: steps.is_org_member.outputs.result == 'false'
