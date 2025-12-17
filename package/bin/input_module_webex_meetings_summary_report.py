@@ -92,11 +92,13 @@ def collect_events(helper, ew):
 
     # set up end time
     now = datetime.now(timezone.utc)
+    # add 24hr delay
+    now_delay = now - timedelta(hours=24)
 
-    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now:
+    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now_delay:
         end_time = opt_end_time
     else:
-        end_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        end_time = now_delay.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # compare if start_time ?> end_time, if so, break
     if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(

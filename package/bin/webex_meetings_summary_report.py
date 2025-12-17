@@ -1,6 +1,7 @@
 import import_declare_test
 import sys
 import json
+from datetime import datetime, timedelta, timezone
 
 from splunklib import modularinput as smi
 
@@ -71,8 +72,14 @@ class ModInputWEBEX_MEETINGS_SUMMARY_REPORT(base_mi.BaseModInput):
         return scheme
 
     def validate_input(self, definition):
-        """validate the input stanza"""
-        """Implement your own validation logic to validate the input stanza configurations"""
+        start_time_start = definition.parameters.get('start_time', None)
+        if start_time_start is not None:
+            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+
+            if start_time > datetime.now(timezone.utc) - timedelta(hours=24):
+                raise ValueError(
+                    "The start time must be set to 24 hours prior to the current UTC time. Please enter a time before {}.".format(datetime.strftime(datetime.now(timezone.utc) - timedelta(hours=24),"%Y-%m-%dT%H:%M:%SZ")))
+            pass
         pass
 
     def get_app_name(self):
