@@ -4,12 +4,11 @@ from dateutil.relativedelta import *
 
 from webex_constants import (
     _RESPONSE_TAG_MAP,
-    _TOKEN_EXPIRES_CHECKPOINT_KEY,
     _GET_DETAILED_CALL_HISTORY
 )
 from webex_api_client import paging_get_request_to_webex
-from oauth_helper import update_access_token
-
+from oauth_helper import get_valid_access_token
+from webex_utils import get_time_span
 '''
     IMPORTANT
     Edit only the validate_input and collect_events functions.
@@ -33,8 +32,8 @@ def collect_events(helper, ew):
     account_name = opt_global_account.get("name")
     client_id = opt_global_account.get("client_id")
     client_secret = opt_global_account.get("client_secret")
-    access_token = opt_global_account.get("access_token")
-    refresh_token = opt_global_account.get("refresh_token")
+    stored_access_token = opt_global_account.get("access_token")
+    stored_refresh_token = opt_global_account.get("refresh_token")
     base_endpoint = opt_global_account.get("endpoint")
         
     # check the checkpoint
@@ -50,29 +49,13 @@ def collect_events(helper, ew):
     
     helper.log_debug("[-] last time timestamp: {}".format(timestamp))
 
-    # set up start time
-    # first time start_time from UI
-    if timestamp is None:
-        start_time = opt_start_time
-    else:
-        # shift 1 second to avoid duplicate
-        start_time = (
-            datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(seconds=1)
-        ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
+    start_time, end_time = get_time_span(opt_start_time, opt_end_time, timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-    # set up end time
-    now = datetime.now(timezone.utc)
-
-    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc) < now:
-        end_time = opt_end_time
-    else:
-        end_time = (now - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
-
-    # compare if start_time ?> end_time, if so, break
-    if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ"):
+    #  if start and end time are not returned it means it has completed the ingestion
+    if not start_time and not end_time:
         helper.log_info(
             "[-] Finished ingestion for time range {start_time} - {end_time}".format(
-                start_time=start_time, end_time=end_time
+                start_time=opt_start_time, end_time=opt_end_time
             )
         )
         return
@@ -84,33 +67,7 @@ def collect_events(helper, ew):
     
     helper.log_info("[-] starting the ingestion [Webex_Detailed_Calls_History] for range [{start_time} - {end_time}]".format(start_time=call_params["startTime"], end_time=call_params["endTime"]))
 
-    # check if the access token expired
-    # get the access_token_expired_time checkpoint
-    expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(
-        account_name=account_name
-    )
-    
-    access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
-
-    now = datetime.now(timezone.utc)
-
-    # update the access token if it expired
-    if (
-        not access_token_expired_time
-        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S").replace(tzinfo=timezone.utc) < now
-    ):
-
-        helper.log_debug(
-            "[*] The access token of account {account_name} expired! Updating now!".format(
-                account_name=account_name
-            )
-        )
-
-        # override the access_token and expires_in
-        access_token, refresh_token, expires_in = update_access_token(
-            helper, account_name, client_id, client_secret, refresh_token, base_endpoint
-        )
-
+    access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint)
 
     calls = paging_get_request_to_webex(
         helper,
