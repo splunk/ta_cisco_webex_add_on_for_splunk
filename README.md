@@ -5,6 +5,7 @@
 [![Latest release (latest by date)](https://img.shields.io/github/v/release/splunk/ta_cisco_webex_add_on_for_splunk?label=Latest%20Release)](https://github.com/splunk/genesys_cloud_ta/releases)
 [![License](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/Apache-2.0)
 
+Find more details in our [Github Page](https://splunk.github.io/ta_cisco_webex_add_on_for_splunk/) and [README](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/blob/main/package/README.md#here-are-the-endpoints-their-corresponding-source-types-and-the-required-scopes)
 > **Cisco Webex Add-on for Splunk** is an Add-on to pull in data from _[Webex REST API](https://developer.webex.com/docs/basics)_ to Splunk.
 
 Here are the endpoints and their mapping soucetypes.
@@ -21,7 +22,7 @@ Here are the endpoints and their mapping soucetypes.
 
 ## Versions Supported
 
-  - Tested for installation and basic ingestion on Splunk 9.X and 8.2 for **CentOS** system.
+  - Tested for installation and basic ingestion on Splunk 10.x, 9.X and 8.2.
 
 > Built by Splunk's FDSE Team (#team-fdse).
 
@@ -30,4 +31,4 @@ Here are the endpoints and their mapping soucetypes.
 * Isaac Fonseca Monge
 * Marie Duran
 * Ashley Hoang
-* Isaac Fonseca
+* Erica Pescio
