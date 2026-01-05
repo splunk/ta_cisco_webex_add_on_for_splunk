@@ -2,7 +2,7 @@
 
 [![GitHub issues](https://img.shields.io/github/issues/splunk/ta_cisco_webex_add_on_for_splunk?label=issues&color=informational)](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/issues)
 [![GitHub All Releases](https://img.shields.io/github/downloads/splunk/ta_cisco_webex_add_on_for_splunk/total?label=download&logo=github&style=flat-square&color=important)](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/releases)
-[![Latest release (latest by date)](https://img.shields.io/github/v/release/splunk/ta_cisco_webex_add_on_for_splunk?label=Latest%20Release)](https://github.com/splunk/genesys_cloud_ta/releases)
+[![Latest release (latest by date)](https://img.shields.io/github/v/release/splunk/ta_cisco_webex_add_on_for_splunk?label=Latest%20Release)](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/releases)
 [![License](https://img.shields.io/badge/License-Apache_2.0-yellow.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Find more details in our [Github Page](https://splunk.github.io/ta_cisco_webex_add_on_for_splunk/) and [README](https://github.com/splunk/ta_cisco_webex_add_on_for_splunk/blob/main/package/README.md#here-are-the-endpoints-their-corresponding-source-types-and-the-required-scopes)
