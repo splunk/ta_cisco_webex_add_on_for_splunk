@@ -2,7 +2,7 @@ import import_declare_test
 
 import sys
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from splunklib import modularinput as smi
 
 import os
@@ -66,11 +66,11 @@ class ModInputWEBEX_MEETING_QUALITIES(base_mi.BaseModInput):
     def validate_input(self, definition):
         start_time_start = definition.parameters.get('start_time', None)
         if start_time_start is not None:
-            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%SZ")
+            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
-            if start_time <= datetime.now() - timedelta(days=7):
+            if start_time <= datetime.now(timezone.utc) - timedelta(days=7):
                 raise ValueError(
-                    "Start time cannot be earlier than 7 days ago. Please enter a date after {}.".format(datetime.strftime(datetime.now() - timedelta(days=7),"%Y-%m-%d")))
+                    "Start time cannot be earlier than 7 days ago. Please enter a date after {}.".format(datetime.strftime(datetime.now(timezone.utc) - timedelta(days=7),"%Y-%m-%d")))
             pass
 
     def get_app_name(self):

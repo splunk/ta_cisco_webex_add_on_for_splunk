@@ -5,8 +5,8 @@
 | Splunk Input       | Webex Endpoint        | Splunk Sourcetype               | Required Scopes                 |
 |--------------------|-----------------------|---------------------------------|---------------------------------|
 | Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         | meeting:admin_schedule_read spark-admin:people_read   |
-| Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         | meeting:admin_schedule_read meeting:admin_participants_read   |
-| Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             | meeting:admin_schedule_read meeting:admin_participants_read   |
+| Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         | meeting:admin_schedule_read meeting:admin_participants_read meeting:admin_config_read    |
+| Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             | meeting:admin_schedule_read meeting:admin_participants_read meeting:admin_config_read  |
 | Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events              | audit:events_read spark:organizations_read  |
 | Webex Meeting Qualities       | [Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities)                               | cisco:webex:meeting:qualities              | analytics:read_all   |
 | Webex Detailed Call History       | [Detailed Call History](https://developer.webex.com/docs/api/v1/reports-detailed-call-history/get-detailed-call-history)                               | cisco:webex:call:detailed_history             | spark-admin:calling_cdr_read |
@@ -96,9 +96,9 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 
 The **Webex Meetings Summary Report** input is used to fetch the data from both [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports) endpoint and [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports) endpoint. It allows users to retrieve account-wide reports on past meetings and their correlated meeting attendees.
 
-**Please Note**: The input only returns the **historical** meeting reports and attendee reports, since these two endpoints only contain historical data. The input will have a few hours delay due to the API behavior. Typically, meeting data is not showing up in the API until 2 to 3 hours after the meetings end. Therefore, the meetings data is only ingested 2 to 3 hours after the meetings end.
+**Please Note**: The input only returns the **historical** meeting reports and attendee reports, since these two endpoints only contain historical data. The input includes a 24‑hour delay due to the behavior of the API. According to the Webex documentation, “The report data for a meeting should be available within 24 hours after the meeting ends.” To ensure the data is complete and to avoid data gaps, the input ingests meeting data only after a full 24 hours have passed since the meeting ended.
 
-The `Start Time` is required. Set the starting date and time to fetch meetings & attendees. The Start Time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). The interval between Start Time and End Time cannot exceed 30 days and Start Time cannot be earlier than 90 days ago.
+The `Start Time` is required. Set the starting date and time to fetch meetings & attendees. The Start Time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). The start time must be set to 24 hours prior to the current UTC time. The interval between Start Time and End Time cannot exceed 30 days and Start Time cannot be earlier than 90 days ago.
 
 The `End Time` is optional. If you set it to be a specific date, only reports within the time range from Start Time to End Time will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z). The interval between Start Time and End Time cannot exceed 30 days. Leave it blank if an ongoing ingestion mode is needed.
 
@@ -112,7 +112,7 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
     - **Site Name** (_required_): Site Name of the Webex Meeting account. `example: example.webex.com`
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The interval between Start Time and End Time cannot exceed 30 days and Start Time cannot be earlier than 90 days ago.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The start time must be set to 24 hours prior to the current UTC time. The interval between Start Time and End Time cannot exceed 30 days and Start Time cannot be earlier than 90 days ago.
     - **End Time** (_optional_): End date and time in the format YYYY-Mon-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. The interval between Start Time and End Time cannot exceed 30 days.
 - Click on the `Add` green button on the bottom right of the pop-up box.
 

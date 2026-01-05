@@ -2,7 +2,7 @@ import import_declare_test
 
 import sys
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from splunklib import modularinput as smi
 
 
@@ -78,16 +78,16 @@ class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput):
         locations = definition.parameters.get('locations', None)
         
         if start_time_start is not None:
-            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%S.%fZ")
+            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
 
-            if start_time <= datetime.now() - timedelta(days=2):
+            if start_time <= datetime.now(timezone.utc) - timedelta(days=2):
                 raise ValueError(
-                    "Start time cannot be earlier than 48 hours ago. Please enter a date after {}.".format(datetime.strftime(datetime.now() - timedelta(days=2),"%Y-%m-%d")))
+                    "Start time cannot be earlier than 48 hours ago. Please enter a date after {}.".format(datetime.strftime(datetime.now(timezone.utc) - timedelta(days=2),"%Y-%m-%d")))
             
         if end_time_start is not None:
-            end_time = datetime.strptime(end_time_start, "%Y-%m-%dT%H:%M:%S.%fZ")
+            end_time = datetime.strptime(end_time_start, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
             
-            if end_time > datetime.now() + timedelta(days=2):
+            if end_time > datetime.now(timezone.utc) + timedelta(days=2):
                  raise ValueError(
                     "End time should be later than start time but no later than 48 hours.")
                  
