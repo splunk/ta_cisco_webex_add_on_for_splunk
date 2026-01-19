@@ -1,5 +1,16 @@
 from datetime import datetime, timedelta, timezone
 
+def change_date_format(date_str, current_format, new_format):
+    if not date_str:
+        return None
+    
+    dt = datetime.strptime(date_str, current_format).strftime(new_format)
+    
+    if "." in dt:
+        return dt[:-4] + 'Z'
+    
+    return dt
+
 def get_time_span(opt_start_time, opt_end_time, last_run_timestamp, date_format):
     start_time = None
     end_time = None

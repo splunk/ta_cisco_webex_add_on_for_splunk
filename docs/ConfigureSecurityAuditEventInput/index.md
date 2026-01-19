@@ -24,5 +24,5 @@ Each attribute in the following table corresponds to a field in Splunk Web.
 |`interval`               |Interval                          |Time interval of input in seconds.|
 |`index`                  |Index                             |The index in which the data should be stored. The default is <code>default</code>.|
 |`account`                |Global Account                    |The Webex account created in the Configuration tab.|
-|`start_time`             |Start Time                        |Required, Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.|
+|`start_time`             |Start Time                        |Required, Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.|
 |`end_time`               |End Time                          |Optional, End date and time in the format YYYY-Mon-DDTHH:MM:SSZ. `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.|

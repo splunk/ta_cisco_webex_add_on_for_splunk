@@ -9,7 +9,7 @@ from webex_constants import (
 )
 from webex_api_client import paging_get_request_to_webex
 from oauth_helper import get_valid_access_token
-from webex_utils import get_time_span
+from webex_utils import change_date_format, get_time_span
 
 '''
     IMPORTANT
@@ -26,8 +26,8 @@ def use_single_instance_mode():
 def collect_events(helper, ew):
 
     # insert input values into the url and/or header (helper class handles credential store)
-    opt_start_time = helper.get_arg('start_time')
-    opt_end_time = helper.get_arg('end_time')
+    opt_start_time = change_date_format(helper.get_arg('start_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
+    opt_end_time = change_date_format(helper.get_arg('end_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
 
     # Get account info
     opt_global_account = helper.get_arg("global_account")
