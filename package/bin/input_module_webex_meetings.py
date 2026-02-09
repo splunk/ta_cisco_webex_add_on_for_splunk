@@ -109,10 +109,9 @@ def collect_events(helper, ew):
                     # checkpoint_time = datetime.strptime(helper.get_check_point(last_timestamp_checkpoint_key), "%Y-%m-%dT%H:%M:%SZ")
                     for meeting in meetings:
                         # compare the meeting start time with the last checkpoint time
-                        last_checkpoint_time = datetime.strptime(
-                            helper.get_check_point(last_timestamp_checkpoint_key),
-                            "%Y-%m-%dT%H:%M:%SZ",
-                        )
+                        checkpoint_value = helper.get_check_point(last_timestamp_checkpoint_key) or opt_start_time
+                        last_checkpoint_time = datetime.strptime(checkpoint_value,"%Y-%m-%dT%H:%M:%SZ")
+                        
                         meeting_start_time = datetime.strptime(meeting["start"], "%Y-%m-%dT%H:%M:%SZ")
 
                         helper.log_debug("[-] meeting_start_time: {} vs last_checkpoint_time: {}".format(meeting_start_time, last_checkpoint_time))

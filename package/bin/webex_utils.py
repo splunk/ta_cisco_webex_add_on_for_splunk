@@ -26,7 +26,7 @@ def get_time_span(opt_start_time, opt_end_time, last_run_timestamp, date_format)
             start_time = (now - timedelta(minutes=1)).strftime(date_format)
     else:
         # use the last time run as the start time
-        start_time = (datetime.strptime(last_run_timestamp, date_format) - timedelta(minutes=1)).strftime(date_format)
+        start_time = (datetime.strptime(last_run_timestamp, date_format) + timedelta(seconds=1)).strftime(date_format)
         if "." in date_format:
             start_time = start_time[:-4]+"Z"
         
@@ -34,7 +34,7 @@ def get_time_span(opt_start_time, opt_end_time, last_run_timestamp, date_format)
     if opt_end_time and datetime.strptime(opt_end_time, date_format).replace(tzinfo=timezone.utc) < now:
         end_time = opt_end_time
     else:
-        end_time = now.strftime(date_format)
+        end_time = now.strftime(date_format)[:-4]+"Z"
     
     # if the start time is after the end time the ingestion already finished
     if datetime.strptime(start_time, date_format) > datetime.strptime(end_time, date_format):

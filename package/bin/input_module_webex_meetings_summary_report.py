@@ -46,37 +46,17 @@ def collect_events(helper, ew):
     )
     timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
     helper.log_debug("[-] last time timestamp: {}".format(timestamp))
-
-    # set up start time
-    # first time start_time from UI
-    if timestamp is None:
-        start_time = opt_start_time
-        # save the UI start_time as checkpoint
-        helper.save_check_point(
-            last_timestamp_checkpoint_key, start_time
-        )
-        helper.log_debug("[-] no checkpoint timestamp exists, saving new timestamp: {}".format(start_time))
-
-    else:
-        # shift 1 second to avoid duplicate
-        start_time = (
-            datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ") + timedelta(seconds=1)
-        ).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    # set up end time
-    now = datetime.now(timezone.utc)
-    # add 24hr delay
-    now_delay = now - timedelta(hours=24)
-
-    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now_delay:
-        end_time = opt_end_time
-    else:
+    
+    start_time, end_time = get_time_span(opt_start_time, opt_end_time, timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    
+    now_delay = datetime.now(timezone.utc) - timedelta(hours=24)
+    
+    if not opt_end_time and not datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now_delay:
+        #add 24h delay to end time
         end_time = now_delay.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    # compare if start_time ?> end_time, if so, break
-    if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%SZ") > datetime.strptime(
-        end_time, "%Y-%m-%dT%H:%M:%SZ"
-    ):
+    
+    # if start and end time are not returned it means it has completed the ingestion
+    if not start_time and not end_time:
         helper.log_info(
             "[-] Finished ingestion for time range {start_time} - {end_time}".format(
                 start_time=opt_start_time, end_time=opt_end_time
