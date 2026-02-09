@@ -1,6 +1,5 @@
 import json
 from datetime import datetime, timedelta, timezone
-from dateutil.relativedelta import *
 
 from webex_constants import (
     _MEETING_USAGE_REPORTS_ENDPOINT,
