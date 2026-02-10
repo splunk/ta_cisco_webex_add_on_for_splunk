@@ -4,6 +4,10 @@ def change_date_format(date_str, current_format, new_format):
     if not date_str:
         return None
     
+    # this validation avoids issues with existing inputs
+    if "." in date_str and new_format == "%Y-%m-%dT%H:%M:%S.%fZ":
+        return date_str
+    
     dt = datetime.strptime(date_str, current_format).strftime(new_format)
     
     if "." in dt:

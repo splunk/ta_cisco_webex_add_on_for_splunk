@@ -46,16 +46,19 @@ def collect_events(helper, ew):
     timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
     helper.log_debug("[-] last time timestamp: {}".format(timestamp))
     
-    start_time, end_time = get_time_span(opt_start_time, opt_end_time, timestamp, "%Y-%m-%dT%H:%M:%SZ")
+    # End time is has a different validation for this input
+    start_time, _ = get_time_span(opt_start_time, opt_end_time, timestamp, "%Y-%m-%dT%H:%M:%SZ")
     
+    # 24 hours delay
     now_delay = datetime.now(timezone.utc) - timedelta(hours=24)
     
-    if not opt_end_time and not datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now_delay:
-        #add 24h delay to end time
+    if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < now_delay:
+        end_time = opt_end_time
+    else:
         end_time = now_delay.strftime("%Y-%m-%dT%H:%M:%SZ")
     
-    # if start and end time are not returned it means it has completed the ingestion
-    if not start_time and not end_time:
+    # if start time is not returned it means it has completed the ingestion
+    if not start_time:
         helper.log_info(
             "[-] Finished ingestion for time range {start_time} - {end_time}".format(
                 start_time=opt_start_time, end_time=opt_end_time

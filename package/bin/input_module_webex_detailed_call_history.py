@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 
 from webex_constants import (
@@ -57,6 +58,10 @@ def collect_events(helper, ew):
             )
         )
         return
+    
+    # subtract 5 minutes to avoid errors from the API
+    if not opt_end_time:
+        end_time = (datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ") - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
 
     call_params["startTime"] = start_time
     call_params["endTime"] = end_time
