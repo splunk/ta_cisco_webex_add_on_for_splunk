@@ -371,6 +371,18 @@
                                                 {
                                                     "value": "cloud-contact-center:pod_conv",
                                                     "label": "cloud-contact-center:pod_conv"
+                                                },
+                                                {
+                                                    "value": "cjp:config",
+                                                    "label": "cjp:config"
+                                                },
+                                                {
+                                                    "value": "cjp:config_write",
+                                                    "label": "cjp:config_write"
+                                                },
+                                                {
+                                                    "value": "cjp:user",
+                                                    "label": "cjp:user"
                                                 }
                                             ]
                                         },
@@ -688,6 +700,25 @@
                             "help": "Add as comma-separated values additional query params to be included in the call of the API, each param will be concatenated to the URL you previously entered. Example: locationId=0000000, messageId=0000000, teamId=0000000.",
                             "required": false,
                             "type": "text"
+                        },
+                        {
+                            "field": "method",
+                            "label": "Request Method",
+                            "type": "singleSelect",
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "GET",
+                                        "value": "GET"
+                                    },
+                                    {
+                                        "label": "POST",
+                                        "value": "POST"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "GET"
                         }
                     ]
                 },
