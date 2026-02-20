@@ -114,6 +114,12 @@ class OAuth:
                     access_token = resp["access_token"]
                     refresh_token = resp["refresh_token"]
                     expires_in = resp["expires_in"]
+                    self.helper.log_debug(f"[-] Access Token expires in {expires_in}")
+                    self.helper.log_debug(f"[-] Refresh Token expires in {resp.get('refresh_token_expires_in')}")
+                    if self._refresh_token == resp["refresh_token"]:
+                        self.helper.log_debug("[-] Refresh Token remains the same")
+                    else:
+                        self.helper.log_debug("[-] Refresh Token gets updated")
                     return access_token, refresh_token, expires_in
         except Exception as e:
             self.helper.log_error(
@@ -160,7 +166,8 @@ class OAuth:
 
             # Calculate expired time for new access token
             now = datetime.now(timezone.utc)
-            delta = int(new_expires_in)
+            # force the refresh logic one day before it gets expired
+            delta = int(new_expires_in) - 86400
             expired_time = (now + timedelta(seconds=delta)).strftime(
                 "%m/%d/%Y %H:%M:%S"
             )
