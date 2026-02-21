@@ -695,13 +695,6 @@
                             ]
                         },
                         {
-                            "field": "query_params",
-                            "label": "Query Params",
-                            "help": "Add as comma-separated values additional query params to be included in the call of the API, each param will be concatenated to the URL you previously entered. Example: locationId=0000000, messageId=0000000, teamId=0000000.",
-                            "required": false,
-                            "type": "text"
-                        },
-                        {
                             "field": "method",
                             "label": "Request Method",
                             "type": "singleSelect",
@@ -719,6 +712,20 @@
                                 ]
                             },
                             "defaultValue": "GET"
+                        },
+                        {
+                            "field": "query_params",
+                            "label": "Query Params",
+                            "help": "Add as comma-separated values additional query params to be included in the call of the API, each param will be concatenated to the URL you previously entered. Example: locationId=0000000, messageId=0000000, teamId=0000000.",
+                            "required": false,
+                            "type": "text"
+                        },
+                        {
+                            "field": "request_body",
+                            "label": "Request Body",
+                            "help": "Please enter it as a JSON-formatted string. Example: {\"query\":\"query { devices(type: CONTROLLER) { hostName ipAddress version } }\",\"variables\":{\"startTime\":1672531200000,\"endTime\":1675209600000}}",
+                            "required": false,
+                            "type": "text"
                         }
                     ]
                 },
