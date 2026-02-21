@@ -36,5 +36,6 @@ _START_TIME_FIELDS = [
     "startDate",
     "created",
     "createdAt",
-    "createTime"
+    "createTime",
+    "createdTime"
 ]

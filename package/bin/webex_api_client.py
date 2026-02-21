@@ -26,11 +26,14 @@ def paging_get_request_to_webex(
     client_secret,
     params,
     response_tag,
-    is_custom_endpoint=False
+    is_custom_endpoint=False,
+    method = "GET",
+    payload=None
 ):
     results = []
     # set the page_size
     params["max"] = _MAX_PAGE_SIZE if not params.get("max") else params["max"]
+
 
     paging = True
     next_page_link = None
@@ -48,7 +51,9 @@ def paging_get_request_to_webex(
                 client_secret,
                 params,
                 next_page_link,
-                is_custom_endpoint=is_custom_endpoint
+                is_custom_endpoint=is_custom_endpoint,
+                method = method,
+                payload = payload
             )
 
             if data is None or len(data)==0:
@@ -91,7 +96,9 @@ def make_get_request_to_webex(
     params,
     next_page_link,
     retry=True,
-    is_custom_endpoint=False
+    is_custom_endpoint=False,
+    method = "GET",
+    payload=None
 ):
     if next_page_link:
         url = next_page_link
@@ -103,8 +110,12 @@ def make_get_request_to_webex(
         if not is_custom_endpoint and (endpoint == "meeting/qualities" or endpoint == "cdr_feed"):
             protocol, rest = url.split("//")
             url = f"{protocol}//analytics.{rest}"
+        
+         # reconstruct the url for Webex Contact Center: search endpoints
+        if base_endpoint == 'api.wxcc-us1.cisco.com' and endpoint == 'search':
+            url = "https://api.wxcc-us1.cisco.com/search"
        
-    helper.log_debug("[-] url: {} -- params: {}".format(url, params))
+    helper.log_debug("[-] url: {} -- method: {} -- params: {}".format(url, method, params))
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
     }
@@ -114,9 +125,9 @@ def make_get_request_to_webex(
         # use helper.send_http_request to have proxy enabled
         response = helper.send_http_request(
             url,
-            "GET",
+            method,
             parameters=params,
-            payload=None,
+            payload=payload,
             headers=headers,
             cookies=None,
             verify=False,
@@ -130,6 +141,7 @@ def make_get_request_to_webex(
                 response.status_code,
             )
         )
+        helper.log_debug(f"[-] Request method: {response.request.method}, Request body: {response.request.body}")
 
         data = None
         if response.status_code != 200:
@@ -182,7 +194,9 @@ def make_get_request_to_webex(
                     client_secret,
                     params,
                     retry=False,
-                    is_custom_endpoint=False
+                    is_custom_endpoint=False,
+                    method=method,
+                    payload=payload
                 )
             else:
                 response.raise_for_status()

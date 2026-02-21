@@ -87,7 +87,12 @@ class ModInputWEBEX_GENERIC_ENDPOINT(base_mi.BaseModInput):
 
     def validate_input(self, definition):
         """validate the input stanza"""
-        """Implement your own validation logic to validate the input stanza configurations"""
+        request_body = definition.parameters.get('request_body', None)
+        if request_body is not None:
+            try:
+                json.loads(request_body)
+            except json.JSONDecodeError:
+                raise ValueError("Invalid JSON string")
         pass
 
     def get_app_name(self):

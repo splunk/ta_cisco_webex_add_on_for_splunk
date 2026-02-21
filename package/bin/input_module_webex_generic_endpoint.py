@@ -37,7 +37,9 @@ def collect_events(helper, ew):
         opt_end_time = helper.get_arg("end_time")
         opt_webex_endpoint = helper.get_arg("webex_endpoint")
         opt_webex_base_url = helper.get_arg("webex_base_url")
+        opt_method = helper.get_arg("method")
         opt_query_params = helper.get_arg("query_params")
+        opt_request_body = helper.get_arg("request_body")
         
         start_time = None
         end_time = None
@@ -77,6 +79,14 @@ def collect_events(helper, ew):
             if start_time and end_time:
                 query_params.update({"from": start_time, "to": end_time})
             
+            # request body
+            payload = None
+
+            # add reqeust body if they exist
+            if opt_request_body:
+                payload = json.loads(opt_request_body)
+
+            
             # get the data
             data = paging_get_request_to_webex(
                 helper,
@@ -89,7 +99,10 @@ def collect_events(helper, ew):
                 client_secret,
                 query_params,
                 "items",
-                is_custom_endpoint=True
+                is_custom_endpoint=True,
+                method=opt_method,
+                payload=payload
+
             )
             
             # used to save the last "end time" registered in the reponse
