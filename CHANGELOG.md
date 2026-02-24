@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### Changed
 
 - Refactored input file logic to use helper functions for token validation and time handling.
+- Standardized all date formats across all the inputs.
+- Updated documentation to reflect the date format standardization.
 
 ## [v1.3.1] - 2025-12-27
 
