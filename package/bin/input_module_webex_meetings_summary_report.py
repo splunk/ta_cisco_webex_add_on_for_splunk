@@ -93,7 +93,9 @@ def collect_events(helper, ew):
     # write meetings data into Splunk
 
     try:
-        checkpoint_time = datetime.strptime(helper.get_check_point(last_timestamp_checkpoint_key), "%Y-%m-%dT%H:%M:%SZ")
+        checkpoint_value = helper.get_check_point(last_timestamp_checkpoint_key) or opt_start_time
+        checkpoint_time = datetime.strptime(checkpoint_value,"%Y-%m-%dT%H:%M:%SZ")
+        
         for meeting in meeting_usage_reports:
             # compare the meeting start time with the last checkpoint time
             last_checkpoint_time = datetime.strptime(
