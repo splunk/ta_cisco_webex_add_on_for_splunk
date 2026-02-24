@@ -98,10 +98,9 @@ def collect_events(helper, ew):
         
         for meeting in meeting_usage_reports:
             # compare the meeting start time with the last checkpoint time
-            last_checkpoint_time = datetime.strptime(
-                helper.get_check_point(last_timestamp_checkpoint_key),
-                "%Y-%m-%dT%H:%M:%SZ",
-            )
+            last_checkpoint_value = helper.get_check_point(last_timestamp_checkpoint_key) or opt_start_time
+            last_checkpoint_time = datetime.strptime(last_checkpoint_value,"%Y-%m-%dT%H:%M:%SZ")
+            
             meeting_start_time = datetime.strptime(meeting["start"], "%Y-%m-%dT%H:%M:%SZ")
             # ingest the meetings that happened after the last ingestion
             if meeting_start_time > last_checkpoint_time:
