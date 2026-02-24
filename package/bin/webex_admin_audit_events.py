@@ -1,7 +1,6 @@
 import import_declare_test
 import sys
 import json
-from datetime import datetime, timedelta
 from splunklib import modularinput as smi
 
 import os
