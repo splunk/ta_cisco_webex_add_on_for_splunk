@@ -8,3 +8,5 @@ check_for_data_compression_and_archiving:
   comment: 'Ok'
 check_for_supported_tls:
   comment: 'Ok'
+check_all_python_files_are_well_formed:
+  comment: 'Ok'
