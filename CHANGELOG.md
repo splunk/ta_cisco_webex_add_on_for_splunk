@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.4.0] - 2026-02-27
+
+### Added
+
+- Added support for POST method in the Generic Input
+- Added support for search endpoint of Webex Contact Center
+
 ## [v1.3.2] - 2026-02-24
 
 ### Changed
