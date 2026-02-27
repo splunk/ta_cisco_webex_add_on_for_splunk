@@ -120,9 +120,9 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 
 The **Webex Admin Audit Events** input is used to fetch the data from [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events) endpoint. It allows users to retrieve organization-wide audit logs all over the account.
 
-The `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-01-01T00:00:00.000Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+The `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
 
-The `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-02-01T00:00:00.000Z).
+The `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z).
 
 **Please Note**: Due to the API behavior, the selected time range cannot be more than a year. Therefore, If you want to obtain the audit logs that happened more than one year ago, you **MUST** fill in both `Start Time` and `End Time`, and ensure that the range does not exceed one year.
 
@@ -135,8 +135,8 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
-    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional), `example:2023-02-01T00:00:00.000Z`. End Time must be after the Start Time.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.
 - Click on the `Add` green button on the bottom right of the pop-up box.
 
 **Webex Meeting Qualities**
@@ -194,9 +194,9 @@ The **Webex Security Audit Events** input is used to fetch the data from [Securi
 1. Sign in to Control Hub, then under **Management** > **Organization Settings**.
 2. In the **User authentication data** section, toggle **Allow user authentication data** on.
 
-The `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-01-01T00:00:00.000Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+The `Start Time` is required. Set the starting date and time to fetch admin audit events. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
 
-The `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SS.SSSZ (example:2023-02-01T00:00:00.000Z).
+The `End Time` is optional. If you set it to be a specific date, only logs within the time range from Start Date to End Date will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z).
 
 The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest audit event created time as the checkpoint, and will be used as the `Start Time` (advancing by one millisecond) for the next run.
 
@@ -207,8 +207,8 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SS.SSSZ, `example:2023-01-01T00:00:00.000Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
-    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional), `example:2023-02-01T00:00:00.000Z`. End Time must be after the Start Time.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. If you leave the `End Time` blank, Start Time **MUST** be within one year from the current time.
+    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SSZ.(Optional), `example:2023-02-01T00:00:00Z`. End Time must be after the Start Time.
 - Click on the `Add` green button on the bottom right of the pop-up box.
 
 ## Versions Supported

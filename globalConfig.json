@@ -993,28 +993,28 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "List events which occurred after a specific date and time. Start date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.",
+                            "help": "List events which occurred after a specific date and time. Start date and time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.",
                             "required": true,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
-                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
                             ]
                         },
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "List events which occurred before a specific date and time. End date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional). End Time must be after the Start Time.",
+                            "help": "List events which occurred before a specific date and time. End date and time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
                             "required": false,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
-                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2033-01-01T00:00:00.000Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
                                 }
                             ]
                         }
@@ -1177,21 +1177,21 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "The specified time must be between 5 minutes ago and 48 hours ago, and be formatted as YYYY-MM-DDTHH:MM:SS.mmmZ",
+                            "help": "The specified time must be between 5 minutes ago and 48 hours ago, and be formatted as YYYY-MM-DDTHH:MM:SSZ",
                             "required": true,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
-                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
                             ]
                         },
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "The specified time should be later than start time but no later than 48 hours, and be formatted as YYYY-MM-DDTHH:MM:SS.mmmZ",
+                            "help": "The specified time should be later than start time but no later than 48 hours, and be formatted as YYYY-MM-DDTHH:MM:SSZ",
                             "required": false,
                             "type": "text",
                             "validators": [
@@ -1283,28 +1283,28 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "List events which occurred after a specific date and time. Start date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.",
+                            "help": "List events which occurred after a specific date and time. Start date and time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.",
                             "required": true,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
-                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00.000Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
                                 }
                             ]
                         },
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "List events which occurred before a specific date and time. End date and time MUST be in the format YYYY-MM-DDTHH:MM:SS.SSSZ.(Optional). End Time must be after the Start Time.",
+                            "help": "List events which occurred before a specific date and time. End date and time MUST be in the format YYYY-MM-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
                             "required": false,
                             "type": "text",
                             "validators": [
                                 {
                                     "type": "regex",
-                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$",
-                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SS.SSSZ (example:2033-01-01T00:00:00.000Z)"
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
                                 }
                             ]
                         }

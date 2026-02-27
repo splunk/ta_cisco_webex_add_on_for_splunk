@@ -48,7 +48,7 @@ def collect_events(helper, ew):
         last_run_timestamp = helper.get_check_point(last_run_timestamp_checkpoint_key)
           
         # retrieve the start and end time according to the checkpoiting logic
-        start_time, end_time = get_time_span(opt_start_time, opt_end_time, last_run_timestamp)
+        start_time, end_time = get_time_span(opt_start_time, opt_end_time, last_run_timestamp, "%Y-%m-%dT%H:%M:%SZ")
         
         # check if there is a value for the start and end time, otherwise don't do anything
         if not start_time and not end_time:

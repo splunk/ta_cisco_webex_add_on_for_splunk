@@ -1,15 +1,14 @@
 import json
-from datetime import datetime, timedelta, timezone
-from dateutil.relativedelta import *
+from datetime import datetime
 
 from webex_constants import (
     _ORGANIZATIONS_ENDPOINT,
     _ADMIN_AUDIT_EVENTS_ENDPOINT,
     _RESPONSE_TAG_MAP,
-    _TOKEN_EXPIRES_CHECKPOINT_KEY,
 )
 from webex_api_client import paging_get_request_to_webex
-from oauth_helper import update_access_token
+from oauth_helper import get_valid_access_token
+from webex_utils import get_time_span, change_date_format
 
 '''
     IMPORTANT
@@ -26,43 +25,19 @@ def use_single_instance_mode():
 def collect_events(helper, ew):
 
     # insert input values into the url and/or header (helper class handles credential store)
-    opt_start_time = helper.get_arg('start_time')
-    opt_end_time = helper.get_arg('end_time')
+    opt_start_time = change_date_format(helper.get_arg('start_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
+    opt_end_time = change_date_format(helper.get_arg('end_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
 
     # Get account info
     opt_global_account = helper.get_arg("global_account")
     account_name = opt_global_account.get("name")
     client_id = opt_global_account.get("client_id")
     client_secret = opt_global_account.get("client_secret")
-    access_token = opt_global_account.get("access_token")
-    refresh_token = opt_global_account.get("refresh_token")
+    stored_access_token = opt_global_account.get("access_token")
+    stored_refresh_token = opt_global_account.get("refresh_token")
     base_endpoint = opt_global_account.get("endpoint")
 
-    # check if the access token expired
-    # get the access_token_expired_time checkpoint
-    expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(
-        account_name=account_name
-    )
-    access_token_expired_time = helper.get_check_point(expiration_checkpoint_key)
-
-    now = datetime.now(timezone.utc)
-
-    # update the access token if it expired
-    if (
-        not access_token_expired_time
-        or datetime.strptime(access_token_expired_time, "%m/%d/%Y %H:%M:%S").replace(tzinfo=timezone.utc) < now
-    ):
-
-        helper.log_debug(
-            "[*] The access token of account {account_name} expired! Updating now!".format(
-                account_name=account_name
-            )
-        )
-
-        # override the access_token and expires_in
-        access_token, refresh_token, expires_in = update_access_token(
-            helper, account_name, client_id, client_secret, refresh_token, base_endpoint
-        )
+    access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint)
     
     # fetching org from Organizations endpoint
     try:
@@ -87,50 +62,33 @@ def collect_events(helper, ew):
     for org in organizations:
         org_id = org["id"]
 
+        # construct the request params for admin audit event endpoint
+        admin_audit_event_params = {}
+        
         # check the checkpoint for each org
         # get start date from checkpoint
         last_timestamp_checkpoint_key = "{}-{}_admin_audit_event_report_last_timestamp".format(
             helper.get_input_stanza_names(), org_id
         )
-
-        # construct the request params for admin audit event endpoint
-        admin_audit_event_params = {}
-
         timestamp = helper.get_check_point(last_timestamp_checkpoint_key)
         helper.log_debug("[-] For orgID-{}, last time timestamp: {}".format(org_id, timestamp))
 
-        # set up start time
-        # first time start_time from UI
+        start_time, end_time = get_time_span(opt_start_time, opt_end_time, timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+        
+        # if start and end time are not returned it means it has completed the ingestion
+        if not start_time and not end_time:
+            helper.log_info(
+                "[-] Finished ingestion for orgID-{org_id} for time range {start_time} - {end_time}".format(
+                    org_id=org_id, start_time=opt_start_time, end_time=opt_end_time
+                )
+            )
+            return
+        
         if timestamp is None:
-            start_time = opt_start_time
-            # save the UI start_time as checkpoint
             helper.save_check_point(
                 last_timestamp_checkpoint_key, start_time
             )
             helper.log_debug("[-] For orgID-{}, no checkpoint timestamp exists, saving new timestamp: {}".format(org_id, start_time))
-        else:
-            # shift 1 second to avoid duplicate
-            start_time = (
-                datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ") + timedelta(milliseconds=1)
-            ).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
-
-        # set up end time
-        now = datetime.now(timezone.utc)
-        helper.log_debug("[-] now: {}".format(now))
-
-        if opt_end_time and datetime.strptime(opt_end_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)  < now:
-            end_time = opt_end_time
-        else:
-            end_time = now.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]+'Z'
-        
-        # compare if start_time ?> end_time, if so, break
-        if datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ"):
-            helper.log_info(
-                "[-] Finished ingestion for orgID-{org_id} for time range {start_time} - {end_time}".format(
-                    org_id=org_id, start_time=start_time, end_time=end_time
-                )
-            )
-            return
 
         admin_audit_event_params["from"] = start_time
         admin_audit_event_params["to"] = end_time
