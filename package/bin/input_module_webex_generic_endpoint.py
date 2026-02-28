@@ -82,7 +82,7 @@ def collect_events(helper, ew):
             # request body
             payload = None
 
-            # add reqeust body if they exist
+            # add request body if they exist
             if opt_request_body:
                 payload = json.loads(opt_request_body)
 
