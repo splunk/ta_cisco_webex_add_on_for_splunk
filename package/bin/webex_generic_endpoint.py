@@ -75,10 +75,24 @@ class ModInputWEBEX_GENERIC_ENDPOINT(base_mi.BaseModInput):
                 required_on_create=False,
             )
         )
-        
+
+        scheme.add_argument(
+            smi.Argument(
+                'method',
+                required_on_create=True,
+            )
+        )
+
         scheme.add_argument(
             smi.Argument(
                 'query_params',
+                required_on_create=False,
+            )
+        )
+
+        scheme.add_argument(
+            smi.Argument(
+                'request_body',
                 required_on_create=False,
             )
         )

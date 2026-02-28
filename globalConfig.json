@@ -698,6 +698,7 @@
                             "field": "method",
                             "label": "Request Method",
                             "type": "singleSelect",
+                            "required": true,
                             "options": {
                                 "disableSearch": true,
                                 "autoCompleteFields": [
