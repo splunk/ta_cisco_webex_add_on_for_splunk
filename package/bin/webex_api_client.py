@@ -26,7 +26,8 @@ def paging_get_request_to_webex(
     client_secret,
     params,
     response_tag,
-    is_custom_endpoint=False
+    is_custom_endpoint=False,
+    webex_account_region="us_ca"
 ):
     results = []
     # set the page_size
@@ -48,7 +49,8 @@ def paging_get_request_to_webex(
                 client_secret,
                 params,
                 next_page_link,
-                is_custom_endpoint=is_custom_endpoint
+                is_custom_endpoint=is_custom_endpoint,
+                webex_account_region=webex_account_region
             )
 
             if data is None or len(data)==0:
@@ -91,20 +93,28 @@ def make_get_request_to_webex(
     params,
     next_page_link,
     retry=True,
-    is_custom_endpoint=False
+    is_custom_endpoint=False,
+    webex_account_region="us_ca"
 ):
     if next_page_link:
         url = next_page_link
         params = None
-    else:
+    else: 
         url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+        protocol, rest = url.split("//")
         
         # reconstruct the url for meeting/qualities and cdr_feed endpoints
-        if not is_custom_endpoint and (endpoint == "meeting/qualities" or endpoint == "cdr_feed"):
-            protocol, rest = url.split("//")
+        if not is_custom_endpoint and endpoint == "meeting/qualities":
             url = f"{protocol}//analytics.{rest}"
+        elif not is_custom_endpoint and endpoint == "cdr_feed":
+            #construct the URL depending on the region
+            if webex_account_region == "us_ca":
+                url = f"{protocol}//analytics-calling.{rest}"
+            else:
+                url = f"{protocol}//analytics-calling-{webex_account_region}.{rest}"
        
     helper.log_debug("[-] url: {} -- params: {}".format(url, params))
+    
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
     }
@@ -182,7 +192,8 @@ def make_get_request_to_webex(
                     client_secret,
                     params,
                     retry=False,
-                    is_custom_endpoint=False
+                    is_custom_endpoint=False,
+                    webex_account_region="us_ca"
                 )
             else:
                 response.raise_for_status()

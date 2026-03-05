@@ -25,6 +25,7 @@ def collect_events(helper, ew):
     opt_start_time = change_date_format(helper.get_arg('start_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
     opt_end_time = change_date_format(helper.get_arg('end_time'), "%Y-%m-%dT%H:%M:%SZ" ,"%Y-%m-%dT%H:%M:%S.%fZ")
     opt_locations = helper.get_arg('locations')
+    opt_webex_account_region = helper.get_arg('account_region')
 
     # Get account info
     opt_global_account = helper.get_arg("global_account")
@@ -34,6 +35,8 @@ def collect_events(helper, ew):
     stored_access_token = opt_global_account.get("access_token")
     stored_refresh_token = opt_global_account.get("refresh_token")
     base_endpoint = opt_global_account.get("endpoint")
+    is_gov_account = opt_global_account.get("is_gov_account")
+    
         
     # check the checkpoint
     # get startdate from checkpoint
@@ -72,6 +75,8 @@ def collect_events(helper, ew):
 
     access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint)
 
+    account_region = "gov" if is_gov_account == "1" else opt_webex_account_region
+    
     calls = paging_get_request_to_webex(
         helper,
         base_endpoint,
@@ -83,6 +88,8 @@ def collect_events(helper, ew):
         client_secret,
         call_params,
         _RESPONSE_TAG_MAP[_GET_DETAILED_CALL_HISTORY],
+        is_custom_endpoint=False,
+        webex_account_region=account_region
     )
     
     helper.log_debug("[-] detailed call history response size: {}".format(len(calls)))
