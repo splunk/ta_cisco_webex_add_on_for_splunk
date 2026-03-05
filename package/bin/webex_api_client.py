@@ -1,7 +1,7 @@
 # encoding = utf-8
 import import_declare_test
 
-from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS, _Webex_Contact_Center_BASE_URL
+from webex_constants import _BASE_URL, _MAX_PAGE_SIZE, UNAUTHORIZED_STATUS, _Webex_Contact_Center_BASE_URL_PREFIX
 from oauth_helper import update_access_token
 import re
 
@@ -112,8 +112,8 @@ def make_get_request_to_webex(
             url = f"{protocol}//analytics.{rest}"
         
          # reconstruct the url for Webex Contact Center: search endpoints
-        if base_endpoint == _Webex_Contact_Center_BASE_URL and endpoint == 'search':
-            url = f"https://{_Webex_Contact_Center_BASE_URL}/search"
+        if base_endpoint.startswith(_Webex_Contact_Center_BASE_URL_PREFIX) and endpoint == 'search':
+            url = f"https://{base_endpoint}/search"
        
     helper.log_debug("[-] url: {} -- method: {} -- params: {}".format(url, method, params))
     headers = {
