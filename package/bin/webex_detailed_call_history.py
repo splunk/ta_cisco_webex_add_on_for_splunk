@@ -65,6 +65,13 @@ class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput):
         
         scheme.add_argument(
             smi.Argument(
+                'account_region',
+                required_on_create=False,
+            )
+        )
+        
+        scheme.add_argument(
+            smi.Argument(
                 'locations',
                 required_on_create=False,
             )

@@ -27,6 +27,7 @@ def paging_get_request_to_webex(
     params,
     response_tag,
     is_custom_endpoint=False,
+    webex_account_region="us_ca",
     method = "GET",
     payload=None
 ):
@@ -52,6 +53,7 @@ def paging_get_request_to_webex(
                 params,
                 next_page_link,
                 is_custom_endpoint=is_custom_endpoint,
+                webex_account_region=webex_account_region,
                 method = method,
                 payload = payload
             )
@@ -97,25 +99,33 @@ def make_get_request_to_webex(
     next_page_link,
     retry=True,
     is_custom_endpoint=False,
+    webex_account_region="us_ca",
     method = "GET",
     payload=None
 ):
     if next_page_link:
         url = next_page_link
         params = None
-    else:
+    else: 
         url = _BASE_URL.format(base_endpoint=base_endpoint) + endpoint
+        protocol, rest = url.split("//")
         
         # reconstruct the url for meeting/qualities and cdr_feed endpoints
-        if not is_custom_endpoint and (endpoint == "meeting/qualities" or endpoint == "cdr_feed"):
-            protocol, rest = url.split("//")
+        if not is_custom_endpoint and endpoint == "meeting/qualities":
             url = f"{protocol}//analytics.{rest}"
+        elif not is_custom_endpoint and endpoint == "cdr_feed":
+            #construct the URL depending on the region
+            if webex_account_region == "us_ca":
+                url = f"{protocol}//analytics-calling.{rest}"
+            else:
+                url = f"{protocol}//analytics-calling-{webex_account_region}.{rest}"
         
          # reconstruct the url for Webex Contact Center: search endpoints
         if base_endpoint.startswith(_Webex_Contact_Center_BASE_URL_PREFIX) and endpoint == 'search':
             url = f"https://{base_endpoint}/search"
        
     helper.log_debug("[-] url: {} -- method: {} -- params: {}".format(url, method, params))
+    
     headers = {
         "Authorization": "Bearer {access_token}".format(access_token=access_token),
     }
@@ -195,6 +205,7 @@ def make_get_request_to_webex(
                     params,
                     retry=False,
                     is_custom_endpoint=False,
+                    webex_account_region="us_ca",
                     method=method,
                     payload=payload
                 )

@@ -1176,6 +1176,31 @@
                             }
                         },
                         {
+                            "type": "singleSelect",
+                            "field": "account_region",
+                            "label": "Webex Account Region",
+                            "help": "Select the region of your Webex account.",
+                            "required": true,
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "United States/Canada",
+                                        "value": "us_ca"
+                                    },
+                                    {
+                                        "label": "Europe",
+                                        "value": "eu"
+                                    },
+                                    {
+                                        "label": "India",
+                                        "value": "in"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "us_ca"
+                        },
+                        {
                             "field": "start_time",
                             "label": "Start Time",
                             "help": "The specified time must be between 5 minutes ago and 48 hours ago, and be formatted as YYYY-MM-DDTHH:MM:SSZ",
