@@ -2,19 +2,12 @@ import json
 from datetime import datetime, timezone
 from webex_api_client import paging_get_request_to_webex
 from oauth_helper import get_valid_access_token
-from webex_utils import get_time_span
+from webex_utils import get_time_span, to_epoch_ms
 
 from webex_constants import (
    _Webex_Contact_Center_BASE_URL
 )
 
-def to_epoch_ms(iso_str):
-   """
-   Converts date string, e.g. 2026-01-01T00:00:00Z to epoch time in milliseconds.
-   Handles the 'Z' suffix by treating it as UTC (+00:00).
-   """
-   dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
-   return int(dt.timestamp() * 1000)
 
 def extract_nested_list(response):
    data_content = response.get("data", {})
