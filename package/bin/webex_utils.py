@@ -1,5 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
+def to_epoch_ms(iso_str):
+   """
+   Converts date string, e.g. 2026-01-01T00:00:00Z to epoch time in milliseconds.
+   Handles the 'Z' suffix by treating it as UTC (+00:00).
+   """
+   dt = datetime.fromisoformat(iso_str.replace('Z', '+00:00'))
+   return int(dt.timestamp() * 1000)
+
 def change_date_format(date_str, current_format, new_format):
     if not date_str:
         return None

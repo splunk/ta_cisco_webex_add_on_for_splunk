@@ -2,9 +2,8 @@ import import_declare_test
 
 import sys
 import json
-from datetime import datetime, timedelta, timezone
-from splunklib import modularinput as smi
 
+from splunklib import modularinput as smi
 
 import os
 import traceback
@@ -13,23 +12,23 @@ from splunklib import modularinput as smi
 from solnlib import conf_manager
 from solnlib import log
 from solnlib.modular_input import checkpointer
-from splunktaucclib.modinput_wrapper import base_modinput  as base_mi
-import input_module_webex_detailed_call_history as input_module
+from splunktaucclib.modinput_wrapper import base_modinput  as base_mi 
+import input_module_webex_contact_center_search as input_module
 
 
 bin_dir  = os.path.basename(__file__)
 app_name = os.path.basename(os.path.dirname(os.getcwd()))
 
-class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput): 
+class ModInputWEBEX_CONTACT_CENTER_SEARCH(base_mi.BaseModInput): 
 
     def __init__(self):
         use_single_instance = False
-        super(ModInputWEBEX_DETAILED_CALL_HISTORY, self).__init__(app_name, "webex_detailed_call_history", use_single_instance) 
+        super(ModInputWEBEX_CONTACT_CENTER_SEARCH, self).__init__(app_name, "webex_contact_center_search", use_single_instance) 
         self.global_checkbox_fields = None
 
     def get_scheme(self):
-        scheme = smi.Scheme('webex_detailed_call_history')
-        scheme.description = 'Webex Detailed Call History'
+        scheme = smi.Scheme('webex_contact_center_search')
+        scheme.description = 'Webex Contact Center - Search'
         scheme.use_external_validation = True
         scheme.streaming_mode_xml = True
         scheme.use_single_instance = False
@@ -51,6 +50,20 @@ class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput):
         
         scheme.add_argument(
             smi.Argument(
+                'webex_contact_center_region',
+                required_on_create=True,
+            )
+        )
+        
+        scheme.add_argument(
+            smi.Argument(
+                'org_id',
+                required_on_create=True,
+            )
+        )
+        
+        scheme.add_argument(
+            smi.Argument(
                 'start_time',
                 required_on_create=True,
             )
@@ -65,52 +78,24 @@ class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput):
         
         scheme.add_argument(
             smi.Argument(
-                'account_region',
-                required_on_create=False,
-            )
-        )
-        
-        scheme.add_argument(
-            smi.Argument(
-                'locations',
-                required_on_create=False,
+                'query',
+                required_on_create=True,
             )
         )
         
         return scheme
 
     def validate_input(self, definition):
-        start_time_start = definition.parameters.get('start_time', None)
-        end_time_start = definition.parameters.get('end_time', None)
-        locations = definition.parameters.get('locations', None)
-        
-        if start_time_start is not None:
-            start_time = datetime.strptime(start_time_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
-
-            if start_time <= datetime.now(timezone.utc) - timedelta(days=2):
-                raise ValueError(
-                    "Start time cannot be earlier than 48 hours ago. Please enter a date after {}.".format(datetime.strftime(datetime.now(timezone.utc) - timedelta(days=2),"%Y-%m-%d")))
-            
-        if end_time_start is not None:
-            end_time = datetime.strptime(end_time_start, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
-            
-            if end_time > datetime.now(timezone.utc) + timedelta(days=2):
-                 raise ValueError(
-                    "End time should be later than start time but no later than 48 hours.")
-                 
-        if locations is not None:
-            locations_array = locations.split(",")
-            if len(locations_array) > 10:
-                raise ValueError(
-                    "You must not add more than 10 locations.")
+        """validate the input stanza"""
+        """Implement your own validation logic to validate the input stanza configurations"""
         pass
 
     def get_app_name(self):
-        return "ta_cisco_webex_add_on_for_splunk"
+        return "ta_cisco_webex_add_on_for_splunk" 
 
     def collect_events(helper, ew):
         input_module.collect_events(helper, ew)
-
+        
     def get_account_fields(self):
         account_fields = []
         return account_fields
@@ -137,7 +122,7 @@ class ModInputWEBEX_DETAILED_CALL_HISTORY(base_mi.BaseModInput):
 
 
 if __name__ == '__main__':
-    exit_code = ModInputWEBEX_DETAILED_CALL_HISTORY().run(sys.argv)
+    exit_code = ModInputWEBEX_CONTACT_CENTER_SEARCH().run(sys.argv)
     sys.exit(exit_code)
 
 
