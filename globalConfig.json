@@ -1335,6 +1335,153 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_contact_center_search",
+                    "title": "Webex Contact Center - Search",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "type": "singleSelect",
+                            "field": "webex_contact_center_region",
+                            "label": "Webex Contact Center Region",
+                            "help": "Select the region of your Webex Contact Center.",
+                            "required": true,
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "North America (US)",
+                                        "value": "us1"
+                                    },
+                                    {
+                                        "label": "Europe (EU1)",
+                                        "value": "eu1"
+                                    },
+                                    {
+                                        "label": "Europe (EU2)",
+                                        "value": "eu2"
+                                    },
+                                    {
+                                        "label": "Asia Pacific (ANZ1)",
+                                        "value": "anz1"
+                                    },
+                                    {
+                                        "label": "Canada (CA1)",
+                                        "value": "ca1"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "us1"
+                        },
+                        {
+                            "field": "org_id",
+                            "label": "Org ID",
+                            "help": "Organization ID to use for this operation",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 0,
+                                    "maxLength": 8192,
+                                    "errorMsg": "Max length of text input is 8192"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "If required by the endpoint, add a start date and time in the format YYYY-MM-DDTHH:MM:SSZ (inclusive). It is recommended to set the start time to the current time.",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "End date and time in the format YYYY-MM-DDTHH:MM:SSZ.(Optional). End Time must be after the Start Time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "query",
+                            "label": "Query",
+                            "help": "A graphQL query specifying the task attributes needed in the response",
+                            "required": true,
+                            "type": "text"
+                        }
+                    ]
                 }
             ]
         }
