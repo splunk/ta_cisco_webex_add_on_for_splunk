@@ -1,6 +1,5 @@
 import json
-from datetime import datetime, timezone
-from webex_api_client import paging_get_request_to_webex
+import re
 from oauth_helper import get_valid_access_token
 from webex_utils import get_time_span, to_epoch_ms
 
@@ -14,6 +13,65 @@ def extract_nested_list(response):
    first_level_val = next(iter(data_content.values()), {})
    events = next(iter(first_level_val.values()), [])
    return events
+
+def prepare_paginated_query(query_str):
+    # Remove any existing hardcoded pagination blocks to start fresh
+    query_str = re.sub(r',?\s*pagination\s*:\s*\{[^}]+\}', '', query_str)
+
+    # Update the Query Header (Variable Definitions)
+    # Adds '$cursor: String' inside the query(...) parentheses
+    if '$cursor' not in query_str:
+        query_str = re.sub(
+            r'query\s*\(([^)]+)\)',
+            r'query (\1, $cursor: String)',
+            query_str
+        )
+
+    # Update the Data Object (Arguments) with 'pagination: { cursor: $cursor })'
+    if 'pagination' not in query_str:
+        query_str = re.sub(
+            r'(\b(?!query\b)\w+\s*\([^)]+)\)',
+            r'\1, pagination: { cursor: $cursor })',
+            query_str
+        )
+
+    # Universal PageInfo Injection
+    if 'pageInfo' not in query_str:
+        # Matches the main object and the first inner list block
+        query_str = re.sub(
+            r'(\w+\s*\{)(\s*\w+\s*\{[^{}]*\})',
+            r'\1\2\n    pageInfo {\n      hasNextPage\n      endCursor\n    }',
+            query_str
+        )
+
+    # Final Cleanup: Fix double commas or spaces caused by regex
+    query_str = query_str.replace(', ,', ',').replace('(,', '(').strip()
+
+    return query_str
+
+
+def find_key_recursive(obj, target_key):
+   """
+   Recursively searches for a key in a nested dictionary/list structure.
+   Returns the value of the key if found, otherwise returns None.
+   """
+   if isinstance(obj, dict):
+      #Check if the key is at the current level
+      if target_key in obj:
+         return obj[target_key]
+      #If not, drill down into each value
+      for value in obj.values():
+         result = find_key_recursive(value, target_key)
+         if result is not None:
+               return result
+   elif isinstance(obj, list):
+      #If it's a list, check each item in the list
+      for item in obj:
+         result = find_key_recursive(item, target_key)
+         if result is not None:
+               return result
+   return None
+
 
 
 def collect_events(helper, ew):
@@ -74,49 +132,64 @@ def collect_events(helper, ew):
 
    # Construct the payload
    payload = {
-      'query': opt_query,
+      'query': prepare_paginated_query(opt_query),
       'variables': variables
    }
 
    try:
-      # use helper.send_http_request to have proxy enabled
-      response = helper.send_http_request(
-         url,
-         "POST",
-         parameters=params,
-         payload=payload,
-         headers=headers,
-         cookies=None,
-         verify=False,
-         cert=None,
-         timeout=30,
-         use_proxy=True,
-      )
-      helper.log_debug(
-         "[-] GET data from webex {} API: response.status_code: {}".format(
-               response.url,
-               response.status_code,
+      has_next = True
+      all_events = []
+      while has_next:
+         # use helper.send_http_request to have proxy enabled
+         response = helper.send_http_request(
+            url,
+            "POST",
+            parameters=params,
+            payload=payload,
+            headers=headers,
+            cookies=None,
+            verify=False,
+            cert=None,
+            timeout=30,
+            use_proxy=True,
          )
-      )
-      helper.log_debug(f"[-] Request method: {response.request.method}, Request body: {response.request.body}")
-
-      data = None
-      if response.status_code != 200:
-         helper.log_error(
-               "[-] Error happened while getting date from webex {} API: code: {} - body: {}".format(
-                  response.url, response.status_code, response.text
-               )
+         helper.log_debug(
+            "[-] GET data from webex {} API: response.status_code: {}".format(
+                  response.url,
+                  response.status_code,
+            )
          )
-      else:
-         data = response.json()
-      helper.log_debug(f"[-] data: {data}")
+         helper.log_debug(f"[-] Request method: {response.request.method}, Request body: {response.request.body}")
 
+         data = None
+         if response.status_code != 200:
+            helper.log_error(
+                  "[-] Error happened while getting date from webex {} API: code: {} - body: {}".format(
+                     response.url, response.status_code, response.text
+                  )
+            )
+            break
+         else:
+            resp = response.json()
+            # Extract the list of events
+            events = extract_nested_list(resp)
+            helper.log_debug(f"[-] Found {len(events)} events in current page")
+            all_events.extend(events)
+
+            # Extract pageInfo
+            page_info = find_key_recursive(resp, "pageInfo")
+            helper.log_debug(f"[-] page_info: {page_info}")
+            has_next = page_info.get("hasNextPage", False)
+
+            if has_next:
+               payload["variables"]["cursor"] = page_info.get("endCursor")
+            else:
+               helper.log_debug("[-] Reached the last page.")
+      helper.log_debug(f"[-] Fetched {len(all_events)} data for input {input_name} for time range [{start_time} - {end_time}]")
 
       # write data into Splunk
-      if data:
-         items = extract_nested_list(data)
-         helper.log_debug(f"[-] Fetched {len(items)} data for input {input_name} for time range [{start_time} - {end_time}]")
-         for item in items:
+      if all_events:
+         for item in all_events:
             event = helper.new_event(
                index=helper.get_output_index(),
                sourcetype="cisco:webex:contact:center",
@@ -124,13 +197,10 @@ def collect_events(helper, ew):
             )
             ew.write_event(event)
          # save the end_time as the checkpoint only after data has been successfully retrieved and ingested into Splunk
-         if items:
+         helper.log_debug(f"[-] Ingested {len(all_events)} data for input {input_name} for time range [{start_time} - {end_time}]")
+         if all_events:
             helper.save_check_point(last_run_timestamp_checkpoint_key, end_time)
             helper.log_debug(f"[-] Saved checkpoint - end time: {end_time}.")
    except Exception as e:
       helper.log_error("[-] Request failed to get date from webex {} API: {}".format(url, repr(e)))
       raise e
-
-   
-
-   
