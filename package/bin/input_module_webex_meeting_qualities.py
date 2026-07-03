@@ -85,19 +85,34 @@ def collect_events(helper, ew):
 
         if meeting_start_time > last_checkpoint_time and meeting.get("id", None):
             meetings_qualities_params = {"meetingId": meeting["id"], "max": 1000}
-            meetings_qualities_data_list = paging_get_request_to_webex(
-                helper,
-                base_endpoint,
-                _GET_MEETING_QUALITIES,
-                access_token,
-                refresh_token,
-                account_name,
-                client_id,
-                client_secret,
-                meetings_qualities_params,
-                _RESPONSE_TAG_MAP[_GET_MEETING_QUALITIES],
-                webex_account_region=account_region
-            )
+            # A single meeting's qualities fetch can fail transiently (e.g. Webex 502) or
+            # PERMANENTLY: quality data expires 14 days after the meeting, after which this
+            # endpoint returns 425 ("Quality data is not available for this meeting because
+            # it has expired after 14 days") on every call, forever. Do NOT let one meeting
+            # abort the whole run: that skips save_check_point() below, so the checkpoint
+            # never advances and EVERY meeting in the window is re-ingested on every interval
+            # (unbounded duplicates). Log and skip this meeting; the checkpoint still advances
+            # past it via the other meetings in the window. Trade-off: a persistently-failing
+            # meeting's qualities are not captured -- acceptable vs. stalling all meetings.
+            try:
+                meetings_qualities_data_list = paging_get_request_to_webex(
+                    helper,
+                    base_endpoint,
+                    _GET_MEETING_QUALITIES,
+                    access_token,
+                    refresh_token,
+                    account_name,
+                    client_id,
+                    client_secret,
+                    meetings_qualities_params,
+                    _RESPONSE_TAG_MAP[_GET_MEETING_QUALITIES],
+                    webex_account_region=account_region
+                )
+            except Exception as e:
+                helper.log_error(
+                    "[-] Skipping meeting {} for this run due to qualities API error: {}".format(meeting["id"], e)
+                )
+                continue
             helper.log_debug("[-] meetings qualities data list size: {} for meeting: {}".format(len(meetings_qualities_data_list), meeting["id"]))
 
             if len(meetings_qualities_data_list) > 0:
@@ -117,8 +132,11 @@ def collect_events(helper, ew):
                         )
                         ew.write_event(meeting_quality_event)
                 except Exception as e:
-                    helper.log_error("[-] Error happened while writing meetings qualities into Splunk: {}".format(e))
-                    raise e
+                    # Same rationale as the fetch above: a write/parse failure for one
+                    # meeting must not abort the run and block the checkpoint save. Log
+                    # and move on to the next meeting.
+                    helper.log_error("[-] Error happened while writing meetings qualities into Splunk for meeting {}: {}".format(meeting["id"], e))
+                    continue
                 latest_time = last_checkpoint_time if latest_time is None else latest_time
                 latest_time = max(latest_time, meeting_start_time)
 

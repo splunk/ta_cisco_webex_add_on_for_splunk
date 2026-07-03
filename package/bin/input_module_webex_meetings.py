@@ -86,19 +86,32 @@ def collect_events(helper, ew):
         if user.get("emails", None):
             for email in user["emails"]:
                 meetings_params["hostEmail"] = email
-                # fetching the meetings data for each user
-                meetings = paging_get_request_to_webex(
-                    helper,
-                    base_endpoint,
-                    _MEETINGS_ENDPOINT,
-                    access_token,
-                    refresh_token,
-                    account_name,
-                    client_id,
-                    client_secret,
-                    meetings_params,
-                    _RESPONSE_TAG_MAP[_MEETINGS_ENDPOINT],
-                )
+                # fetching the meetings data for each user.
+                # A single host can fail transiently (e.g. Webex 502) or persistently
+                # (a host the API consistently chokes on). Do NOT let one host abort the
+                # whole run: that skips save_check_point() at the end, so the checkpoint
+                # never advances and EVERY meeting is re-ingested on every interval
+                # (unbounded duplicates). Log and skip this host; the checkpoint still
+                # advances for the rest. Trade-off: a persistently-failing host's meetings
+                # in this window are not captured -- acceptable vs. stalling all hosts.
+                try:
+                    meetings = paging_get_request_to_webex(
+                        helper,
+                        base_endpoint,
+                        _MEETINGS_ENDPOINT,
+                        access_token,
+                        refresh_token,
+                        account_name,
+                        client_id,
+                        client_secret,
+                        meetings_params,
+                        _RESPONSE_TAG_MAP[_MEETINGS_ENDPOINT],
+                    )
+                except Exception as e:
+                    helper.log_error(
+                        "[-] Skipping host {} for this run due to API error: {}".format(email, e)
+                    )
+                    continue
                 helper.log_debug("[-] meetings data size: {} for user: {}".format(len(meetings), email))
                 # helper.log_debug("[-] meetings data for user: {}\n{}".format(email, meetings))
 
@@ -134,10 +147,13 @@ def collect_events(helper, ew):
                             )
                             ew.write_event(meeting_event)
                 except Exception as e:
+                    # Same rationale as the fetch above: a write/parse failure for one
+                    # host must not abort the run and block the checkpoint save. Log and
+                    # move on to the next host.
                     helper.log_error(
-                        "[-] Error happened while writing data into Splunk: {}".format(e)
+                        "[-] Error happened while writing data into Splunk for host {}: {}".format(email, e)
                     )
-                    raise e
+                    continue
     # save the end_time of the last round as checkpoint for next ingestion
     helper.save_check_point(last_timestamp_checkpoint_key, end_time)
     helper.log_debug("[-] Saved checkpoint: Last run time saved: {}".format(helper.get_check_point(last_timestamp_checkpoint_key)))

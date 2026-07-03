@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- `webex_meetings` input re-ingested every meeting on every interval whenever a single host's meetings request failed (e.g. a Webex `502`). The checkpoint is saved only after the entire per-host loop completes, so one failing host aborted the run before `save_check_point()`, leaving the checkpoint unset and the dedup comparison permanently falling back to `start_time`. The per-host fetch and write now log and continue instead of raising, so the checkpoint advances and duplicate ingestion stops.
+- `webex_meeting_qualities` input had the same defect in its per-meeting loop: the checkpoint is saved only after the entire loop completes, so a single meeting's qualities request failing aborted the run before `save_check_point()`. This is triggered permanently rather than transiently — quality data expires 14 days after a meeting, after which `GET /v1/meeting/qualities` returns `425` ("Quality data is not available for this meeting because it has expired after 14 days") for that meeting on every run. With the checkpoint pinned, every meeting in the window was re-ingested every interval. The per-meeting qualities fetch and write now log and continue instead of raising, so the checkpoint advances past expired/failing meetings and duplicate ingestion stops.
+
 ## [v1.4.2] - 2026-05-28
 
 ### Fixed
