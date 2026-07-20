@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.4.3",
+        "version": "1.4.4",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
@@ -1527,6 +1527,134 @@
                                 ]
                             },
                             "defaultValue": "AAR"
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_inventory",
+                    "title": "Webex Inventory",
+                    "description": "This input makes a request to a user-specified Webex API endpoint (GET or POST) on a fixed interval and indexes the response as events. Each run is tagged with a unique, sortable batch_id (epoch timestamp), and no checkpointing or deduplication is applied at ingest time — every run re-indexes the full response. This is intended for inventory-style endpoints (e.g., devices, locations, workspaces) .",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "webex_endpoint",
+                            "label": "API Endpoint",
+                            "help": "The endpoint of the Webex API. Example: devices, devices/12345678, messages",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^(?!/).*",
+                                    "errorMsg": "Do not include a leading slash (/) before the endpoint."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "webex_base_url",
+                            "label": "Webex Base API URL",
+                            "type": "text",
+                            "defaultValue": "webexapis.com",
+                            "required": true,
+                            "help": "Enter the base URL for the endpoint (usually webexapis.com). If the endpoint requires the analytics:read_all scope, you may need to use analytics.webexapis.com. Please check the endpoint documentation to confirm which to use."
+                        },
+                        {
+                            "field": "method",
+                            "label": "Request Method",
+                            "type": "singleSelect",
+                            "required": true,
+                            "options": {
+                                "disableSearch": true,
+                                "autoCompleteFields": [
+                                    {
+                                        "label": "GET",
+                                        "value": "GET"
+                                    },
+                                    {
+                                        "label": "POST",
+                                        "value": "POST"
+                                    }
+                                ]
+                            },
+                            "defaultValue": "GET"
+                        },
+                        {
+                            "field": "query_params",
+                            "label": "Query Params",
+                            "help": "Add as comma-separated values additional query params to be included in the call of the API, each param will be concatenated to the URL you previously entered. Example: locationId=0000000, messageId=0000000, teamId=0000000.",
+                            "required": false,
+                            "type": "text"
+                        },
+                        {
+                            "field": "request_body",
+                            "label": "Request Body",
+                            "help": "Please enter it as a JSON-formatted string. Example: {\"query\":\"query { devices(type: CONTROLLER) { hostName ipAddress version } }\",\"variables\":{\"startTime\":1672531200000,\"endTime\":1675209600000}}",
+                            "required": false,
+                            "type": "text"
+                        },
+                        {
+                            "field": "sourcetype",
+                            "label": "Sourcetype",
+                            "help": "Enter a sourcetype for the data input",
+                            "required": true,
+                            "type": "text"
                         }
                     ]
                 }

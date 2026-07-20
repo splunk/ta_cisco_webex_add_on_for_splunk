@@ -5,6 +5,7 @@
 | Splunk Input       | Webex Endpoint        | Splunk Sourcetype               | Required Scopes                 |
 |--------------------|-----------------------|---------------------------------|---------------------------------|
 | Webex Generic Endpoint                | [Webex API](https://developer.webex.com/messaging/docs/basics)                       | cisco:webex:<**API Endpoint**>       | Refer to the endpoint documentation to confirm the required scopes |
+| Webex Inventory       | [Any Webex API Endpoint](https://developer.webex.com/docs/basics)                       | User-defined (e.g., cisco:webex:inventory:devices)         | Refer to the endpoint documentation to confirm the required scopes |
 | Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         | meeting:admin_schedule_read spark-admin:people_read   |
 | Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         | meeting:admin_schedule_read meeting:admin_participants_read meeting:admin_config_read    |
 | Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             | meeting:admin_schedule_read meeting:admin_participants_read meeting:admin_config_read  |
@@ -91,6 +92,28 @@ Most endpoints require a **GET** request. If a **POST** request is necessary, se
     - **Request Method**(_required_): Select the Request Method.
     - **Query Params**(_optional_): Include any query parameters for the endpoint. For multiple parameters, enter them as comma-separated values (e.g. `locationId=0000000, messageId=0000000, teamId=0000000`).
     - **Request Body**(_optional_): Please enter it as a JSON-formatted string. Example: {"query":"query { devices(type: CONTROLLER) { hostName ipAddress version } }","variables":{"startTime":1672531200000,"endTime":1675209600000}}
+- Click on the `Add` green button on the bottom right of the pop-up box.
+
+
+**Webex Inventory Input**
+
+The **Webex Inventory** input allows you to query any Webex API endpoint on a fixed interval and index the response as events. This input is designed for inventory-style endpoints that return a collection of resources (e.g., devices, locations, workspaces, people).
+
+Unlike the Generic Endpoint input, Webex Inventory does not maintain state between runs - it re-indexes the full response from the API endpoint on each interval. This makes it ideal for tracking complete collections of resources that don't change frequently. Each run is tagged with a unique, sortable batch_id (epoch timestamp) for easy correlation of events from the same collection run.
+
+- Click on the `Inputs` button on the top left corner.
+- Click on `Create New Input` button on the top right corner.
+- Enter the following details in the pop-up box:
+    - **Name** (_required_): Unique name for the data input.
+    - **Interval** (_required_): Time interval of input in seconds.
+    - **Index** (_required_): Index for storing data.
+    - **Global Account** (_required_): Select the account created during Configuration.
+    - **API Endpoint** (_required_): The Webex API endpoint to query (e.g., `devices`, `workspaces`, `locations`). Do not include a leading slash.
+    - **Webex Base API URL** (_required_): Enter the base URL for the endpoint. Usually `webexapis.com`, but some endpoints may require different base URLs (e.g., `analytics.webexapis.com` for analytics-related endpoints). Default: `webexapis.com`.
+    - **Request Method** (_required_): Select `GET` (default) or `POST`. Most endpoints use GET.
+    - **Query Params** (_optional_): Include any query parameters for the endpoint as comma-separated values (e.g., `max=500, type=RoomDevice`).
+    - **Request Body** (_optional_): For POST requests, enter the payload as a JSON-formatted string.
+    - **Sourcetype** (_required_): Enter a sourcetype name for identifying the data in Splunk (e.g., `cisco:webex:inventory:devices`).
 - Click on the `Add` green button on the bottom right of the pop-up box.
 
 
