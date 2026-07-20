@@ -12,6 +12,7 @@ Here are the endpoints and their mapping soucetypes.
 | Splunk Input       | Webex Endpoint        | Splunk Sourcetype               |
 |--------------------|-----------------------|---------------------------------|
 | Webex Generic Endpoint                | [Webex API](https://developer.webex.com/messaging/docs/basics)                       | cisco:webex:<**API Endpoint**>       |
+| Webex Inventory       | [Any Webex API Endpoint](https://developer.webex.com/docs/basics)                       | User-defined (e.g., cisco:webex:inventory:devices)         |
 | Webex Scheduled Meetings       | [Meetings](https://developer.webex.com/docs/api/v1/meetings/list-meetings)                       | cisco:webex:meetings         |
 | Webex Meetings Summary Report       | [Meeting Usage Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-usage-reports)                       | cisco:webex:meeting:usage:reports         |
 | Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             |
