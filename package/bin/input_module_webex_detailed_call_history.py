@@ -187,20 +187,34 @@ def collect_events(helper, ew):
                 )
                 raise e
 
+        buffer_boundary_dt = now - timedelta(hours=LATE_DATA_BUFFER_HOURS)
+
         if chunk_last_report_time is not None:
             # Chunk had data — save the max Report time and continue to next chunk.
             helper.save_check_point(last_timestamp_checkpoint_key, chunk_last_report_time)
             helper.log_debug("[-] Checkpoint saved: {} after chunk [{} - {}]".format(chunk_last_report_time, chunk_start, chunk_end))
-        elif chunk_end_dt < now - timedelta(hours=LATE_DATA_BUFFER_HOURS):
-            # Empty chunk that is older than the late-data buffer — safe to advance
+        elif chunk_end_dt <= buffer_boundary_dt:
+            # Empty chunk entirely outside the late-data buffer — safe to advance
             # past it since any server-side delay would have resolved by now.
             helper.save_check_point(last_timestamp_checkpoint_key, chunk_end)
             helper.log_debug("[-] Checkpoint advanced (empty, outside late-data buffer): {} after chunk [{} - {}]".format(chunk_end, chunk_start, chunk_end))
+        elif chunk_start_dt < buffer_boundary_dt:
+            # Empty chunk that spans the buffer boundary.  The portion before the
+            # boundary is safe to skip; advance the checkpoint to the boundary so
+            # the next run only re-queries the recent risky portion.
+            safe_end = buffer_boundary_dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+            helper.save_check_point(last_timestamp_checkpoint_key, safe_end)
+            helper.log_info(
+                "[-] Empty chunk [{} - {}] spans the {}-hour late-data buffer boundary; "
+                "checkpoint advanced to {} (safe portion). "
+                "Remaining window will be retried on next run.".format(
+                    chunk_start, chunk_end, LATE_DATA_BUFFER_HOURS, safe_end
+                )
+            )
+            break
         else:
-            # Empty chunk within the late-data buffer window.  Server-side delays
-            # may mean records for this window haven't arrived yet.  Leave the
-            # checkpoint unchanged and stop processing — this window and all
-            # subsequent ones will be retried on the next run.
+            # Empty chunk entirely within the late-data buffer window.
+            # Leave the checkpoint unchanged and stop processing.
             helper.log_info(
                 "[-] Empty chunk [{} - {}] is within the {}-hour late-data buffer; "
                 "checkpoint not advanced, will retry on next run.".format(
