@@ -48,6 +48,7 @@ def paging_get_request_to_webex(
     next_page_link = None
     pagination_count = 0   # counts requests after the initial one
     window_start = None    # start of the current 60-second pagination window
+    _MAX_RETRIES = 3       # max retries per request on 429
 
     try:
         while paging:
@@ -73,22 +74,34 @@ def paging_get_request_to_webex(
                     window_start = time.time()
 
             helper.log_debug("[-] next_page_link {}".format(next_page_link))
-            data,response_header = make_get_request_to_webex(
-                helper,
-                base_endpoint,
-                endpoint,
-                access_token,
-                refresh_token,
-                account_name,
-                client_id,
-                client_secret,
-                params,
-                next_page_link,
-                is_custom_endpoint=is_custom_endpoint,
-                webex_account_region=webex_account_region,
-                method = method,
-                payload = payload
-            )
+
+            # Retry loop for 429 responses
+            for attempt in range(1, _MAX_RETRIES + 1):
+                try:
+                    data, response_header = make_get_request_to_webex(
+                        helper,
+                        base_endpoint,
+                        endpoint,
+                        access_token,
+                        refresh_token,
+                        account_name,
+                        client_id,
+                        client_secret,
+                        params,
+                        next_page_link,
+                        is_custom_endpoint=is_custom_endpoint,
+                        webex_account_region=webex_account_region,
+                        method=method,
+                        payload=payload
+                    )
+                    break  # success — exit retry loop
+                except Exception as exc:
+                    if attempt < _MAX_RETRIES and getattr(getattr(exc, 'response', None), 'status_code', None) == 429:
+                        helper.log_warning(
+                            "[-] Retrying after 429 (attempt {}/{})".format(attempt, _MAX_RETRIES)
+                        )
+                        continue
+                    raise
 
             if next_page_link is not None:
                 pagination_count += 1
@@ -191,7 +204,17 @@ def make_get_request_to_webex(
         helper.log_debug(f"[-] Request method: {response.request.method}, Request body: {response.request.body}")
 
         data = None
-        if response.status_code != 200:
+        if response.status_code == 429:
+            retry_after = int(response.headers.get('Retry-After', 60))
+            helper.log_warning(
+                "[-] Rate limited (429) by webex {} API; sleeping {} s before retry".format(
+                    endpoint, retry_after
+                )
+            )
+            time.sleep(retry_after)
+            # Re-raise so the caller (paging_get_request_to_webex) retries the request
+            response.raise_for_status()
+        elif response.status_code != 200:
             helper.log_error(
                 "[-] Error happened while getting date from webex {} API: code: {} - body: {}\n[!] You need to re-configure the account in configuration page".format(
                     response.url, response.status_code, response.text
