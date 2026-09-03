@@ -165,12 +165,12 @@ def make_get_request_to_webex(
                 url = f"{protocol}//analytics.webexgov.us/v1/meeting/qualities"
             else:
                 url = f"{protocol}//analytics-{webex_account_region}.{rest}"
-        elif not is_custom_endpoint and endpoint == "cdr_feed":
+        elif not is_custom_endpoint and endpoint in ("cdr_feed", "cdr_stream"):
             #construct the URL depending on the region
             if webex_account_region == "us_ca":
                 url = f"{protocol}//analytics-calling.{rest}"
             elif webex_account_region == "gov":
-                url = f"{protocol}//analytics-calling-{webex_account_region}.webexapis.com/v1/cdr_feed"
+                url = f"{protocol}//analytics-calling-{webex_account_region}.webexapis.com/v1/{endpoint}"
             else:
                 url = f"{protocol}//analytics-calling-{webex_account_region}.{rest}"
        

@@ -1228,7 +1228,7 @@
                         {
                             "field": "start_time",
                             "label": "Start Time",
-                            "help": "The specified time must be between 5 minutes ago and 48 hours ago, and be formatted as YYYY-MM-DDTHH:MM:SSZ",
+                            "help": "Records older than 2 hours are collected from the CDR Feed API (history), and newer records are collected from the CDR Stream API (near real-time). The start time can be up to 30 days ago and must be formatted as YYYY-MM-DDTHH:MM:SSZ. Setting a very old start time (for example, 30 days ago) means the first run has to backfill a large amount of data and will take significantly longer to complete.",
                             "required": true,
                             "type": "text",
                             "validators": [
@@ -1242,7 +1242,7 @@
                         {
                             "field": "end_time",
                             "label": "End Time",
-                            "help": "The specified time should be later than start time but no later than 48 hours, and be formatted as YYYY-MM-DDTHH:MM:SSZ",
+                            "help": "The specified time should be later than start time and at least 1 minute in the past, and be formatted as YYYY-MM-DDTHH:MM:SSZ. Leave blank for continuous near real-time collection.",
                             "required": false,
                             "type": "text",
                             "validators": [
