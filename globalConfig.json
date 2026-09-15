@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.5.0",
+        "version": "1.6.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
@@ -66,7 +66,8 @@
                             "type": "oauth",
                             "options": {
                                 "auth_type": [
-                                    "oauth"
+                                    "oauth",
+                                    "service_app"
                                 ],
                                 "oauth": [
                                     {
@@ -389,9 +390,38 @@
                                         "help": {
                                             "text": "Select the authorization scopes. Please ensure that the scopes entered here match those selected in your Webex Integration."
                                         },
-                                        "required": true
+                                        "required": false
                                     }
                                 ],
+                                "service_app": [
+                                    {
+                                        "label": "Client Id",
+                                        "field": "service_app_client_id",
+                                        "help": "Enter the Client ID of your Webex Service App."
+                                    },
+                                    {
+                                        "label": "Client Secret",
+                                        "field": "service_app_client_secret",
+                                        "encrypted": true,
+                                        "help": "Enter the Client Secret of your Webex Service App."
+                                    },
+                                    {
+                                        "label": "Access Token",
+                                        "field": "service_app_access_token",
+                                        "encrypted": true,
+                                        "help": "Enter the Access Token generated after an administrator authorizes the Service App."
+                                    },
+                                    {
+                                        "label": "Refresh Token",
+                                        "field": "service_app_refresh_token",
+                                        "encrypted": true,
+                                        "help": "Enter the Refresh Token generated after an administrator authorizes the Service App. It is used to automatically obtain new access tokens."
+                                    }
+                                ],
+                                "oauth_type_labels": {
+                                    "oauth": "Webex Integration - OAuth 2.0",
+                                    "service_app": "Webex Service App"
+                                },
                                 "auth_label": "Auth Type",
                                 "oauth_popup_width": 600,
                                 "oauth_popup_height": 600,
