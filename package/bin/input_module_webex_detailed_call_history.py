@@ -210,6 +210,7 @@ def collect_events(helper, ew):
 
         chunk_last_report_time = None  # running max Report time (raw string, for the checkpoint)
         chunk_last_report_dt = None    # its datetime, used for the max comparison
+        ingested_count = 0             # number of events actually written to Splunk this chunk
 
         # Parse the de-dup lower bound once per chunk (it only changes between chunks).
         last_saved_report_dt = (
@@ -245,6 +246,7 @@ def collect_events(helper, ew):
                 )
 
                 ew.write_event(meeting_event)
+                ingested_count += 1
 
             except Exception as e:
                 helper.log_error(
@@ -253,6 +255,8 @@ def collect_events(helper, ew):
                     )
                 )
                 raise e
+
+        helper.log_debug("[-] Ingested {} event(s) into Splunk for {} chunk [{} - {}]".format(ingested_count, endpoint, chunk_start, chunk_end))
 
         if chunk_last_report_time is not None:
             # Chunk had data — the max Report time always wins, for both cdr_feed and
