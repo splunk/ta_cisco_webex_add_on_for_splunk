@@ -10,7 +10,7 @@
 | Webex Meetings Summary Report       | [Meeting Attendee Reports](https://developer.webex.com/docs/api/v1/meetings-summary-report/list-meeting-attendee-reports)                       | cisco:webex:meeting:attendee:reports             | meeting:admin_schedule_read meeting:admin_participants_read meeting:admin_config_read  |
 | Webex Admin Audit Events       | [Admin Audit Events](https://developer.webex.com/docs/api/v1/admin-audit-events)                               | cisco:webex:admin:audit:events              | audit:events_read spark:organizations_read  |
 | Webex Meeting Qualities       | [Meeting Qualities](https://developer.webex.com/docs/api/v1/meeting-qualities/get-meeting-qualities)                               | cisco:webex:meeting:qualities              | analytics:read_all   |
-| Webex Detailed Call History       | [Detailed Call History](https://developer.webex.com/docs/api/v1/reports-detailed-call-history/get-detailed-call-history)                               | cisco:webex:call:detailed_history             | spark-admin:calling_cdr_read |
+| Webex Detailed Call History       | [CDR Feed](https://developer.webex.com/calling/docs/api/v1/reports-detailed-call-history/get-detailed-call-history) / [CDR Stream](https://developer.webex.com/calling/docs/api/v1/reports-live-stream-detailed-call-history/get-live-stream-detailed-call-history)                               | cisco:webex:call:detailed_history             | spark-admin:calling_cdr_read |
 | Webex Security Audit Events       | [Security Audit Events](https://developer.webex.com/admin/docs/api/v1/security-audit-events/list-security-audit-events)                               | cisco:webex:security:audit:events            | audit:events_read spark:organizations_read |
 | Webex Contact Center - Search       | [Webex Contact Center - Search](https://developer.webex.com/webex-contact-center/docs/api/v1/search/search)                               | cjp:config or cjp:config_read            | cisco:webex:contact:center:AAR cisco:webex:contact:center:ASR cisco:webex:contact:center:CAR cisco:webex:contact:center:CSR |
 
@@ -194,15 +194,25 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
 
 **Webex Detailed Call History**
 
-The **Webex Detailed Call History** input is used to fetch the data from [Webex Detailed Call History](https://developer.webex.com/docs/api/v1/reports-detailed-call-history/get-detailed-call-history) endpoint. It allows users to retrieve detailed data from calls. Only organization administrators can retrieve the data and it requires the administrator role "Webex Calling Detailed Call History API access" to be enabled.
+The **Webex Detailed Call History** input retrieves detailed call records (CDRs) for your organization. Only organization administrators can retrieve the data, and it requires the administrator role "Webex Calling Detailed Call History API access" to be enabled.
 
-The `Start Time` is required. Set the starting date and time to fetch the calls data. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). The Start Time **MUST** must be between 5 minutes ago and 48 hours ago, more than that is not possible.
+The input collects data from two complementary Webex Calling Detailed Call History APIs — [CDR Feed](https://developer.webex.com/calling/docs/api/v1/reports-detailed-call-history/get-detailed-call-history) and [CDR Stream](https://developer.webex.com/calling/docs/api/v1/reports-live-stream-detailed-call-history/get-live-stream-detailed-call-history) — and switches between them automatically based on how old the data being collected is:
 
-The `End Time` is optional. If you set it to be a specific date, only data within the time range from Start time to End time will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z). Leave it blank if an ongoing ingestion mode is needed. The End Time **MUST** be later than the Start Time but no later than 48 hours.
+- **CDR Feed** (`/v1/cdr_feed`, history): can query any window between 5 minutes ago and 30 days ago, in up to 12-hour chunks per request. Used to backfill older records efficiently.
+- **CDR Stream** (`/v1/cdr_stream`, near real-time): records become available about 1 minute after the call data reaches the Webex Calling cloud, but the start time cannot be older than 12 hours and only 2 hours of records can be pulled per request. Used for the most recent data once collection has caught up to near real-time.
+
+Both APIs return the same records. A time chunk is served by **CDR Stream** once its start time is within 2 hours of now; anything older is served by **CDR Feed** in 12-hour chunks, capped at that 2-hour boundary so CDR Stream cleanly handles the recent remainder. To respect the CDR rate limits (1 initial request per minute), the input waits 60 seconds between chunks.
+
+The `Start Time` is required. Set the starting date and time to fetch the calls data. The Start time is inclusive and should be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z). The Start Time **MUST** be no earlier than 30 days ago, more than that is not possible.
+
+The `End Time` is optional. If you set it to be a specific date, only data within the time range from Start time to End time will be ingested. The format should be YYYY-MM-DDTHH:MM:SSZ (example:2023-02-01T00:00:00Z). Leave it blank if an ongoing ingestion mode is needed. The End Time **MUST** be later than the Start Time and at least 1 minute in the past.
 
 The `Locations` field is also optional. You can include up to 10 comma-separed locations, and each location name should the same as shown in the Control Hub.
 
-The input uses checkpointing to avoid ingesting duplicate data. After the initial run, the script will save the latest call start time as the checkpoint, and will be used as the `Start Time` (advancing by one millisecond) for the next run.
+The input uses checkpointing to avoid ingesting duplicate data, and the saved checkpoint is used as the `Start Time` for the next run:
+
+- **When a chunk returns new records**, the checkpoint is set to the maximum **Report time** of the records that were actually written. Because the Webex CDR `startTime` filter is inclusive at second granularity, any record whose Report time is at or before the saved checkpoint is skipped before indexing to prevent duplicates.
+- **When a chunk returns no new records** (either genuinely empty or every record was skipped as a duplicate), the checkpoint is advanced using the chunk's **end time** so collection can move forward. For **CDR Stream** the checkpoint always advances to the chunk end. For **CDR Feed** the checkpoint advances to the chunk end only if the chunk is fully outside the 2-hour late-data buffer; if it straddles the buffer boundary it advances only to that boundary and stops, and if it falls entirely within the buffer the checkpoint is left unchanged so the window is retried on the next run.
 
 - Click on the `Inputs` button on the top left corner.
 - Click on `Create New Input` button on the top right corner.
@@ -211,8 +221,8 @@ The input uses checkpointing to avoid ingesting duplicate data. After the initia
     - **Interval** (_required_): Time interval of input in seconds.
     - **Index** (_required_): Index for storing data.
     - **Global Account** (_required_): Select the account created during Configuration.
-    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The Start Time **MUST** must be between 5 minutes ago and 48 hours ago.
-    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. The End Time **MUST** be later than the Start Time but no later than 48 hours.
+    - **Start Time** (_required_): Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The Start Time **MUST** be no earlier than 30 days ago.
+    - **End Time** (_optional_): End date and time in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed. The End Time **MUST** be later than the Start Time and at least 1 minute in the past.
     - **Locations** (_optional_): Enter up to 10 locations separated by a comma.
 - Click on the `Add` green button on the bottom right of the pop-up box.
 

@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.5.1] - 2026-09-15
+
+### Fixed
+
+- Fixed duplicate ingestion in the Detailed Call History input where the CDR Stream checkpoint could get stuck on the most recent record. The Webex CDR `startTime` filter is inclusive at second granularity, so the record at the checkpoint boundary was returned and re-ingested on every run. Records at or before the saved checkpoint are now skipped before indexing, and timestamp comparisons use `datetime` (instead of string) so varying millisecond precision is ordered correctly.
+
 ## [v1.5.0] - 2026-09-08
 
 ### Added
