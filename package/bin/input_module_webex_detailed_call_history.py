@@ -142,6 +142,14 @@ def collect_events(helper, ew):
     chunk_start_dt = start_dt
     is_first_chunk = True
 
+    # Running lower bound for de-duplication.  The cdr_stream/cdr_feed startTime
+    # filter is inclusive at second granularity and ignores the sub-second/+1 ms
+    # advance, so the record at the exact checkpoint second is returned again on
+    # every run (and at each chunk boundary within a run).  Skip any record whose
+    # Report time is <= the last saved checkpoint to avoid re-ingesting it.
+    # Seeded with the previous run's checkpoint.
+    last_saved_report_time = timestamp
+
     while chunk_start_dt < end_dt:
         # Choose the endpoint for this chunk based on how recent its start time is.
         use_stream = chunk_start_dt >= stream_boundary_dt
@@ -200,15 +208,34 @@ def collect_events(helper, ew):
 
         helper.log_debug("[-] detailed call history response size: {} for {} chunk [{} - {}]".format(len(calls), endpoint, chunk_start, chunk_end))
 
-        chunk_last_report_time = None  # running max Report time seen in this chunk
+        chunk_last_report_time = None  # running max Report time (raw string, for the checkpoint)
+        chunk_last_report_dt = None    # its datetime, used for the max comparison
+        ingested_count = 0             # number of events actually written to Splunk this chunk
+
+        # Parse the de-dup lower bound once per chunk (it only changes between chunks).
+        last_saved_report_dt = (
+            datetime.strptime(last_saved_report_time, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+            if last_saved_report_time is not None else None
+        )
 
         for call in calls:
             try:
                 report_time_str = call["Report time"]
-                call_report_time_ts = datetime.strptime(report_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                call_report_time_dt = datetime.strptime(report_time_str, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
 
-                if chunk_last_report_time is None or report_time_str > chunk_last_report_time:
+                # Skip records at or before the last checkpoint.  Compared as datetime
+                # (not raw string) so records with differing millisecond precision are
+                # ordered correctly.  The API's startTime filter is inclusive at second
+                # granularity, so the boundary record keeps being returned and would
+                # otherwise be written as a duplicate (leaving the checkpoint stuck).
+                if last_saved_report_dt is not None and call_report_time_dt <= last_saved_report_dt:
+                    continue
+
+                call_report_time_ts = call_report_time_dt.timestamp()
+
+                if chunk_last_report_dt is None or call_report_time_dt > chunk_last_report_dt:
                     chunk_last_report_time = report_time_str
+                    chunk_last_report_dt = call_report_time_dt
 
                 meeting_event = helper.new_event(
                                     source=helper.get_input_type() + "://" + helper.get_input_stanza_names(),
@@ -219,6 +246,7 @@ def collect_events(helper, ew):
                 )
 
                 ew.write_event(meeting_event)
+                ingested_count += 1
 
             except Exception as e:
                 helper.log_error(
@@ -228,14 +256,19 @@ def collect_events(helper, ew):
                 )
                 raise e
 
+        helper.log_debug("[-] Ingested {} event(s) into Splunk for {} chunk [{} - {}]".format(ingested_count, endpoint, chunk_start, chunk_end))
+
         if chunk_last_report_time is not None:
             # Chunk had data — the max Report time always wins, for both cdr_feed and
             # cdr_stream.  The checkpoint-advance logic below only applies to empty chunks.
             helper.save_check_point(last_timestamp_checkpoint_key, chunk_last_report_time)
+            last_saved_report_time = chunk_last_report_time
             helper.log_debug("[-] Checkpoint saved: {} after {} chunk [{} - {}]".format(chunk_last_report_time, endpoint, chunk_start, chunk_end))
         elif use_stream:
-            # Empty cdr_stream chunk — advance the checkpoint to the chunk end.
+            # Empty cdr_stream chunk (or all records were duplicates skipped above) —
+            # advance the checkpoint to the chunk end.
             helper.save_check_point(last_timestamp_checkpoint_key, chunk_end)
+            last_saved_report_time = chunk_end
             helper.log_debug("[-] Checkpoint advanced (empty cdr_stream): {} after chunk [{} - {}]".format(chunk_end, chunk_start, chunk_end))
         else:
             buffer_boundary_dt = now - timedelta(hours=LATE_DATA_BUFFER_HOURS)
@@ -244,6 +277,7 @@ def collect_events(helper, ew):
                 # Empty chunk entirely outside the late-data buffer — safe to advance
                 # past it since any server-side delay would have resolved by now.
                 helper.save_check_point(last_timestamp_checkpoint_key, chunk_end)
+                last_saved_report_time = chunk_end
                 helper.log_debug("[-] Checkpoint advanced (empty, outside late-data buffer): {} after chunk [{} - {}]".format(chunk_end, chunk_start, chunk_end))
             elif chunk_start_dt < buffer_boundary_dt:
                 # Empty chunk that spans the buffer boundary.  The portion before the
