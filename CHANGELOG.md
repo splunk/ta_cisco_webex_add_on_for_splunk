@@ -3,11 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v1.6.0] - 2026-09-08
+## [v1.6.0] - 2026-09-16
 
 ### Added
 
 - Added Service App authentication as a new authorization option for the account. Administrators can now select "Service App" in the Auth Type dropdown and provide the Service App Client ID, Client Secret, Access Token, and Refresh Token. The add-on automatically refreshes the access token using the refresh token, the same way it does for the OAuth 2.0 Integration flow.
+
+## [v1.5.1] - 2026-09-15
+
+### Fixed
+
+- Fixed duplicate ingestion in the Detailed Call History input where the CDR Stream checkpoint could get stuck on the most recent record. The Webex CDR `startTime` filter is inclusive at second granularity, so the record at the checkpoint boundary was returned and re-ingested on every run. Records at or before the saved checkpoint are now skipped before indexing, and timestamp comparisons use `datetime` (instead of string) so varying millisecond precision is ordered correctly.
 
 ## [v1.5.0] - 2026-09-08
 
