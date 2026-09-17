@@ -7,7 +7,7 @@ from webex_constants import (
     _RESPONSE_TAG_MAP
 )
 from webex_api_client import paging_get_request_to_webex
-from oauth_helper import get_valid_access_token
+from oauth_helper import get_valid_access_token, get_account_oauth_config
 from webex_utils import change_date_format, get_time_span
 
 '''
@@ -31,13 +31,10 @@ def collect_events(helper, ew):
     # Get account info
     opt_global_account = helper.get_arg("global_account")
     account_name = opt_global_account.get("name")
-    client_id = opt_global_account.get("client_id")
-    client_secret = opt_global_account.get("client_secret")
-    stored_access_token = opt_global_account.get("access_token")
-    stored_refresh_token = opt_global_account.get("refresh_token")
+    client_id, client_secret, stored_access_token, stored_refresh_token, auth_type = get_account_oauth_config(opt_global_account)
     base_endpoint = opt_global_account.get("endpoint")
 
-    access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint)
+    access_token, refresh_token = get_valid_access_token(helper, account_name, client_id, client_secret, stored_access_token, stored_refresh_token, base_endpoint, auth_type)
     
     # fetching org from Organizations endpoint
     try:

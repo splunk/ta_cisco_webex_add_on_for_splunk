@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.6.0] - 2026-09-16
+
+### Added
+
+- Added Service App authentication as a new authorization option for the account. Administrators can now select "Service App" in the Auth Type dropdown and provide the Service App Client ID, Client Secret, Access Token, and Refresh Token. The add-on automatically refreshes the access token using the refresh token, the same way it does for the OAuth 2.0 Integration flow.
+
 ## [v1.5.1] - 2026-09-15
 
 ### Fixed
