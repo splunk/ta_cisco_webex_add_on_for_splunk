@@ -2,7 +2,7 @@
     "meta": {
         "name": "ta_cisco_webex_add_on_for_splunk",
         "displayName": "Cisco Webex Add-on for Splunk",
-        "version": "1.6.0",
+        "version": "1.7.0",
         "restRoot": "ta_cisco_webex_add_on_for_splunk",
         "schemaVersion": "0.0.10",
         "supportedThemes": [
@@ -1557,6 +1557,150 @@
                                 ]
                             },
                             "defaultValue": "AAR"
+                        }
+                    ]
+                },
+                {
+                    "template": "input_with_helper",
+                    "name": "webex_workspace_metrics",
+                    "title": "Webex Workspace Metrics",
+                    "entity": [
+                        {
+                            "field": "name",
+                            "label": "Name",
+                            "type": "text",
+                            "help": "Enter a unique name for the data input",
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^[a-zA-Z]\\w*$",
+                                    "errorMsg": "Input Name must start with a letter and followed by alphabetic letters, digits or underscores."
+                                },
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 100,
+                                    "errorMsg": "Length of input name should be between 1 and 100"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "interval",
+                            "field": "interval",
+                            "label": "Interval",
+                            "help": "Time interval of input in seconds",
+                            "required": true
+                        },
+                        {
+                            "field": "index",
+                            "label": "Index",
+                            "type": "singleSelect",
+                            "defaultValue": "default",
+                            "options": {
+                                "endpointUrl": "data/indexes",
+                                "createSearchChoice": true,
+                                "denyList": "^_.*$"
+                            },
+                            "required": true,
+                            "validators": [
+                                {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80,
+                                    "errorMsg": "Length of index name should be between 1 and 80."
+                                }
+                            ]
+                        },
+                        {
+                            "field": "global_account",
+                            "label": "Global Account",
+                            "help": "",
+                            "required": true,
+                            "type": "singleSelect",
+                            "options": {
+                                "referenceName": "account"
+                            }
+                        },
+                        {
+                            "field": "org_id",
+                            "label": "Organization ID",
+                            "help": "Enter the Organization ID if required.",
+                            "required": false,
+                            "type": "text"
+                        },
+                        {
+                            "field": "start_time",
+                            "label": "Start Time",
+                            "help": "Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ.",
+                            "required": true,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "Start time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2023-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "end_time",
+                            "label": "End Time",
+                            "help": "End date and time in the format YYYY-MM-DDTHH:MM:SSZ. (Optional). End Time must be after the Start Time.",
+                            "required": false,
+                            "type": "text",
+                            "validators": [
+                                {
+                                    "type": "regex",
+                                    "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                                    "errorMsg": "End time must be in the format YYYY-MM-DDTHH:MM:SSZ (example:2033-01-01T00:00:00Z)"
+                                }
+                            ]
+                        },
+                        {
+                            "field": "metrics",
+                            "label": "Metrics",
+                            "help": "Select the metrics you want to collect. You can select multiple metrics and/or create a new value by typing it.",
+                            "required": true,
+                            "type": "multipleSelect",
+                            "options": {
+                                "createSearchChoice": true,
+                                "delimiter": ",",
+                                "items": [
+                                    {
+                                        "value": "ambientNoise",
+                                        "label": "ambientNoise"
+                                    },
+                                    {
+                                        "value": "humidity",
+                                        "label": "humidity"
+                                    },
+                                    {
+                                        "value": "soundLevel",
+                                        "label": "soundLevel"
+                                    },
+                                    {
+                                        "value": "peopleCount",
+                                        "label": "peopleCount"
+                                    },
+                                    {
+                                        "value": "temperature",
+                                        "label": "temperature"
+                                    },
+                                    {
+                                        "value": "timeBooked",
+                                        "label": "timeBooked"
+                                    },
+                                    {
+                                        "value": "timeUsed",
+                                        "label": "timeUsed"
+                                    },
+                                    {
+                                        "value": "tvoc",
+                                        "label": "tvoc"
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
