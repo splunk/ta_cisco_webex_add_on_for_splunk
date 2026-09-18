@@ -17,6 +17,8 @@ _GET_LIVE_STREAM_DETAILED_CALL_HISTORY = "cdr_stream"
 _SECURITY_AUDIT_EVENTS_ENDPOINT = "admin/securityAudit/events"
 _FEDRAMP_BASE_URL = "api-usgov.webex.com"
 _Webex_Contact_Center_BASE_URL  = "api.wxcc-{region}.cisco.com"
+_LIST_WORKSPACES_ENDPOINT = "workspaces"
+_WORKSPACES_METRICS_ENDPOINT = "workspaceMetrics"
 
 UNAUTHORIZED_STATUS = 401
 
@@ -31,7 +33,8 @@ _RESPONSE_TAG_MAP = {
     _GET_MEETING_QUALITIES: "items",
     _GET_LIVE_STREAM_DETAILED_CALL_HISTORY: "items",
     _GET_DETAILED_CALL_HISTORY: "items",
-    _SECURITY_AUDIT_EVENTS_ENDPOINT: "items"
+    _SECURITY_AUDIT_EVENTS_ENDPOINT: "items",
+    _LIST_WORKSPACES_ENDPOINT: "items"
 }
 
 _START_TIME_FIELDS = [
