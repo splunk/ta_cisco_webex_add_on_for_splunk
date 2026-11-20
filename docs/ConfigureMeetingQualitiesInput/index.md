@@ -22,3 +22,5 @@ Each attribute in the following table corresponds to a field in Splunk Web.
 |`account`                |Global Account                    |The Webex account created in the Configuration tab.|
 |`start_time`             |Start Time                        |Required, Start date and time (inclusive) in the format YYYY-MM-DDTHH:MM:SSZ, `example:2023-01-01T00:00:00Z`. The Start Time **MUST** be within 7 days from the current time.|
 |`end_time`               |End Time                          |Optional, End date and time in the format YYYY-Mon-DDTHH:MM:SSZ. `example:2023-02-01T00:00:00Z`. Leave it blank if an ongoing ingestion mode is needed.|
+
+**Note**: This input requires the `analytics:read_all` scope to access the data. Take into consideration that this one won't be available to select if you use a Service App. If you still require to use this input you might want to use an Integration instead.

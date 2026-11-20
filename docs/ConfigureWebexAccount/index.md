@@ -26,3 +26,5 @@
     - **Access Token**: Enter the `Access Token` generated after an administrator authorizes the Service App.
     - **Refresh Token**: Enter the `Refresh Token` generated after an administrator authorizes the Service App. It is used to automatically obtain new access tokens.
 6. Click on the `Add` button.
+
+**Note**: Take into consideration that the `analytics:read_all` scope is not available to select if you are using a Service App. If you still require to use this scope, you might want to use an Integration instead.
