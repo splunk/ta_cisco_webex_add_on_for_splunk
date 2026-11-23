@@ -5,7 +5,30 @@ from solnlib import conf_manager
 
 from webex_constants import _APP_NAME, _REALM, _TOKEN_EXPIRES_CHECKPOINT_KEY, _REFRESH_TOKEN_ENDPOINT
 
-def get_valid_access_token(helper, account_name, client_id, client_secret, access_token, refresh_token, base_endpoint):
+
+def get_account_oauth_config(opt_global_account):
+    """Resolve the OAuth credentials for an account based on its selected auth type.
+
+    The account can be configured with either the interactive "oauth" (OAuth 2.0
+    Integration) flow or the "service_app" (Service App) flow. Both use the same
+    refresh_token grant, but the Service App stores its credentials under
+    dedicated ``service_app_*`` fields to keep them separate in the UI.
+
+    Returns:
+        tuple: (client_id, client_secret, access_token, refresh_token, auth_type)
+    """
+    auth_type = opt_global_account.get("auth_type") or "oauth"
+    prefix = "service_app_" if auth_type == "service_app" else ""
+    return (
+        opt_global_account.get(f"{prefix}client_id"),
+        opt_global_account.get(f"{prefix}client_secret"),
+        opt_global_account.get(f"{prefix}access_token"),
+        opt_global_account.get(f"{prefix}refresh_token"),
+        auth_type,
+    )
+
+
+def get_valid_access_token(helper, account_name, client_id, client_secret, access_token, refresh_token, base_endpoint, auth_type="oauth"):
    try:
         expiration_checkpoint_key = _TOKEN_EXPIRES_CHECKPOINT_KEY.format(account_name=account_name)
            
@@ -18,20 +41,21 @@ def get_valid_access_token(helper, account_name, client_id, client_secret, acces
             helper.log_debug(f"[*] The access token of account {account_name} expired! Updating now!")
             
             # override the access_token and expires_in
-            access_token, refresh_token, expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint)
+            access_token, refresh_token, expires_in = update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint, auth_type)
         
         return access_token, refresh_token
    except Exception as e:
        helper.log_error(f"Error validating the access token {e}")
         
-def update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint):
+def update_access_token(helper, account_name, client_id, client_secret, refresh_token, base_endpoint, auth_type="oauth"):
     helper.log_debug("[-] Updating access token.....")
     oauth = OAuth(
         helper,
         client_id,
         client_secret,
         refresh_token,
-        base_endpoint
+        base_endpoint,
+        auth_type
     )
     return oauth.refresh_token(account_name)
 
@@ -45,7 +69,8 @@ class OAuth:
         client_id,
         client_secret,
         refresh_token,
-        base_endpoint
+        base_endpoint,
+        auth_type="oauth"
     ):
         """[summary]
 
@@ -55,6 +80,7 @@ class OAuth:
             client_id (string): The client id of the Webex Oauth integration app.
             client_secret (string): The client secrete of the Webex Oauth integration app.
             refresh_token (string): The refresh token of the Webex Oauth integration app.
+            auth_type (string): The account auth type ("oauth" or "service_app").
         """
         self.helper = helper
         self._client_id = client_id
@@ -62,12 +88,18 @@ class OAuth:
         self._refresh_token = refresh_token
         self._base_endpoint = base_endpoint
 
+        # Service App credentials are stored under dedicated ``service_app_*`` fields.
+        self._field_prefix = "service_app_" if auth_type == "service_app" else ""
+        self._access_token_field = f"{self._field_prefix}access_token"
+        self._refresh_token_field = f"{self._field_prefix}refresh_token"
+        self._client_secret_field = f"{self._field_prefix}client_secret"
+
         # dict of encrypted fields
         # NOTE: MUST include all fields that need to be encrypted.
         self._password_storage_stanza = {
-            "access_token": "",
-            "refresh_token": "",
-            "client_secret": self._client_secret,
+            self._access_token_field: "",
+            self._refresh_token_field: "",
+            self._client_secret_field: self._client_secret,
         }
 
     def get_new_token(self):
@@ -139,12 +171,12 @@ class OAuth:
 
         self.helper.log_debug("[-] Updating new tokens in {} account".format(account_name))
         # NOTE: MUST include all fields that need to be encrypted.
-        self._password_storage_stanza["access_token"] = new_account_token
-        self._password_storage_stanza["refresh_token"] = new_refresh_token
+        self._password_storage_stanza[self._access_token_field] = new_account_token
+        self._password_storage_stanza[self._refresh_token_field] = new_refresh_token
 
         # NOTE: this update will take effect in next round of ingestion
         try:
-            account_conf.update(account_name, self._password_storage_stanza, ["access_token", "refresh_token", "client_secret"])
+            account_conf.update(account_name, self._password_storage_stanza, [self._access_token_field, self._refresh_token_field, self._client_secret_field])
         except Exception as e:
             self.helper.log_error("[-] Error happened while updating account: {}. Error: {}".format(account_name, e))
             raise e

@@ -13,6 +13,7 @@ _MEETING_ATTENDEE_REPORTS_ENDPOINT = "meetingReports/attendees?meetingId={meetin
 _LIST_PEOPLE_ENDPOINT = "people"
 _GET_MEETING_QUALITIES =  "meeting/qualities"
 _GET_DETAILED_CALL_HISTORY = "cdr_feed"
+_GET_LIVE_STREAM_DETAILED_CALL_HISTORY = "cdr_stream"
 _SECURITY_AUDIT_EVENTS_ENDPOINT = "admin/securityAudit/events"
 _FEDRAMP_BASE_URL = "api-usgov.webex.com"
 _Webex_Contact_Center_BASE_URL  = "api.wxcc-{region}.cisco.com"
@@ -28,6 +29,7 @@ _RESPONSE_TAG_MAP = {
     _MEETING_ATTENDEE_REPORTS_ENDPOINT: "items",
     _LIST_PEOPLE_ENDPOINT: "items",
     _GET_MEETING_QUALITIES: "items",
+    _GET_LIVE_STREAM_DETAILED_CALL_HISTORY: "items",
     _GET_DETAILED_CALL_HISTORY: "items",
     _SECURITY_AUDIT_EVENTS_ENDPOINT: "items"
 }

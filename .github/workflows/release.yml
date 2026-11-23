@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.9 ]
+        python-version: [ 3.13 ]
     outputs:
       artifact_name: ${{ steps.artifact.outputs.name }}
       ta_version: ${{ steps.app.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "name=${{ steps.app.outputs.name }}-${{ steps.app.outputs.version }}-py${{ matrix.python-version }}" >> $GITHUB_OUTPUT
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.artifact.outputs.name }}
           path: ${{ steps.app.outputs.name }}*.tar.gz
@@ -67,8 +67,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ${{ needs.build.outputs.artifact_name }}
           path: dist
