@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v1.6.1] - 2026-11-23
+
+### Fixed
+
+- Bumped the `httplib2` to the latest version by removing the `httplib2` 0.22.0 version pin from the  `requirements.txt` so builds install the latest available version.
+
 ## [v1.6.0] - 2026-09-16
 
 ### Added
